@@ -1,23 +1,70 @@
-<modal [title]="'Historia Clínica - ' + paciente.nombre">
+<div class="detailPatient">
+    @if (loading()) {
+    <div class="detailPatient__loading">
+        <p>Cargando datos del paciente...</p>
+    </div>
+    } @else if (patient()) {
+    <div class="detailPatient__header">
+        <div class="detailPatient__header-info">
+            <h2 class="detailPatient__title">{{ getFullName() }}</h2>
+        </div>
+        <button mat-icon-button (click)="onClose()" class="detailPatient__close">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
 
-    <section class="personal-data-grid">
-        @for (dato of pacientesData; track dato.label) {
-        <card-info [label]="dato.label" [value]="dato.value" [editable]="true"></card-info>
-        }
-    </section>
+    <div class="detailPatient__content">
+        <section class="detailPatient__personal-data">
+            <h3>Datos Personales</h3>
+            <div class="personal-data-grid">
+                <div class="data-item">
+                    <span class="data-item__label">Fecha de Nacimiento</span>
+                    <span class="data-item__value">{{ formatDate(patient()!.birthdate) }}</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-item__label">Teléfono</span>
+                    <span class="data-item__value">{{ patient()!.phone }}</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-item__label">Email</span>
+                    <span class="data-item__value">{{ patient()!.email }}</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-item__label">Dirección</span>
+                    <span class="data-item__value">{{ patient()!.address || 'No especificada' }}</span>
+                </div>
+            </div>
+        </section>
 
-    <section class="detailPatient__menu">
-        <menu-detail-patient (tabChange)="onTabChange($event)"></menu-detail-patient>
-        @if(activeTab === 'clinical') {
-        <app-clinical-history></app-clinical-history>
-        }
+        <section class="detailPatient__form">
+            @if (patientFormConfig()) {
+            <f-form [config]="patientFormConfig()!" (formSubmit)="onSubmitPatient($event)"></f-form>
+            }
+        </section>
 
-        @if(activeTab === 'treatments') {
-        <app-treatments></app-treatments>
-        }
+        <section class="detailPatient__menu">
+            <menu-detail-patient (tabChange)="onTabChange($event)"></menu-detail-patient>
 
-        @if(activeTab === 'sessions') {
-        <app-sessions-history></app-sessions-history>
-        }
-    </section>
-</modal>
+            @if(activeTab === 'clinical') {
+            <app-clinical-history [patientId]="patient()!.id"></app-clinical-history>
+            }
+
+            @if(activeTab === 'treatments') {
+            <app-treatments [patientId]="patient()!.id"></app-treatments>
+            }
+
+            @if(activeTab === 'sessions') {
+            <app-sessions-history [patientId]="patient()!.id"></app-sessions-history>
+            }
+        </section>
+
+        <div class="detailPatient__actions">
+            <button mat-button (click)="onClose()">Cancelar</button>
+            <button mat-raised-button color="warn" (click)="onDelete()">
+                <mat-icon>delete</mat-icon>
+                Eliminar Paciente
+            </button>
+        </div>
+    </div>
+    }
+</div>

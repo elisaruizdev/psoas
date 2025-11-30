@@ -1,1 +1,153 @@
-<p>sessions-history works!</p>
+<div class="sessions-history">
+    @if (!showForm()) {
+    <div class="sessions-history__action">
+        <button-ui [title]="'Nueva sesión'" [icon]="'icons/add.svg'" (click)="onNewSession()">
+        </button-ui>
+    </div>
+    }
+
+    @if (showForm() && sessionFormConfig()) {
+    <div class="sessions-history__form">
+        <h3>Nueva Sesión</h3>
+        <f-form [config]="sessionFormConfig()!" (formSubmit)="onSubmitSession($event)" (formCancel)="onCancelForm()">
+        </f-form>
+    </div>
+    }
+
+    @if (!showForm()) {
+    <div class="sessions-history__content">
+        @if (loading()) {
+        <div class="sessions-history__loading">
+            <p>Cargando sesiones...</p>
+        </div>
+        } @else if (treatmentsWithSessions().length === 0) {
+        <div class="sessions-history__empty">
+            <p>No hay tratamientos registrados. Crea un tratamiento primero para registrar sesiones.</p>
+        </div>
+        } @else {
+        <div class="sessions-history__treatments">
+            @for (item of treatmentsWithSessions(); track item.treatment.id) {
+            <div class="treatment-group">
+                <div class="treatment-group__header">
+                    <div class="treatment-group__title">
+                        <mat-icon class="treatment-group__icon">healing</mat-icon>
+                        <div class="treatment-group__info">
+                            <h3>{{ item.treatment.treatment_name }}</h3>
+                            <p>
+                                {{ formatDate(item.treatment.start_date) }}
+                                @if (item.treatment.end_date) {
+                                - {{ formatDate(item.treatment.end_date) }}
+                                } @else {
+                                - Actualidad
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    <div class="treatment-group__stats">
+                        <div class="treatment-group__stat">{{ getSessionsCount(item.treatment) }}</div>
+                    </div>
+                </div>
+
+                @if (item.sessions.length === 0) {
+                <div class="treatment-group__no-sessions">
+                    <p>No hay sesiones registradas para este tratamiento</p>
+                </div>
+                } @else {
+                <div class="treatment-group__sessions">
+                    @for (session of item.sessions; track session.id) {
+                    <mat-card class="session-card">
+                        <div class="session-card__header">
+                            <div class="session-card__date">
+                                <mat-icon class="session-card__date-icon">event_note</mat-icon>
+                                <div class="session-card__date-info">
+                                    <h4>Sesión del {{ formatDate(session.session_date) }}</h4>
+                                    <p>
+                                        <mat-icon>person</mat-icon>
+                                        {{ getPhysioName(session) }} • {{ session.duration }} min
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <mat-card-content>
+                            <div class="session-card__section">
+                                <div class="section-label">
+                                    <mat-icon>build</mat-icon>
+                                    <strong>Técnicas aplicadas</strong>
+                                </div>
+                                @if (isEditing(session.id)) {
+                                <textarea class="section-content-edit" [(ngModel)]="session.techniques_applied"
+                                    rows="3"></textarea>
+                                } @else {
+                                <p class="section-content">{{ session.techniques_applied }}</p>
+                                }
+                            </div>
+
+                            <div class="session-card__section">
+                                <div class="section-label">
+                                    <mat-icon>trending_up</mat-icon>
+                                    <strong>Evolución del paciente</strong>
+                                </div>
+                                @if (isEditing(session.id)) {
+                                <textarea class="section-content-edit" [(ngModel)]="session.patient_evolution"
+                                    rows="3"></textarea>
+                                } @else {
+                                <p class="section-content">{{ session.patient_evolution }}</p>
+                                }
+                            </div>
+
+                            @if (session.observations || isEditing(session.id)) {
+                            <div class="session-card__observations">
+                                <div class="section-label">
+                                    <mat-icon>speaker_notes</mat-icon>
+                                    <strong>Observaciones</strong>
+                                </div>
+                                @if (isEditing(session.id)) {
+                                <textarea class="section-content-edit" [(ngModel)]="session.observations"
+                                    rows="2"></textarea>
+                                } @else {
+                                <p class="section-content">{{ session.observations }}</p>
+                                }
+                            </div>
+                            }
+
+                            @if (session.next_appointment) {
+                            <div class="session-card__next-appointment">
+                                <mat-icon>event</mat-icon>
+                                <span>Próxima cita: {{ formatDate(session.next_appointment) }}</span>
+                            </div>
+                            }
+                        </mat-card-content>
+
+                        <mat-card-actions>
+                            @if (isEditing(session.id)) {
+                            <button mat-button (click)="onCancelEdit()">
+                                <mat-icon>close</mat-icon>
+                                Cancelar
+                            </button>
+                            <button mat-button color="primary" (click)="onSaveEdit(session)">
+                                <mat-icon>save</mat-icon>
+                                Guardar
+                            </button>
+                            } @else {
+                            <button mat-button (click)="onEdit(session)">
+                                <mat-icon>edit</mat-icon>
+                                Editar
+                            </button>
+                            <button mat-button color="warn" (click)="onDelete(session)">
+                                <mat-icon>delete</mat-icon>
+                                Eliminar
+                            </button>
+                            }
+                        </mat-card-actions>
+                    </mat-card>
+                    }
+                </div>
+                }
+            </div>
+            }
+        </div>
+        }
+    </div>
+    }
+</div>

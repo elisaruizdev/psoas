@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormConfig } from '../../models/form.model';
+import { ButtonUI } from '../button/button';
 
 
 @Component({
   selector: 'f-form',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ButtonUI],
   templateUrl: './form.html',
   styleUrl: './form.scss',
 })
@@ -30,7 +31,7 @@ export class Form {
   private buildForm(): void {
     const formControls: any = {};
 
-    this.config.sections.forEach((section: { fields: any[]; }) => {
+    this.config.sections.forEach((section: { fields: any[] }) => {
       section.fields.forEach((field) => {
         const validators = [];
 
@@ -43,7 +44,6 @@ export class Form {
         }
 
         const defaultValue = field.type === 'checkbox' ? field.value || false : field.value || '';
-
 
         formControls[field.name] = [defaultValue, validators];
       });

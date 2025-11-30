@@ -17,7 +17,17 @@ export class PatientsService {
     return this.http.post<Patient>(this.apiUrl, patient);
   }
 
+  getPatientById(id: string): Observable<Patient> {
+    return this.http.get<Patient>(`${this.apiUrl}/${id}`);
+  }
+
   getAllPatients(): Observable<Patient[]> {
     return this.http.get<Patient[]>(this.apiUrl);
+  }
+  updatePatient(id: string, patient: Partial<Patient>): Observable<Patient> {
+    return this.http.patch<Patient>(`${this.apiUrl}/${id}`, patient);
+  }
+  deletePatient(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

@@ -34,9 +34,7 @@ export class Register {
         email: this.registerForm.get('email')?.value,
         password: this.registerForm.get('password')?.value,
       }
-      console.log('Formulario enviado', dataRegister);
       this.register.registerForm(dataRegister).subscribe(response => {
-        console.log('Registro exitoso', response);
       }, error => {
         console.error('Error en el registro', error);
       });

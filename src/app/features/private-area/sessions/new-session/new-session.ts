@@ -181,7 +181,6 @@ export class NewSession implements OnInit {
   }
 
   private showSuccessNotification(message: string): void {
-    console.log('ÉXITO:', message);
     alert(message);
   }
 

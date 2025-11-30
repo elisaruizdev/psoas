@@ -1,1 +1,124 @@
-<p>treatments works!</p>
+<div class="treatments">
+    @if (!showForm()) {
+    <div class="treatments__action">
+        <button-ui [title]="'Nuevo tratamiento'" [icon]="'icons/add.svg'" (click)="onNewTreatment()">
+        </button-ui>
+    </div>
+    }
+
+    @if (showForm() && treatmentFormConfig()) {
+    <div class="treatments__form">
+        <h3>Nuevo Tratamiento</h3>
+        <f-form [config]="treatmentFormConfig()!" (formSubmit)="onSubmitTreatment($event)" [showCancelButton]="false"></f-form>
+        <div class="form-actions">
+            <button mat-button (click)="onCancelForm()">Cancelar</button>
+        </div>
+    </div>
+    }
+
+    @if (!showForm()) {
+    <div class="treatments__content">
+        @if (loading()) {
+        <div class="treatments__loading">
+            <p>Cargando tratamientos...</p>
+        </div>
+        } @else if (treatments().length === 0) {
+        <div class="treatments__empty">
+            <p>Aquí se mostrarán los tratamientos del paciente.</p>
+        </div>
+        } @else {
+        <div class="treatments__list">
+            @for (treatment of treatments(); track treatment.id) {
+            <mat-card class="treatment-card">
+                <div class="treatment-card__header">
+                    <div class="treatment-card__title-row">
+                        <mat-icon class="treatment-card__icon">healing</mat-icon>
+                        <div class="treatment-card__title-content">
+                            @if (isEditing(treatment.id)) {
+                            <input class="treatment-card__title-edit" [(ngModel)]="treatment.treatment_name"
+                                placeholder="Nombre del tratamiento">
+                            } @else {
+                            <h3 class="treatment-card__title">{{ treatment.treatment_name }}</h3>
+                            }
+                            <p class="treatment-card__date">
+                                <mat-icon>event</mat-icon>
+                                {{ formatDate(treatment.start_date) }}
+                                @if (treatment.end_date) {
+                                - {{ formatDate(treatment.end_date) }}
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    <mat-chip [color]="getStatusColor(treatment.status)" highlighted>
+                        {{ getStatusLabel(treatment.status) }}
+                    </mat-chip>
+                </div>
+
+                <mat-card-content>
+                    <div class="treatment-card__section">
+                        <div class="section-label">
+                            <mat-icon>description</mat-icon>
+                            <strong>Descripción</strong>
+                        </div>
+                        @if (isEditing(treatment.id)) {
+                        <textarea class="section-content-edit" [(ngModel)]="treatment.description" rows="3"></textarea>
+                        } @else {
+                        <p class="section-content">{{ treatment.description }}</p>
+                        }
+                    </div>
+
+                    <div class="treatment-card__section">
+                        <div class="section-label">
+                            <mat-icon>flag</mat-icon>
+                            <strong>Objetivos</strong>
+                        </div>
+                        @if (isEditing(treatment.id)) {
+                        <textarea class="section-content-edit" [(ngModel)]="treatment.objectives" rows="3"></textarea>
+                        } @else {
+                        <p class="section-content">{{ treatment.objectives }}</p>
+                        }
+                    </div>
+
+                    @if (treatment.sessions_planned) {
+                    <div class="treatment-card__sessions">
+                        <mat-icon>event_available</mat-icon>
+                        <span><strong>Sesiones planificadas:</strong> {{ treatment.sessions_planned }}</span>
+                    </div>
+                    }
+
+                    <div class="treatment-card__meta">
+                        <span class="meta-item">
+                            <mat-icon>update</mat-icon>
+                            Actualizado: {{ formatDate(treatment.updatedAt) }}
+                        </span>
+                    </div>
+                </mat-card-content>
+
+                <mat-card-actions>
+                    @if (isEditing(treatment.id)) {
+                    <button mat-button (click)="onCancelEdit()">
+                        <mat-icon>close</mat-icon>
+                        Cancelar
+                    </button>
+                    <button mat-button color="primary" (click)="onSaveEdit(treatment)">
+                        <mat-icon>save</mat-icon>
+                        Guardar
+                    </button>
+                    } @else {
+                    <button mat-button (click)="onEdit(treatment)">
+                        <mat-icon>edit</mat-icon>
+                        Editar
+                    </button>
+                    <button mat-button color="warn" (click)="onDelete(treatment)">
+                        <mat-icon>delete</mat-icon>
+                        Eliminar
+                    </button>
+                    }
+                </mat-card-actions>
+            </mat-card>
+            }
+        </div>
+        }
+    </div>
+    }
+</div>

@@ -72,13 +72,11 @@
     </div>
     }
     <div class="f-form__actions">
-        @if (showCancelButton) {
-        <button type="button" class="f-form__button f-form__button--cancel" (click)="onCancel()">
-            {{ cancelButtonText }}
-        </button>
-        }
-        <button type="submit" class="f-form__button f-form__button--submit">
-            {{ submitButtonText }}
-        </button>
+    @if (showCancelButton) {
+    <button-ui [title]  ="cancelButtonText" [icon]="'icons/cancel.svg'"  (click)="onCancel()">
+    </button-ui>
+    }
+    <button-ui [title]="submitButtonText" [icon]="'icons/check.svg'" [disabled]="form.invalid">  
+    </button-ui>
     </div>
 </form>

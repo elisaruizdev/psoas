@@ -1,39 +1,38 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TabItem } from '../../../layout/models/layout.model';
-
+import { PatientTab, TabId } from '../../models/patients.model';
 
 @Component({
   selector: 'menu-detail-patient',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './menu-detail-patient.html',
-  styleUrls: ['./menu-detail-patient.scss']
+  styleUrls: ['./menu-detail-patient.scss'],
 })
 export class MenuDetailPatientComponent {
-  @Output() tabChange = new EventEmitter<'clinical' | 'treatments' | 'sessions'>();
+  @Output() tabChange = new EventEmitter<TabId>();
 
-  activeTab: 'clinical' | 'treatments' | 'sessions' = 'clinical';
+  activeTab: TabId = 'clinical';
 
-  tabs: TabItem[] = [
-    { 
-      label: 'Historial Clínico', 
-      id: 'clinical', 
-      icon: 'assets/icons/stethoscope.svg' 
+  tabs: PatientTab[] = [
+    {
+      label: 'Historial Clínico',
+      id: 'clinical',
+      icon: 'icons/stethoscope.svg',
     },
-    { 
-      label: 'Tratamientos', 
-      id: 'treatments', 
-      icon: 'assets/icons/medication.svg' 
+    {
+      label: 'Tratamientos',
+      id: 'treatments',
+      icon: 'icons/medication.svg',
     },
-    { 
-      label: 'Historial de Sesiones', 
-      id: 'sessions', 
-      icon: 'assets/icons/calendar.svg' 
-    }
+    {
+      label: 'Historial de Sesiones',
+      id: 'sessions',
+      icon: 'icons/calendar_purple.svg',
+    },
   ];
 
-  selectTab(tabId: 'clinical' | 'treatments' | 'sessions'): void {
+  selectTab(tabId: TabId): void {
     this.activeTab = tabId;
     this.tabChange.emit(tabId);
   }

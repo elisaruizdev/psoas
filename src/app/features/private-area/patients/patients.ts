@@ -108,12 +108,18 @@ export class Patients {
   }
 
   private abrirDetallePaciente(paciente: any): void {
-    this.dialog.open(DetailPatient, {
-      data: paciente,
+    const dialogRef = this.dialog.open(DetailPatient, {
+      data: { id: paciente.id },
       width: '1000px',
       maxWidth: '100vw',
       height: 'auto',
       panelClass: 'fullscreen-dialog',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'updated' || result?.action === 'delete') {
+        this.getAllPatients();
+      }
     });
   }
 

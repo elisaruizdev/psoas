@@ -1,9 +1,118 @@
-<div class="clinical_history">
-    <section class="clinical_history__header">
-        <button-ui [title]="'Nuevo diagnóstico'" [icon]="'icons/add.svg'" (click)="openNewDiagnosis()"></button-ui>
-    </section>
-    <section class="clinical_history__content">
-        <p>Aquí se mostrará el historial clínico del paciente.</p>  
-    </section>    
-    
+<div class="clinical-history">
+    @if (!showForm()) {
+    <div class="clinical-history__action">
+        <button-ui [title]="'Nuevo diagnóstico'" [icon]="'icons/add.svg'" (click)="onNewDiagnosis()">
+        </button-ui>
+    </div>
+    }
+
+    @if (showForm() && diagnosisFormConfig()) {
+    <div class="clinical-history__form">
+        <h3>Nuevo Diagnóstico</h3>
+        <f-form [config]="diagnosisFormConfig()!" (formSubmit)="onSubmitDiagnosis($event)" [showCancelButton]="false"   ></f-form>
+        <div class="form-actions">
+            <button mat-button (click)="onCancelForm()">Cancelar</button>
+        </div>
+    </div>
+    }
+
+    @if (!showForm()) {
+    <div class="clinical-history__content">
+        @if (loading()) {
+        <div class="clinical-history__loading">
+            <p>Cargando diagnósticos...</p>
+        </div>
+        } @else if (diagnoses().length === 0) {
+        <div class="clinical-history__empty">
+            <p>Aquí se mostrará el historial clínico del paciente.</p>
+        </div>
+        } @else {
+        <div class="clinical-history__list">
+            @for (diagnosis of diagnoses(); track diagnosis.id) {
+            <mat-card class="diagnosis-card">
+                <div class="diagnosis-card__header">
+                    <div class="diagnosis-card__title-row">
+                        <mat-icon class="diagnosis-card__icon">{{
+                            diagnosis.status === 'active' ? 'emergency' : 'check_circle'
+                            }}</mat-icon>
+                        <div class="diagnosis-card__title-content">
+                            @if (isEditing(diagnosis.id)) {
+                            <input class="diagnosis-card__title-edit" [(ngModel)]="diagnosis.diagnosis_type"
+                                placeholder="Tipo de diagnóstico">
+                            } @else {
+                            <h3 class="diagnosis-card__title">{{ diagnosis.diagnosis_type }}</h3>
+                            }
+                            <p class="diagnosis-card__date">
+                                <mat-icon>event</mat-icon>
+                                {{ formatDate(diagnosis.diagnosis_date) }}
+                            </p>
+                        </div>
+                    </div>
+                    <mat-chip [color]="getStatusColor(diagnosis.status)" highlighted>
+                        {{ getStatusLabel(diagnosis.status) }}
+                    </mat-chip>
+                </div>
+
+                <mat-card-content>
+                    <div class="diagnosis-card__section">
+                        <div class="section-label">
+                            <mat-icon>description</mat-icon>
+                            <strong>Descripción</strong>
+                        </div>
+                        @if (isEditing(diagnosis.id)) {
+                        <textarea class="section-content-edit" [(ngModel)]="diagnosis.description" rows="3"></textarea>
+                        } @else {
+                        <p class="section-content">{{ diagnosis.description }}</p>
+                        }
+                    </div>
+
+                    @if (diagnosis.observations || isEditing(diagnosis.id)) {
+                    <div class="diagnosis-card__observations">
+                        <div class="section-label">
+                            <mat-icon>speaker_notes</mat-icon>
+                            <strong>Observaciones</strong>
+                        </div>
+                        @if (isEditing(diagnosis.id)) {
+                        <textarea class="section-content-edit" [(ngModel)]="diagnosis.observations" rows="2"></textarea>
+                        } @else {
+                        <p class="section-content">{{ diagnosis.observations }}</p>
+                        }
+                    </div>
+                    }
+
+                    <div class="diagnosis-card__meta">
+                        <span class="meta-item">
+                            <mat-icon>update</mat-icon>
+                            Actualizado: {{ formatDate(diagnosis.updatedAt) }}
+                        </span>
+                    </div>
+                </mat-card-content>
+
+                <mat-card-actions>
+                    @if (isEditing(diagnosis.id)) {
+                    <button mat-button (click)="onCancelEdit()">
+                        <mat-icon>close</mat-icon>
+                        Cancelar
+                    </button>
+                    <button mat-button color="primary" (click)="onSaveEdit(diagnosis)">
+                        <mat-icon>save</mat-icon>
+                        Guardar
+                    </button>
+                    } @else {
+                    <button mat-button (click)="onEdit(diagnosis)">
+                        <mat-icon>edit</mat-icon>
+                        Editar
+                    </button>
+                    <button mat-button color="warn" (click)="onDelete(diagnosis)">
+                        <mat-icon>delete</mat-icon>
+                        Eliminar
+                    </button>
+                    }
+                </mat-card-actions>
+            </mat-card>
+            }
+        </div>
+        }
+    </div>
+    }
 </div>
