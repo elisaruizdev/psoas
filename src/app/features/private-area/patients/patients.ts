@@ -2,45 +2,41 @@ import { Component, signal, computed } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { ButtonUI } from '../../../shared/ui/button/button';
+import { MatDialog } from '@angular/material/dialog';
 import { TableConfig } from '../../../shared/models/table.model';
 import { Table } from '../../../shared/ui/table/table';
-import { DetailPatient } from './detail-patient/detail-patient';
-import { MatDialog } from '@angular/material/dialog';
-import { NewPatient } from './new-patient/new-patient';
+import { ButtonUI } from '../../../shared/ui/button/button';
 import { PatientsService } from './services/patients.service';
 import { Patient } from './models/patients.model';
+import { NewPatient } from './new-patient/new-patient';
+import { DetailPatient } from './detail-patient/detail-patient';
 
 @Component({
   selector: 'app-patients',
-  imports: [MatButtonModule, MatDividerModule, MatIconModule, ButtonUI, Table],
+  imports: [MatButtonModule, MatDividerModule, MatIconModule, Table, ButtonUI],
   templateUrl: './patients.html',
   styleUrl: './patients.scss',
 })
 export class Patients {
   patients = signal<Patient[]>([]);
 
-  listadoPacientesConfig = computed<TableConfig>(() => ({
+  listadoPatientsConfig = computed<TableConfig>(() => ({
     columns: [
       {
         key: 'fullName',
-        label: 'Nombre y Apellidos',
+        label: 'Nombre Completo',
       },
       {
-        key: 'phone',
-        label: 'Teléfono',
+        key: 'identifier',
+        label: 'DNI/NIE',
       },
       {
         key: 'email',
         label: 'Email',
       },
       {
-        key: 'consultationReason',
-        label: 'Motivo de Consulta',
-      },
-      {
-        key: 'healthInsurance',
-        label: 'Aseguradora',
+        key: 'phone',
+        label: 'Teléfono',
       },
       {
         key: 'status',
@@ -51,7 +47,7 @@ export class Patients {
     filterPlaceholder: 'Buscar paciente...',
     pageSizeOptions: [5, 10, 20],
     showFilter: true,
-    noDataMessage: 'Sin resultados',
+    noDataMessage: 'Sin pacientes registrados',
     clickableRows: true,
     clickableParams: 'view-patient',
   }));
@@ -77,11 +73,10 @@ export class Patients {
     return patients.map((patient) => ({
       id: patient.id,
       fullName: this.getFullName(patient),
-      phone: patient.phone,
-      consultationReason: patient.consultation_reason || '-',
+      identifier: patient.identifier,
       email: patient.email,
+      phone: patient.phone,
       status: this.translateStatus(patient.status),
-      healthInsurance: patient.health_insurance || 'Sin seguro',
     }));
   }
 
@@ -97,19 +92,18 @@ export class Patients {
     const statusMap: { [key: string]: string } = {
       active: 'Activo',
       inactive: 'Inactivo',
-      discharged: 'Alta',
     };
     return statusMap[status] || status;
   }
 
-  onPacienteClick(event: any): void {
+  onPatientClick(event: any): void {
     const { row } = event;
-    this.abrirDetallePaciente(row);
+    this.abrirDetallePaciente(row.id);
   }
 
-  private abrirDetallePaciente(paciente: any): void {
+  private abrirDetallePaciente(patientId: string): void {
     const dialogRef = this.dialog.open(DetailPatient, {
-      data: { id: paciente.id },
+      data: { id: patientId },
       width: '1000px',
       maxWidth: '100vw',
       height: 'auto',
@@ -124,9 +118,17 @@ export class Patients {
   }
 
   abrirNuevoPaciente(): void {
-    this.dialog.open(NewPatient, {
-      width: '1000px',
+    const dialogRef = this.dialog.open(NewPatient, {
+      width: '800px',
       maxWidth: '100vw',
+      height: 'auto',
+      panelClass: 'fullscreen-dialog',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'created') {
+        this.getAllPatients();
+      }
     });
   }
 }
