@@ -1,5 +1,5 @@
 {
-  "name": "fisiogest",
+  "name": "psoas",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:fisiogest": "node dist/fisiogest/server/server.mjs"
+    "serve:ssr:psoas": "node dist/psoas/server/server.mjs"
   },
   "prettier": {
     "printWidth": 100,
