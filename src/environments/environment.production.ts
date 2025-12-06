@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseURl: 'https://dominio-backend.com',
+  baseUrl: 'https://dominio-backend.com',
 };
