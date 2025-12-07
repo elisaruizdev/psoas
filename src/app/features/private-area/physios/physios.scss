@@ -26,6 +26,11 @@
     color: #390c9b;
   }
 
+  &__pending-alert{
+    mat-icon {
+          color: #1d0a49;
+    }
+  }
   .pending-request {
     justify-content: space-between;
     display: flex;
@@ -44,16 +49,19 @@
       margin-bottom: 0.5rem;
       margin-right: 2rem;
     }
+
     &__email {
       font-size: 1rem;
       color: #374151;
       font-weight: 600;
     }
+
     &__name {
       font-size: 1rem;
       color: #6b7280;
       font-weight: 600;
     }
+
     &__actions {
       display: flex;
       gap: 0.5rem;
