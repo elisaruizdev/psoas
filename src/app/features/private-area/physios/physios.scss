@@ -6,70 +6,65 @@
     align-items: center;
     justify-content: space-between;
   }
-  
+
   &__title {
     font-size: 2rem;
     font-weight: bold;
     color: #111827;
   }
 
-  &__subtitle {
-    color: #6b7280;
-    margin-bottom: 1.5rem;
-  }
-
-  &__cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-  }
-
-  &__card {
-    background: white;
-    padding: 1.1rem;
-    border: 2px solid transparent;
-    background: linear-gradient(white, white) padding-box,
-      linear-gradient(125deg, #5d3aaf, #3203a1) border-box;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-
-  &__card_title-contain {
+  &__pending-alert {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  &__card-icon {
-       filter: brightness(0) saturate(100%) invert(21%) sepia(48%) saturate(4373%) hue-rotate(264deg) brightness(63%) contrast(122%);
-  }
-
-  &__card-title {
-    font-size: 1.1rem;
-    color: #4618af;
-    font-weight: 500;
-  }
-
-  &__card-value {
-    font-size: 4em;
-    font-weight: bold;
-    color: #130c25;
-    margin: 0;
-    font-family: 'MuseoModerno';
-  }
-
-  &__card-subtitle {
-    font-size: 1rem;
-    color: #4618af;
-    font-weight: 400;
-  }
-
-
-  &__title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #111827;
     margin-bottom: 1rem;
+    align-items: center;
+  }
+
+  &__span {
+    margin-left: 0.5rem;
+    margin-right: 1rem;
+    font-size: 1rem;
+    color: #390c9b;
+  }
+
+  &__pending-alert{
+    mat-icon {
+          color: #1d0a49;
+    }
+  }
+  .pending-request {
+    justify-content: space-between;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 2rem;
+    align-items: center;
+    background-color: #e5e5e5;
+    padding: 1rem;
+    border-radius: 1rem;
+    width: 60%;
+
+    &__info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      margin-bottom: 0.5rem;
+      margin-right: 2rem;
+    }
+
+    &__email {
+      font-size: 1rem;
+      color: #374151;
+      font-weight: 600;
+    }
+
+    &__name {
+      font-size: 1rem;
+      color: #6b7280;
+      font-weight: 600;
+    }
+
+    &__actions {
+      display: flex;
+      gap: 0.5rem;
+    }
   }
 }
-

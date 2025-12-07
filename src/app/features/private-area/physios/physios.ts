@@ -8,11 +8,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { PhysiosService } from './services/physios.service';
 import { Physio } from './models/physios.model';
 import { DetailPhysio } from './detail-physio/detail-physio';
+import { ButtonUI } from '../../../shared/ui/button/button';
 
 
 @Component({
   selector: 'app-physios',
-  imports: [MatButtonModule, MatDividerModule, MatIconModule, Table],
+  imports: [MatButtonModule, MatDividerModule, MatIconModule, Table, ButtonUI],
   templateUrl: './physios.html',
   styleUrl: './physios.scss',
 })
