@@ -6,10 +6,11 @@
     @if (hasPendingPhysios()) {
     <div class="physios__pending-alert">
         <mat-icon>warning</mat-icon>
-        <span>Tienes {{ pendingPhysios().length }} fisioterapeuta(s) pendiente(s) de aprobar</span>
-        <button mat-button color="primary" (click)="togglePendingRequests()">
-            {{ showPendingRequests() ? 'Ocultar solicitudes' : 'Ver solicitudes' }}
-        </button>
+        <span class="physios__span">Tienes {{ pendingPhysios().length }} fisioterapeuta(s) pendiente(s) de aprobar</span>
+        <button-ui [title]="showPendingRequests() ? 'Ocultar solicitudes' : 'Ver solicitudes'"
+            [icon]="showPendingRequests() ? 'icons/not-visibility.svg' : 'icons/visibility.svg'"
+            (click)="togglePendingRequests()">
+        </button-ui>
     </div>
 
     @if (showPendingRequests()) {
@@ -21,12 +22,10 @@
                 <span class="pending-request__email">{{ physio.email }}</span>
             </div>
             <div class="pending-request__actions">
-                <button mat-raised-button color="primary" (click)="approvePhysio(physio.id_physio)">
-                    Aceptar
-                </button>
-                <button mat-raised-button color="warn" (click)="rejectPhysio(physio.id_physio)">
-                    Rechazar
-                </button>
+                <button-ui [title]="'Aprobar'" [icon]="'icons/check.svg'" (click)="approvePhysio(physio.id_physio)">
+                </button-ui>
+                <button-ui [title]="'Rechazar'" [icon]="'icons/cancel.svg'" (click)="rejectPhysio(physio.id_physio)">
+                </button-ui>
             </div>
         </div>
         }
