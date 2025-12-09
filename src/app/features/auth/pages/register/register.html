@@ -79,9 +79,16 @@
             Crear cuenta
         </button>
 
-        <div class="login-form__divider">
-            <span class="login-form__divider-text">¿Ya tienes cuenta?</span>
+        @if (errorMessage()) {
+        <div class="login-form__error-box">
+            {{ errorMessage() }}
         </div>
+        }
+        @if (okMessage()) {
+        <div class="login-form__ok-box">
+            {{ okMessage() }}
+        </div>
+        }
 
         <a href="/login" class="login-form__register-link">
             Volver al inicio de sesión

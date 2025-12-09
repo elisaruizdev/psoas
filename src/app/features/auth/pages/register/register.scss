@@ -198,4 +198,22 @@
             color: $color-primary-medium;
         }
     }
+      &__error-box {
+    border: 1px solid $color-error-border;
+    color: $color-error;
+    background-color: $color-error-bg;
+    padding: $spacing-sm;
+    border-radius: $border-radius-md;
+    font-size: $font-size-sm;
+    margin-bottom: $spacing-lg;
+  }
+    &__ok-box {
+    border: 1px solid $color-success-border;
+    color: $color-success;
+    background-color: $color-success-bg;
+    padding: $spacing-sm;
+    border-radius: $border-radius-md;
+    font-size: $font-size-sm;
+    margin-bottom: $spacing-lg;
+  }
 }
