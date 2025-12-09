@@ -171,7 +171,16 @@ export class DetailPatient implements OnInit {
     if (!patient) return;
 
     if (confirm('¿Estás seguro de que deseas eliminar este paciente?')) {
-      this.dialogRef.close({ action: 'delete', id: patient.id });
+      this.patientsService.deletePatient(patient.id).subscribe({
+        next: () => {
+          this.showSuccessNotification('Paciente eliminado correctamente');   
+          this.dialogRef.close({ action: 'delete', id: patient.id });
+        },
+        error: (error) => {
+          console.error('Error al eliminar:', error);
+          this.showErrorNotification('Error al eliminar el paciente');
+        },
+      });
     }
   }
 

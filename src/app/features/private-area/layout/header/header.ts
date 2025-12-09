@@ -31,11 +31,24 @@ export class Header {
 
   ngOnInit(): void {
     this.userName = sessionStorage.getItem('name') || 'Usuario';
-    this.initials = this.userName.split(' ').map((n) => n.slice(0, 2)).join('').toUpperCase();
-    this.userRole = sessionStorage.getItem('id_physio')? 'Fisioterapeuta' : 'Desconocido';
+    this.initials = this.userName
+      .split(' ')
+      .map((n) => n.slice(0, 2))
+      .join('')
+      .toUpperCase();
+    this.userRole = sessionStorage.getItem('id_physio') ? 'Fisioterapeuta' : 'Desconocido';
   }
 
   logout() {
+    this.clearSessionStorage();
+    this.goToLogin();
+  }
+
+  clearSessionStorage(): void {
+    sessionStorage.clear();
+  }
+
+  goToLogin(): void {
     this.routes.navigate(['/login']);
   }
 }

@@ -38,7 +38,7 @@
 
         <section class="detailPatient__form">
             @if (patientFormConfig()) {
-            <f-form [config]="patientFormConfig()!" (formSubmit)="onSubmitPatient($event)"></f-form>
+            <f-form [config]="patientFormConfig()!" (formSubmit)="onSubmitPatient($event)" [showCancelButton]="false"></f-form>
             }
         </section>
 
@@ -59,7 +59,6 @@
         </section>
 
         <div class="detailPatient__actions">
-            <button mat-button (click)="onClose()">Cancelar</button>
             <button mat-raised-button color="warn" (click)="onDelete()">
                 <mat-icon>delete</mat-icon>
                 Eliminar Paciente
