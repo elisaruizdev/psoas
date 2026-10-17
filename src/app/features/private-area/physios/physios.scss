@@ -1,86 +1,71 @@
+@use 'scss/abstracts/mixins' as *;
+
+// Figma: 02 · Área privada → 04 · Fisios (pending-alert + pending-request)
+
 .physios {
-  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
 
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  &__title {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #111827;
+  &__subtitle {
+    @include type(body-m);
+    color: var(--text-secondary);
   }
 
   &__pending-alert {
     display: flex;
-    margin-bottom: 1rem;
-    align-items: center;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-lg);
+    color: var(--feedback-warning-fg);
+    background: var(--feedback-warning-bg);
+    border: 1px solid var(--feedback-warning-border);
+    border-radius: var(--radius-md);
   }
 
   &__span {
-    margin-left: 0.5rem;
-    margin-right: 1rem;
-    font-size: 1rem;
-    color: #390c9b;
+    @include type(label-m);
+    flex: 1;
+    min-width: 12rem;
   }
 
-  &__pending-alert{
-    mat-icon {
-          color: #1d0a49;
-    }
-  }
-  .pending-request {
-    justify-content: space-between;
+  &__pending-list {
     display: flex;
-    flex-direction: row;
-    margin-bottom: 2rem;
-    align-items: center;
-    background-color: #e5e5e5;
-    padding: 1rem;
-    border-radius: 1rem;
-    width: min(100%, 40rem);
-    flex-wrap: wrap;
-    gap: 0.75rem;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+}
 
-    &__info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      margin-bottom: 0.5rem;
-      margin-right: 2rem;
-    }
+.pending-request {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
 
-    &__email {
-      font-size: 1rem;
-      color: #374151;
-      font-weight: 600;
-    }
-
-    &__name {
-      font-size: 1rem;
-      color: #6b7280;
-      font-weight: 600;
-    }
-
-    &__actions {
-      display: flex;
-      gap: 0.5rem;
-    }
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
   }
 
-  &__error {
-    margin: 0;
-    padding: 0.75rem 1rem;
-    border: 1px solid #fecaca;
-    border-radius: 0.5rem;
-    background: #fee2e2;
-    color: #dc2626;
-    font-size: 0.875rem;
+  &__name {
+    @include type(heading-s);
+    color: var(--text-primary);
+  }
+
+  &__email {
+    @include type(body-s);
+    color: var(--text-secondary);
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--space-sm);
   }
 }

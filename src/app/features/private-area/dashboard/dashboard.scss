@@ -1,81 +1,68 @@
+@use 'scss/abstracts/mixins' as *;
+
+// Figma: 02 · Área privada → 01 · Dashboard (+ Components → Metric Card)
+
 .dashboard {
-  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
 
-  &__title {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #111827;
-  }
-
-  &__subtitle {
-    color: #6b7280;
-    margin-bottom: 1.5rem;
+  &__subtitle,
+  &__loading {
+    @include type(body-m);
+    color: var(--text-secondary);
   }
 
   &__cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-    gap: 1.5rem;
+    gap: var(--space-lg);
   }
 
   &__card {
-    background: white;
-    padding: 1.1rem;
-    border: 2px solid transparent;
-    background: linear-gradient(white, white) padding-box,
-      linear-gradient(125deg, #5d3aaf, #3203a1) border-box;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 20px var(--space-lg);
+    background: var(--bg-surface);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
   }
 
-  &__card_title-contain {
+  &__card-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
 
-  &__card-icon {
-       filter: brightness(0) saturate(100%) invert(21%) sepia(48%) saturate(4373%) hue-rotate(264deg) brightness(63%) contrast(122%);
+  &__card-title {
+    @include type(heading-s);
+    color: var(--text-secondary);
   }
 
-  &__card-title {
-    font-size: 1.1rem;
-    color: #4618af;
-    font-weight: 500;
+  &__card-icon {
+    color: var(--text-brand);
   }
 
   &__card-value {
-    font-size: clamp(2.5rem, 8vw, 4rem);
-    font-weight: bold;
-    color: #130c25;
-    margin: 0;
-    font-family: 'MuseoModerno';
+    @include type(metric);
+    color: var(--text-metric);
   }
 
   &__card-subtitle {
-    font-size: 1rem;
-    color: #4618af;
-    font-weight: 400;
+    @include type(body-xs);
+    color: var(--text-secondary);
   }
 
   &__table {
-    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding-top: var(--space-md);
   }
 
   &__title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #111827;
-    margin-bottom: 1rem;
-  }
-
-  &__error {
-    margin: 0;
-    padding: 0.75rem 1rem;
-    border: 1px solid #fecaca;
-    border-radius: 0.5rem;
-    background: #fee2e2;
-    color: #dc2626;
-    font-size: 0.875rem;
+    @include type(heading-l);
+    color: var(--text-heading);
   }
 }

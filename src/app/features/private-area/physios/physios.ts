@@ -1,7 +1,4 @@
 import { Component, DestroyRef, signal, computed } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatIconModule } from '@angular/material/icon';
 import { TableConfig, TableRowClick } from '../../../shared/models/table.model';
 import { Table } from '../../../shared/ui/table/table';
 import { MatDialog } from '@angular/material/dialog';
@@ -9,12 +6,13 @@ import { PhysiosService } from './services/physios.service';
 import { Physio } from './models/physios.model';
 import { DetailPhysio } from './detail-physio/detail-physio';
 import { ButtonUI } from '../../../shared/ui/button/button';
+import { Icon } from '../../../shared/ui/icon/icon';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 
 @Component({
   selector: 'app-physios',
-  imports: [MatButtonModule, MatDividerModule, MatIconModule, Table, ButtonUI],
+  imports: [Table, ButtonUI, Icon],
   templateUrl: './physios.html',
   styleUrl: './physios.scss',
 })

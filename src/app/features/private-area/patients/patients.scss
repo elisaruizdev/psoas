@@ -1,87 +1,22 @@
+@use 'scss/abstracts/mixins' as *;
+
+// Figma: 02 · Área privada → 02 · Pacientes
+
 .patients {
-  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
 
   &__header {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  
-  &__title {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #111827;
+    gap: var(--space-md);
   }
 
   &__subtitle {
-    color: #6b7280;
-    margin-bottom: 1.5rem;
-  }
-
-  &__cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-    gap: 1.5rem;
-  }
-
-  &__card {
-    background: white;
-    padding: 1.1rem;
-    border: 2px solid transparent;
-    background: linear-gradient(white, white) padding-box,
-      linear-gradient(125deg, #5d3aaf, #3203a1) border-box;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-
-  &__card_title-contain {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  &__card-icon {
-       filter: brightness(0) saturate(100%) invert(21%) sepia(48%) saturate(4373%) hue-rotate(264deg) brightness(63%) contrast(122%);
-  }
-
-  &__card-title {
-    font-size: 1.1rem;
-    color: #4618af;
-    font-weight: 500;
-  }
-
-  &__card-value {
-    font-size: 4em;
-    font-weight: bold;
-    color: #130c25;
-    margin: 0;
-    font-family: 'MuseoModerno';
-  }
-
-  &__card-subtitle {
-    font-size: 1rem;
-    color: #4618af;
-    font-weight: 400;
-  }
-
-
-  &__title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #111827;
-    margin-bottom: 1rem;
-  }
-
-  &__error {
-    margin: 0;
-    padding: 0.75rem 1rem;
-    border: 1px solid #fecaca;
-    border-radius: 0.5rem;
-    background: #fee2e2;
-    color: #dc2626;
-    font-size: 0.875rem;
+    @include type(body-m);
+    color: var(--text-secondary);
   }
 }
-
