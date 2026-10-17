@@ -1,33 +1,97 @@
-@forward 'scss/abstracts/functions';
-@forward 'scss/abstracts/mixins';
+@use '@angular/material' as mat;
+@use 'scss/abstracts/variables' as *;
 
+@use 'scss/base/tokens';
 @use 'scss/base/reset';
-@use 'scss/base/typography';
 
-@use 'scss/layouts/auth-layout';
-@use 'scss/layouts/dashboard-layout';
-
+@use 'scss/components/alert';
 @use 'scss/components/auth-form';
-@use 'scss/components/header';
-@use 'scss/components/nav-tabs';
-@use 'scss/components/metric-card';
-@use 'scss/components/sessions-table';
+@use 'scss/components/dialog';
 
-.mat-sort-header-container{
-  font-family: 'MuseoModerno', sans-serif;
-  color: #4F0FE6;
-  font-weight: 700;
+// ============================================
+// ANGULAR MATERIAL
+// El tema se genera con la paleta violeta de M3 y después se fijan los
+// roles de sistema a los tokens de Figma, para que tabla, diálogos, menús
+// y chips hereden la misma paleta que el resto de la app.
+// ============================================
+
+html {
+  color-scheme: light;
+
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$violet-palette,
+        theme-type: light,
+      ),
+      typography: Inter,
+      density: 0,
+    )
+  );
+
+  @include mat.theme-overrides(
+    (
+      primary: var(--color-brand-600),
+      on-primary: var(--text-on-brand),
+      primary-container: var(--bg-brand-subtle),
+      on-primary-container: var(--text-brand),
+      error: var(--feedback-error-fg),
+      on-error: var(--text-on-brand),
+      surface: var(--bg-surface),
+      on-surface: var(--text-primary),
+      on-surface-variant: var(--text-secondary),
+      surface-container-lowest: var(--bg-surface),
+      surface-container-low: var(--bg-surface),
+      surface-container: var(--bg-surface),
+      surface-container-high: var(--bg-surface),
+      surface-container-highest: var(--bg-muted),
+      outline: var(--border-default),
+      outline-variant: var(--border-hairline),
+    )
+  );
+
+  @include mat.table-overrides(
+    (
+      background-color: var(--bg-surface),
+      header-container-height: 51px,
+      header-headline-color: var(--text-secondary),
+      header-headline-font: var(--font-sans),
+      header-headline-size: 12px,
+      header-headline-weight: 600,
+      header-headline-line-height: 1.4,
+      header-headline-tracking: 0.03em,
+      row-item-container-height: 54px,
+      row-item-label-text-color: var(--text-primary),
+      row-item-label-text-font: var(--font-sans),
+      row-item-label-text-size: 14px,
+      row-item-label-text-weight: 400,
+      row-item-label-text-line-height: 1.5,
+      row-item-label-text-tracking: -0.003em,
+      row-item-outline-color: var(--border-hairline),
+      row-item-outline-width: 1px,
+    )
+  );
+
+  @include mat.sort-overrides(
+    (
+      arrow-color: var(--text-tertiary),
+    )
+  );
+
+  @include mat.dialog-overrides(
+    (
+      container-color: var(--bg-surface),
+      container-shape: var(--radius-lg),
+      container-elevation-shadow: var(--shadow-modal),
+    )
+  );
 }
 
-td{
-  font-family: 'Inter', sans-serif;
+.cdk-overlay-backdrop.cdk-overlay-dark-backdrop {
+  background: var(--bg-scrim);
 }
 
-mat-chip {
-      font-weight: 800;
-}
-
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-md) {
   .cdk-overlay-pane.fullscreen-dialog {
     width: 100vw !important;
     max-width: 100vw !important;
