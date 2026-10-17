@@ -1,129 +1,120 @@
+@use 'scss/abstracts/mixins' as *;
+@use 'scss/abstracts/variables' as *;
+
+// Figma: 01 · Auth → Hero + tarjeta del formulario
 
 .login-layout {
-    background: linear-gradient(180deg, #4F0FE6 0%, #1D0A49 100%);
-    color: white;
-    padding: 3rem 8rem;
-    min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-xl);
+  min-height: 100vh;
+  padding: var(--space-3xl) 128px;
+  background: var(--bg-app);
+
+  @media (max-width: 1200px) {
+    padding: var(--space-3xl) var(--space-2xl);
+  }
+
+  @media (max-width: $breakpoint-lg) {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: var(--space-lg);
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  &__left {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    font-family: 'Inter', sans-serif;
-    gap: 2rem;
+    flex-direction: column;
+    gap: var(--space-2xl);
+    width: 480px;
+    flex-shrink: 0;
 
-    &__left{
-        max-width: 480px;
-        margin-bottom: 3rem;
+    @media (max-width: $breakpoint-lg) {
+      width: auto;
     }
+  }
 
-    &__header {
-        margin-bottom: 4rem;
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  &__title {
+    @include type(display-hero);
+    color: var(--text-brand);
+
+    @media (max-width: $breakpoint-lg) {
+      font-size: 40px;
     }
+  }
 
-    &__title {
-        font-family: 'MuseoModerno', sans-serif;
-        font-size: 96px;
-        font-weight: 700;
-        margin: 3rem 0 1rem 0;
-        letter-spacing: -0.02em;
-        line-height: 1;
+  &__subtitle {
+    @include type(body-xl);
+    color: var(--text-primary);
+
+    @media (max-width: $breakpoint-lg) {
+      @include type(body-l);
     }
+  }
 
-    &__subtitle {
-        font-family: 'Inter', sans-serif;
-        font-size: 25px;
-        line-height: 1.5;
-        margin: 0;
-        font-weight: 200;
+  &__features {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xl);
+
+    @media (max-width: $breakpoint-lg) {
+      display: none;
     }
+  }
 
-    &__features {
-        list-style: none;
-        padding: 25px 0 0 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 2.5rem;
+  &__feature {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+
+  &__feature-icon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: var(--text-brand);
+    background: var(--bg-brand-subtle);
+    border-radius: var(--radius-md);
+  }
+
+  &__feature-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__feature-title {
+    @include type(heading-m);
+    color: var(--text-primary);
+  }
+
+  &__feature-description {
+    @include type(body-s);
+    color: var(--text-secondary);
+    opacity: 0.85;
+  }
+
+  &__card {
+    flex: 0 1 672px;
+    min-width: 0;
+    background: var(--bg-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-hover);
+
+    @media (max-width: $breakpoint-lg) {
+      flex-basis: auto;
     }
-
-    &__feature {
-        display: flex;
-        gap: 1rem;
-        align-items: flex-start;
-    }
-
-    &__feature-icon {
-        flex-shrink: 0;
-        width: 40px;
-        height: 40px;
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        svg {
-            color: white;
-        }
-    }
-
-    &__feature-content {
-        flex: 1;
-    }
-
-    &__feature-title {
-        font-family: 'Inter', sans-serif;
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin: 0 0 0.25rem 0;
-        color: white;
-    }
-
-    &__feature-description {
-        font-family: 'Inter', sans-serif;
-        font-size: 0.875rem;
-        line-height: 1.4;
-        margin: 0;
-        opacity: 0.85;
-        font-weight: 300;
-    }
-
-     &__right{
-        height: auto;
-        width: 50%;
-        border-radius: 30px;
-        background-color: white;
-        height: fit-content;
-    }
-
-    @media (max-width: 900px) {
-        flex-direction: column;
-        padding: 1.5rem;
-        gap: 1.5rem;
-
-        &__left {
-            max-width: none;
-            margin-bottom: 0;
-        }
-
-        &__header {
-            margin-bottom: 1.5rem;
-        }
-
-        &__title {
-            font-size: 3rem;
-            margin: 0 0 0.5rem 0;
-        }
-
-        &__subtitle {
-            font-size: 1.125rem;
-        }
-
-        &__features {
-            display: none;
-        }
-
-        &__right {
-            width: 100%;
-        }
-    }
+  }
 }
