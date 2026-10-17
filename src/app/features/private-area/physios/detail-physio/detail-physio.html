@@ -1,44 +1,43 @@
-<div class="detail-physio">
-    <div class="detail-physio__header">
-        <h2>Detalle del Fisioterapeuta</h2>
-        <button mat-icon-button (click)="onCancel()">
-            <mat-icon>close</mat-icon>
+<div class="dialog">
+    <header class="dialog__header">
+        <h2 class="dialog__title">Detalle del Fisioterapeuta</h2>
+        <button type="button" class="dialog__close" aria-label="Cerrar" (click)="onCancel()">
+            <ui-icon name="close-lg" [size]="24" />
         </button>
-    </div>
+    </header>
 
-    <div class="detail-physio__content">
-        <div class="info-section">
-            <h3>Información de Registro (No editable)</h3>
-            <div class="info-grid">
-                <div class="info-item">
-                    <label>Nombre Completo</label>
-                    <p>{{ physio.name }} {{ physio.surname }} {{ physio.second_surname || '' }}</p>
+    <div class="dialog__body">
+        <section class="dialog__section">
+            <h3 class="dialog__section-title">Información de Registro (No editable)</h3>
+            <div class="dialog__data-grid">
+                <div class="dialog__data-item">
+                    <span class="dialog__data-label">Nombre Completo</span>
+                    <span class="dialog__data-value">{{ physio.name }} {{ physio.surname }} {{ physio.second_surname || '' }}</span>
                 </div>
-                <div class="info-item">
-                    <label>Correo</label>
-                    <p>{{ physio.email }}</p>
+                <div class="dialog__data-item">
+                    <span class="dialog__data-label">Correo</span>
+                    <span class="dialog__data-value">{{ physio.email }}</span>
                 </div>
-                <div class="info-item">
-                    <label>Estado</label>
-                    <p>{{ getStatusLabel(physio.status) }}</p>
+                <div class="dialog__data-item">
+                    <span class="dialog__data-label">Estado</span>
+                    <span class="dialog__data-value">{{ getStatusLabel(physio.status) }}</span>
                 </div>
-                <div class="info-item">
-                    <label>Fecha de Alta</label>
-                    <p>{{ formatDate(physio.created_at) }}</p>
+                <div class="dialog__data-item">
+                    <span class="dialog__data-label">Fecha de Alta</span>
+                    <span class="dialog__data-value">{{ formatDate(physio.created_at) }}</span>
                 </div>
             </div>
-        </div>
-        <div class="edit-section">
-            <h3>Información Editable</h3>
+        </section>
+
+        <section class="dialog__section">
+            <h3 class="dialog__section-title">Información Editable</h3>
             <f-form [config]="physioFormConfig" [submitButtonText]="'Guardar Cambios'"
                 (formSubmit)="onSubmitPhysio($event)" [showCancelButton]="false">
             </f-form>
-        </div>
+        </section>
     </div>
-    <div class="detail-physio__actions">
-        <button mat-raised-button color="warn" (click)="onDelete()">
-            <mat-icon>delete</mat-icon>
-            Eliminar Fisioterapeuta
-        </button>
-    </div>
+
+    <footer class="dialog__footer">
+        <button-ui variant="danger" icon="trash" [title]="'Eliminar Fisioterapeuta'" (click)="onDelete()"></button-ui>
+    </footer>
 </div>

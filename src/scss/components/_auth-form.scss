@@ -1,0 +1,200 @@
+@use '../abstracts/mixins' as *;
+@use '../abstracts/variables' as *;
+
+// ============================================
+// AUTH FORM — tarjeta de login, registro y recuperación
+// Figma: 01 · Auth (Login form, Register form, Forgot/Reset password…)
+// Compartido por todas las páginas de features/auth/pages.
+// ============================================
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  width: 100%;
+  padding: var(--space-4xl) var(--space-3xl);
+
+  @media (max-width: $breakpoint-md) {
+    padding: var(--space-xl) var(--space-lg);
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding-bottom: var(--space-md);
+  }
+
+  &__title {
+    @include type(heading-xl);
+    color: var(--text-primary);
+  }
+
+  &__subtitle {
+    @include type(body-m);
+    color: var(--text-secondary);
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  // --- Campo -----------------------------------------------------------------
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__label {
+    @include type(label-m);
+    color: var(--text-primary);
+  }
+
+  &__input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 0 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-brand);
+    border-radius: var(--radius-md);
+    transition:
+      border-color var(--transition-fast),
+      box-shadow var(--transition-fast);
+
+    &:focus-within {
+      border-color: var(--border-strong);
+      box-shadow: var(--focus-ring);
+    }
+  }
+
+  &__icon {
+    color: var(--text-secondary);
+  }
+
+  &__input {
+    @include type(body-s);
+    flex: 1;
+    min-width: 0;
+    padding: var(--space-sm) 0;
+    color: var(--text-primary);
+
+    &::placeholder {
+      color: var(--text-tertiary);
+    }
+  }
+
+  &__error {
+    @include type(body-xs);
+    color: var(--feedback-error-fg);
+  }
+
+  // --- Opciones y enlaces --------------------------------------------------------
+  &__options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+  }
+
+  &__checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  &__checkbox-input {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--bg-brand);
+    cursor: pointer;
+  }
+
+  &__checkbox-label {
+    @include type(body-s);
+    color: var(--text-muted);
+    user-select: none;
+  }
+
+  &__link {
+    @include type(label-m);
+    color: var(--text-brand);
+    white-space: nowrap;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  // --- Acción principal ----------------------------------------------------------
+  &__button {
+    @include type(heading-s);
+    @include focus-ring;
+    display: block;
+    width: 100%;
+    padding: 13px var(--space-lg);
+    color: var(--text-on-brand);
+    text-align: center;
+    background: var(--bg-brand-strong);
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast);
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--bg-brand-strong) 88%, black);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-default);
+    }
+  }
+
+  &__divider-text {
+    @include type(body-xs);
+    color: var(--text-tertiary);
+  }
+
+  &__register-link {
+    @include type(heading-s);
+    display: block;
+    padding: var(--space-xs);
+    color: var(--text-brand);
+    text-align: center;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  // --- Estado de éxito (forgot / reset) ------------------------------------------
+  &__success {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  &__success-submessage {
+    @include type(body-s);
+    color: var(--text-secondary);
+  }
+}

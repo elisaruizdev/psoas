@@ -1,17 +1,16 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
+import { Icon } from '../icon/icon';
 
 @Component({
   selector: 'modal',
-  imports: [CommonModule, MatDialogModule, MatIconModule, MatButtonModule],
+  imports: [Icon],
   templateUrl: './modal.html',
   styleUrl: './modal.scss',
 })
 export class Modal {
   @Input() title: string = '';
+  @Input() subtitle: string = '';
 
   dialogRef = inject(MatDialogRef<Modal>);
 

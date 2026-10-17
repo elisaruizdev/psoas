@@ -11,13 +11,13 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { Icon } from '../../../../shared/ui/icon/icon';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, Icon],
   templateUrl: './reset-password.html',
-  styleUrl: './reset-password.scss',
 })
 export class ResetPassword implements OnInit {
   resetPasswordForm: FormGroup;

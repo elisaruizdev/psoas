@@ -36,6 +36,7 @@ export class NewPatient implements OnInit {
           fields: [
             {
               name: 'name',
+              icon: 'user',
               label: 'Nombre',
               type: 'text',
               placeholder: 'Nombre',
@@ -44,6 +45,7 @@ export class NewPatient implements OnInit {
             },
             {
               name: 'surname',
+              icon: 'user',
               label: 'Primer apellido',
               type: 'text',
               placeholder: 'Primer apellido',
@@ -52,6 +54,7 @@ export class NewPatient implements OnInit {
             },
             {
               name: 'second_surname',
+              icon: 'user',
               label: 'Segundo apellido',
               type: 'text',
               placeholder: 'Segundo apellido',
@@ -60,6 +63,7 @@ export class NewPatient implements OnInit {
             },
             {
               name: 'identifier',
+              icon: 'user',
               label: 'DNI/NIE',
               type: 'text',
               placeholder: '12345678A',
@@ -75,6 +79,7 @@ export class NewPatient implements OnInit {
             },
             {
               name: 'gender',
+              icon: 'user',
               label: 'Género',
               type: 'select',
               placeholder: 'Seleccione...',
@@ -87,6 +92,7 @@ export class NewPatient implements OnInit {
             },
             {
               name: 'health_insurance',
+              icon: 'list',
               label: 'Seguro Médico',
               type: 'text',
               placeholder: 'Compañía de seguro',
@@ -115,6 +121,7 @@ export class NewPatient implements OnInit {
             },
             {
               name: 'address',
+              icon: 'home',
               label: 'Dirección Completa',
               type: 'text',
               placeholder: 'Calle, número, piso, puerta',
@@ -123,6 +130,7 @@ export class NewPatient implements OnInit {
             },
             {
               name: 'city',
+              icon: 'home',
               label: 'Ciudad',
               type: 'text',
               placeholder: 'Madrid',
@@ -130,6 +138,7 @@ export class NewPatient implements OnInit {
             },
             {
               name: 'zip',
+              icon: 'home',
               label: 'Código Postal',
               type: 'text',
               placeholder: '28001',
@@ -138,6 +147,7 @@ export class NewPatient implements OnInit {
             },
             {
               name: 'emergency_contact',
+              icon: 'phone',
               label: 'Contacto de Emergencia',
               type: 'text',
               placeholder: 'Nombre y teléfono',
@@ -152,6 +162,7 @@ export class NewPatient implements OnInit {
           fields: [
             {
               name: 'consultation_reason',
+              icon: 'list',
               label: 'Motivo de Consulta',
               type: 'textarea',
               placeholder: '¿Por qué acude el paciente?',
@@ -161,6 +172,7 @@ export class NewPatient implements OnInit {
             },
             {
               name: 'medical_history',
+              icon: 'list',
               label: 'Antecedentes Médicos',
               type: 'textarea',
               placeholder: 'Enfermedades previas, cirugías, alergias, medicación actual...',

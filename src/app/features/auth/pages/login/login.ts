@@ -5,15 +5,15 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } 
 import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { Icon } from '../../../../shared/ui/icon/icon';
 import { SessionService } from '../../services/session.service';
 import { LoginRequest } from '../../models/login.model';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, CommonModule],
+  imports: [RouterLink, ReactiveFormsModule, CommonModule, Icon],
   templateUrl: './login.html',
-  styleUrl: './login.scss',
 })
 export class Login {
   loginForm: FormGroup<{

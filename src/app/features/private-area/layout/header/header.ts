@@ -1,15 +1,13 @@
-import { CommonModule } from '@angular/common';
 import { Component, input, Input, output } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { SessionService } from '../../../auth/services/session.service';
+import { Icon } from '../../../../shared/ui/icon/icon';
 import { ClinicNotification, MenuUser } from '../models/layout.model';
 
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule, MatButtonModule, MatIconModule],
+  imports: [Icon],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
@@ -33,11 +31,8 @@ export class Header {
 
   ngOnInit(): void {
     this.userName = this.session.name() || 'Usuario';
-    this.initials = this.userName
-      .split(' ')
-      .map((n) => n.slice(0, 2))
-      .join('')
-      .toUpperCase();
+    // Figma (App Header): dos primeras letras del nombre en minúscula ("el", "ad")
+    this.initials = this.userName.trim().slice(0, 2).toLowerCase();
     this.userRole = this.session.idPhysio() ? 'Fisioterapeuta' : 'Desconocido';
   }
 

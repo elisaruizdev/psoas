@@ -1,7 +1,4 @@
 import { Component, DestroyRef, signal, computed } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { TableConfig, TableRowClick } from '../../../shared/models/table.model';
 import { Table } from '../../../shared/ui/table/table';
@@ -14,7 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-patients',
-  imports: [MatButtonModule, MatDividerModule, MatIconModule, Table, ButtonUI],
+  imports: [Table, ButtonUI],
   templateUrl: './patients.html',
   styleUrl: './patients.scss',
 })

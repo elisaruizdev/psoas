@@ -3,11 +3,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { FormConfig, FormFieldConfig, FormFieldValue, FormValue } from '../../models/form.model';
 import { ButtonUI } from '../button/button';
+import { Icon } from '../icon/icon';
 
 
 @Component({
   selector: 'f-form',
-  imports: [CommonModule, ReactiveFormsModule, ButtonUI],
+  imports: [CommonModule, ReactiveFormsModule, ButtonUI, Icon],
   templateUrl: './form.html',
   styleUrl: './form.scss',
 })
@@ -108,15 +109,15 @@ export class Form {
     return !!(control && control.touched && control.errors);
   }
 
-  getIconSvg(iconName: string): string {
-    const icons: { [key: string]: string } = {
-      user: 'icons/user.svg',
-      email: 'icons/arroba.svg',
-      phone: 'icons/phone.svg',
-      lock: 'icons/lock.svg',
-      calendar: 'icons/calendar.svg',
+  /** Icono del campo: el configurado o, si no hay, el que corresponde a su tipo. */
+  getFieldIcon(field: FormFieldConfig): string | undefined {
+    const iconsByType: Partial<Record<FormFieldConfig['type'], string>> = {
+      email: 'mail',
+      tel: 'phone',
+      date: 'calendar',
+      password: 'lock',
     };
-    return icons[iconName] || '';
+    return field.icon ?? iconsByType[field.type];
   }
 
   resetForm(): void {

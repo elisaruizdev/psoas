@@ -2,35 +2,33 @@
     <p class="dashboard__subtitle">{{ currentDate }}</p>
 
     @if (loading()) {
-    <div class="dashboard__loading">
-        <p>Cargando estadísticas...</p>
-    </div>
+    <p class="dashboard__loading">Cargando estadísticas...</p>
     } @else if (loadError()) {
-    <p class="dashboard__error" role="alert">{{ loadError() }}</p>
+    <p class="alert alert--error" role="alert">{{ loadError() }}</p>
     } @else {
     <section class="dashboard__cards">
         <div class="dashboard__card">
-            <div class="dashboard__card_title-contain">
+            <div class="dashboard__card-head">
                 <h3 class="dashboard__card-title">Sesiones hoy</h3>
-                <img src="icons/list.svg" alt="icono de lista" class="dashboard__card-icon">
+                <ui-icon class="dashboard__card-icon" name="list-lg" [size]="24" />
             </div>
             <p class="dashboard__card-value">{{ sesionesHoy() }}</p>
             <p class="dashboard__card-subtitle">{{ sesionesCompletadas() }} completadas</p>
         </div>
 
         <div class="dashboard__card">
-            <div class="dashboard__card_title-contain">
+            <div class="dashboard__card-head">
                 <h3 class="dashboard__card-title">Sesiones semana</h3>
-                <img src="icons/list.svg" alt="icono de lista" class="dashboard__card-icon">
+                <ui-icon class="dashboard__card-icon" name="list-lg" [size]="24" />
             </div>
             <p class="dashboard__card-value">{{ sesionesSemana() }}</p>
             <p class="dashboard__card-subtitle">Próximos 7 días</p>
         </div>
 
         <div class="dashboard__card">
-            <div class="dashboard__card_title-contain">
+            <div class="dashboard__card-head">
                 <h3 class="dashboard__card-title">Pacientes activos</h3>
-                <img src="icons/patient.svg" alt="icono de pacientes" class="dashboard__card-icon">
+                <ui-icon class="dashboard__card-icon" name="list-lg" [size]="24" />
             </div>
             <p class="dashboard__card-value">{{ pacientesActivos() }}</p>
         </div>

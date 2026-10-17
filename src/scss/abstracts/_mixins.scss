@@ -1,0 +1,57 @@
+@use 'sass:map';
+
+// ============================================
+// TIPOGRAFÍA
+// Text styles de Figma. El letter-spacing de Figma va en % del tamaño
+// de fuente, por eso se expresa en em (−2 % → −0.02em).
+// Uso: @include type(heading-s);
+// ============================================
+
+$type-styles: (
+  display-hero: (family: display, size: 56px, weight: 700, line-height: 1, tracking: 0),
+  display-logo: (family: display, size: 32px, weight: 700, line-height: 1.2, tracking: 0),
+  display-logo-s: (family: display, size: 24px, weight: 700, line-height: 1.2, tracking: 0),
+  metric: (size: 48px, weight: 600, line-height: 1, tracking: -0.03em),
+  metric-s: (size: 36px, weight: 600, line-height: 1, tracking: -0.025em),
+  heading-xl: (size: 34px, weight: 700, line-height: 1.2, tracking: -0.02em),
+  heading-l: (size: 22px, weight: 600, line-height: 1.3, tracking: -0.01em),
+  heading-m: (size: 17px, weight: 600, line-height: 1.4, tracking: -0.01em),
+  heading-s: (size: 15px, weight: 600, line-height: 1.4, tracking: -0.005em),
+  body-xl: (size: 22px, weight: 400, line-height: 1.4, tracking: -0.01em),
+  body-l: (size: 17px, weight: 400, line-height: 1.5, tracking: -0.008em),
+  body-m: (size: 15px, weight: 400, line-height: 1.5, tracking: -0.005em),
+  body-s: (size: 14px, weight: 400, line-height: 1.5, tracking: -0.003em),
+  body-xs: (size: 13px, weight: 400, line-height: 1.4, tracking: 0),
+  label-m: (size: 14px, weight: 600, line-height: 1.4, tracking: -0.003em),
+  label-s: (size: 13px, weight: 600, line-height: 1.4, tracking: 0),
+  nav-tab: (size: 15px, weight: 500, line-height: 1.4, tracking: -0.005em),
+  table-header: (size: 12px, weight: 600, line-height: 1.4, tracking: 0.03em),
+  table-cell: (size: 14px, weight: 400, line-height: 1.5, tracking: -0.003em),
+);
+
+@mixin type($name) {
+  $style: map.get($type-styles, $name);
+
+  @if not $style {
+    @error 'Text style desconocido: #{$name}';
+  }
+
+  @if map.get($style, family) == display {
+    font-family: var(--font-display);
+  } @else {
+    font-family: var(--font-sans);
+  }
+
+  font-size: map.get($style, size);
+  font-weight: map.get($style, weight);
+  line-height: map.get($style, line-height);
+  letter-spacing: map.get($style, tracking);
+}
+
+// Anillo de foco visible solo con teclado.
+@mixin focus-ring {
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+}

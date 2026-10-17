@@ -18,17 +18,14 @@ export class MenuDetailPatientComponent {
     {
       label: 'Historial Clínico',
       id: 'clinical',
-      icon: 'icons/stethoscope.svg',
     },
     {
       label: 'Tratamientos',
       id: 'treatments',
-      icon: 'icons/medication.svg',
     },
     {
       label: 'Historial de Sesiones',
       id: 'sessions',
-      icon: 'icons/calendar_purple.svg',
     },
   ];
 

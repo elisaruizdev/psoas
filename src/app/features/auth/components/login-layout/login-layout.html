@@ -1,67 +1,51 @@
 <div class="login-layout">
     <div class="login-layout__left">
-            <div class="login-layout__header">
-                <h1 class="login-layout__title">Psoas</h1>
-                <p class="login-layout__subtitle">
-                    La plataforma de los fisioterapeutas
-                </p>
-            </div>
-            
-            <ul class="login-layout__features">
-                <li class="login-layout__feature">
-                    <div class="login-layout__feature-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                    </div>
-                    <div class="login-layout__feature-content">
-                        <h3 class="login-layout__feature-title">Gestiona todas las citas</h3>
-                        <p class="login-layout__feature-description">
-                            Agenda las citas de tus pacientes fácilmente y mira tu calendario
-                        </p>
-                    </div>
-                </li>
-            
-                <li class="login-layout__feature">
-                    <div class="login-layout__feature-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                            <polyline points="10 9 9 9 8 9"></polyline>
-                        </svg>
-                    </div>
-                    <div class="login-layout__feature-content">
-                        <h3 class="login-layout__feature-title">Historial de pacientes</h3>
-                        <p class="login-layout__feature-description">
-                            Toda la información de tus pacientes en un solo lugar
-                        </p>
-                    </div>
-                </li>
-            
-                <li class="login-layout__feature">
-                    <div class="login-layout__feature-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="23 4 23 10 17 10"></polyline>
-                            <polyline points="1 20 1 14 7 14"></polyline>
-                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-                        </svg>
-                    </div>
-                    <div class="login-layout__feature-content">
-                        <h3 class="login-layout__feature-title">Control de tratamientos</h3>
-                        <p class="login-layout__feature-description">
-                            Seguimiento y control de los tratamientos de tus pacientes
-                        </p>
-                    </div>
-                </li>
-            </ul>
+        <div class="login-layout__header">
+            <h1 class="login-layout__title">Psoas</h1>
+            <p class="login-layout__subtitle">
+                La plataforma de los fisioterapeutas
+            </p>
+        </div>
+
+        <ul class="login-layout__features">
+            <li class="login-layout__feature">
+                <div class="login-layout__feature-icon">
+                    <ui-icon name="calendar" />
+                </div>
+                <div class="login-layout__feature-content">
+                    <h3 class="login-layout__feature-title">Gestiona todas las citas</h3>
+                    <p class="login-layout__feature-description">
+                        Agenda las citas de tus pacientes fácilmente y mira tu calendario
+                    </p>
+                </div>
+            </li>
+
+            <li class="login-layout__feature">
+                <div class="login-layout__feature-icon">
+                    <ui-icon name="file" />
+                </div>
+                <div class="login-layout__feature-content">
+                    <h3 class="login-layout__feature-title">Historial de pacientes</h3>
+                    <p class="login-layout__feature-description">
+                        Toda la información de tus pacientes en un solo lugar
+                    </p>
+                </div>
+            </li>
+
+            <li class="login-layout__feature">
+                <div class="login-layout__feature-icon">
+                    <ui-icon name="refresh" />
+                </div>
+                <div class="login-layout__feature-content">
+                    <h3 class="login-layout__feature-title">Control de tratamientos</h3>
+                    <p class="login-layout__feature-description">
+                        Seguimiento y control de los tratamientos de tus pacientes
+                    </p>
+                </div>
+            </li>
+        </ul>
     </div>
-    <div class="login-layout__right">
+    <div class="login-layout__card">
         <router-outlet></router-outlet>
     </div>
-
 </div>

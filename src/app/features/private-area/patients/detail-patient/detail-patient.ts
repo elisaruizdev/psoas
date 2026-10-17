@@ -3,11 +3,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { PatientsService } from '../services/patients.service';
 import { Patient } from '../models/patients.model';
 import { Form } from '../../../../shared/ui/form/form';
+import { ButtonUI } from '../../../../shared/ui/button/button';
+import { Icon } from '../../../../shared/ui/icon/icon';
 import { FormConfig, FormValue, formText } from '../../../../shared/models/form.model';
 import { MenuDetailPatientComponent } from './menu-detail-patient/menu-detail-patient';
 import { ClinicalHistory } from './clinical-history/clinical-history';
@@ -20,9 +20,9 @@ import { SessionsHistory } from './sessions-history/sessions-history';
   imports: [
     CommonModule,
     MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
     Form,
+    ButtonUI,
+    Icon,
     MenuDetailPatientComponent,
     ClinicalHistory,
     Treatments,
@@ -99,6 +99,7 @@ export class DetailPatient implements OnInit {
           fields: [
             {
               name: 'address',
+              icon: 'home',
               label: 'Dirección Completa',
               type: 'text',
               placeholder: 'Calle, número, piso, puerta',
@@ -108,6 +109,7 @@ export class DetailPatient implements OnInit {
             },
             {
               name: 'city',
+              icon: 'home',
               label: 'Ciudad',
               type: 'text',
               placeholder: 'Madrid',
@@ -116,6 +118,7 @@ export class DetailPatient implements OnInit {
             },
             {
               name: 'zip',
+              icon: 'home',
               label: 'Código Postal',
               type: 'text',
               placeholder: '28001',
@@ -130,6 +133,7 @@ export class DetailPatient implements OnInit {
           fields: [
             {
               name: 'emergency_contact',
+              icon: 'phone',
               label: 'Contacto de Emergencia',
               type: 'text',
               placeholder: 'Nombre y teléfono',
@@ -139,6 +143,7 @@ export class DetailPatient implements OnInit {
             },
             {
               name: 'health_insurance',
+              icon: 'list',
               label: 'Seguro Médico',
               type: 'text',
               placeholder: 'Compañía de seguro',

@@ -1,59 +1,33 @@
+@use 'scss/abstracts/mixins' as *;
+
+// Figma: 03 · Modales → 02 · Detalle paciente (tabs)
+
 .tab-menu {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  border-bottom: 2px solid #e0e0e0;
-  border-radius: 20px;
+  overflow-x: auto;
+  border-bottom: 2px solid var(--border-default);
 }
 
 .tab-menu__item {
-  padding: 1rem 2rem;
-  border: none;
-  background: none;
-  color: #666;
-  font-weight: 500;
-  cursor: pointer;
+  @include type(nav-tab);
+  @include focus-ring;
+  flex-shrink: 0;
+  margin-bottom: -2px;
+  padding: var(--space-sm) 20px;
+  color: var(--text-secondary);
+  white-space: nowrap;
   border-bottom: 3px solid transparent;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1rem;
-  font-family: inherit;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast);
 
   &:hover {
-    color: #5e35b1;
-    background: #f9f9f9;
+    color: var(--text-primary);
   }
 
-  &--active {
-    color: #5e35b1;
-    border-bottom-color: #5e35b1;
-    background: #f3e5f5;
-  }
-}
-
-.tab-menu__icon {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.tab-menu__label {
-  white-space: nowrap;
-}
-
-@media (max-width: 768px) {
-  .tab-menu {
-    overflow-x: auto;
-  }
-
-  .tab-menu__item {
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
-  }
-
-  .tab-menu__icon {
-    width: 1rem;
-    height: 1rem;
+  &--active,
+  &--active:hover {
+    color: var(--text-brand);
+    border-bottom-color: var(--border-brand);
   }
 }

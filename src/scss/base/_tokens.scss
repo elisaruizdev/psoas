@@ -1,0 +1,126 @@
+// ============================================
+// DESIGN TOKENS
+// Fuente: Figma "Psoas" → colecciones "Psoas / Primitives" y "Psoas / Semantic".
+// Modo activo: Apple (el que usan todas las pantallas del archivo).
+// Los componentes consumen SOLO los tokens semánticos; los primitivos
+// existen para que un tema nuevo se defina reasignando referencias.
+// ============================================
+
+:root {
+  // --- Primitives: color ---------------------------------------------------
+  --color-brand-500: #7c3aed;
+  --color-brand-550: #5918d0;
+  --color-brand-600: #4f0fe6;
+  --color-brand-700: #5b21b6;
+  --color-brand-800: #2d1b4e;
+  --color-brand-900: #1d0a49;
+  --color-brand-950: #1e1333;
+  --color-brand-accent: #4618af;
+  --color-brand-ink: #130c25;
+
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f9fafb;
+  --color-neutral-200: #e5e7eb;
+  --color-neutral-400: #9ca3af;
+  --color-neutral-600: #6b7280;
+  --color-neutral-700: #4b5563;
+  --color-neutral-900: #1a1a2e;
+  --color-neutral-950: #111827;
+
+  --color-apple-gray-100: #f5f5f7;
+  --color-apple-gray-150: #f2f2f7;
+  --color-apple-gray-200: #e8e8ed;
+  --color-apple-gray-300: #d2d2d7;
+  --color-apple-ink: #1d1d1f;
+  --color-apple-ink-muted: #424245;
+  --color-apple-ink-secondary: #6e6e73;
+  --color-apple-ink-tertiary: #86868b;
+  --color-apple-green-fg: #248a3d;
+  --color-apple-green-bg: #e9f7ee;
+  --color-apple-accent-tint: #efeafd;
+
+  --color-red-100: #fee2e2;
+  --color-red-200: #fecaca;
+  --color-red-600: #dc2626;
+  --color-green-200: #bbf7d0;
+  --color-amber-100: #fef3c7;
+  --color-amber-200: #fde68a;
+  --color-amber-600: #d97706;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-600: #2563eb;
+
+  // --- Semantic: color (modo Apple) ----------------------------------------
+  --bg-app: var(--color-apple-gray-100);
+  --bg-surface: var(--color-neutral-0);
+  --bg-muted: var(--color-apple-gray-150);
+  --bg-brand: var(--color-brand-600);
+  --bg-brand-strong: var(--color-brand-600);
+  --bg-brand-deep: var(--color-brand-900);
+  --bg-brand-subtle: var(--color-apple-accent-tint);
+  --bg-button: var(--color-brand-600);
+  --bg-scrim: rgb(0 0 0 / 40%);
+
+  --border-default: var(--color-apple-gray-300);
+  --border-hairline: var(--color-apple-gray-200);
+  --border-brand: var(--color-apple-gray-300);
+  --border-strong: var(--color-brand-600);
+
+  --text-primary: var(--color-apple-ink);
+  --text-heading: var(--color-apple-ink);
+  --text-secondary: var(--color-apple-ink-secondary);
+  --text-tertiary: var(--color-apple-ink-tertiary);
+  --text-muted: var(--color-apple-ink-muted);
+  --text-brand: var(--color-brand-600);
+  --text-brand-strong: var(--color-brand-700);
+  --text-on-brand: var(--color-neutral-0);
+  --text-metric: var(--color-apple-ink);
+
+  --feedback-error-fg: var(--color-red-600);
+  --feedback-error-bg: var(--color-red-100);
+  --feedback-error-border: var(--color-red-200);
+  --feedback-success-fg: var(--color-apple-green-fg);
+  --feedback-success-bg: var(--color-apple-green-bg);
+  --feedback-success-border: var(--color-green-200);
+  --feedback-warning-fg: var(--color-amber-600);
+  --feedback-warning-bg: var(--color-amber-100);
+  --feedback-warning-border: var(--color-amber-200);
+  --feedback-info-fg: var(--color-blue-600);
+  --feedback-info-bg: var(--color-blue-100);
+  --feedback-info-border: var(--color-blue-200);
+
+  // Anillo de foco: no existe en Figma, se deriva de la marca para accesibilidad.
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--color-brand-600) 25%, transparent);
+
+  // --- Spacing ---------------------------------------------------------------
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 40px;
+  --space-3xl: 48px;
+  --space-4xl: 56px;
+
+  // --- Radius (lg y xl cambian en el modo Apple) -----------------------------
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-card: 16px;
+  --radius-lg: 20px;
+  --radius-panel: 20px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+
+  // --- Elevation (effect styles "Elevation/*") ----------------------------------
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 4%), 0 4px 16px rgb(0 0 0 / 6%);
+  --shadow-header: 0 1px 0 rgb(0 0 0 / 6%);
+  --shadow-hover: 0 1px 3px rgb(0 0 0 / 6%), 0 12px 40px rgb(0 0 0 / 10%);
+  --shadow-modal: 0 8px 24px rgb(0 0 0 / 12%), 0 24px 64px rgb(0 0 0 / 16%);
+
+  // --- Typography ------------------------------------------------------------
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'MuseoModerno', var(--font-sans);
+
+  // --- Motion ----------------------------------------------------------------
+  --transition-fast: 150ms ease;
+}

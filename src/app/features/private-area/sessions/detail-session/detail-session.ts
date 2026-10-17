@@ -2,17 +2,17 @@ import { Component, DestroyRef, Inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { AppointmentsService } from '../services/appointments.service';
 import { Form } from '../../../../shared/ui/form/form';
+import { ButtonUI } from '../../../../shared/ui/button/button';
+import { Icon } from '../../../../shared/ui/icon/icon';
 import { FormConfig, FormValue, formText } from '../../../../shared/models/form.model';
 import { Appointment, UpdateAppointment } from '../models/appointment.model';
 
 @Component({
   selector: 'app-detail-session',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, Form],
+  imports: [CommonModule, MatDialogModule, Form, ButtonUI, Icon],
   templateUrl: './detail-session.html',
   styleUrl: './detail-session.scss',
 })
@@ -53,6 +53,7 @@ export class DetailSession implements OnInit {
             },
             {
               name: 'appointment_time',
+              icon: 'calendar',
               label: 'Hora',
               type: 'select',
               placeholder: 'Seleccione una hora',
@@ -76,6 +77,7 @@ export class DetailSession implements OnInit {
             },
             {
               name: 'duration',
+              icon: 'list',
               label: 'Duración',
               type: 'select',
               placeholder: 'Seleccione duración',
@@ -94,6 +96,7 @@ export class DetailSession implements OnInit {
           fields: [
             {
               name: 'notes',
+              icon: 'list',
               label: 'Notas',
               type: 'textarea',
               placeholder: 'Observaciones sobre la cita...',

@@ -2,11 +2,11 @@
     <div class="patients__header">
         <!-- <h1 class="patients__title">Gestión de pacientes</h1> -->
         <p class="patients__subtitle">Administra la información de tus pacientes y su tratamiento</p>
-        <button-ui [title]="'Nuevo paciente'" [icon]="'icons/add.svg'" (click)="openNewPatient()"></button-ui>
+        <button-ui [title]="'Nuevo paciente'" icon="add" (click)="openNewPatient()"></button-ui>
     </div>
 
     @if (loadError()) {
-    <p class="patients__error" role="alert">{{ loadError() }}</p>
+    <p class="alert alert--error" role="alert">{{ loadError() }}</p>
     } @else {
     <section class="patients__table">
         <f-table [config]="listadoPatientsConfig()" (rowClick)="onPatientClick($event)"></f-table>

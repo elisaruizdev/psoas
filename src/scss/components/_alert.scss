@@ -1,0 +1,39 @@
+@use '../abstracts/mixins' as *;
+
+// ============================================
+// ALERT — mensajes de feedback en línea
+// Figma: 05 · Estados → "Mensajes de feedback"
+// <p class="alert alert--error" role="alert">…</p>
+// ============================================
+
+.alert {
+  @include type(body-s);
+  margin: 0;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid;
+  border-radius: var(--radius-md);
+
+  &--error {
+    color: var(--feedback-error-fg);
+    background: var(--feedback-error-bg);
+    border-color: var(--feedback-error-border);
+  }
+
+  &--success {
+    color: var(--feedback-success-fg);
+    background: var(--feedback-success-bg);
+    border-color: var(--feedback-success-border);
+  }
+
+  &--warning {
+    color: var(--feedback-warning-fg);
+    background: var(--feedback-warning-bg);
+    border-color: var(--feedback-warning-border);
+  }
+
+  &--info {
+    color: var(--feedback-info-fg);
+    background: var(--feedback-info-bg);
+    border-color: var(--feedback-info-border);
+  }
+}

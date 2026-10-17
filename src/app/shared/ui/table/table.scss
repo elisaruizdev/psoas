@@ -1,13 +1,22 @@
+@use 'scss/abstracts/mixins' as *;
+
+// Figma: Components → Table Header Row / Table Row.
+// Colores y tipografía base de mat-table se fijan con mat.table-overrides
+// en styles.scss; aquí solo va el contenedor y lo que los tokens no cubren.
+
 .table-container {
   width: 100%;
 
   .filter-field {
     width: 100%;
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-md);
   }
 
-  .mat-elevation-z8 {
+  &__surface {
     overflow: auto;
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
   }
 
   table {
@@ -15,21 +24,37 @@
     min-width: 36rem;
   }
 
-  .clickable-row {
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+  .mat-mdc-header-cell {
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--border-hairline);
+  }
 
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.04);
+  .mat-mdc-header-cell,
+  .mat-mdc-cell {
+    padding: 0 var(--space-sm);
+
+    &:first-of-type {
+      padding-left: var(--space-lg);
+    }
+
+    &:last-of-type {
+      padding-right: var(--space-lg);
     }
   }
 
-  .mat-row.mat-no-data-row {
-    td {
-      text-align: center;
-      padding: 2rem;
-      color: rgba(0, 0, 0, 0.54);
-      font-style: italic;
+  .clickable-row {
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+
+    &:hover {
+      background-color: var(--bg-muted);
     }
+  }
+
+  .mat-row.mat-no-data-row td {
+    @include type(body-s);
+    padding: var(--space-3xl) var(--space-lg);
+    color: var(--text-secondary);
+    text-align: center;
   }
 }

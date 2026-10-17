@@ -1,0 +1,134 @@
+@use '../abstracts/mixins' as *;
+@use '../abstracts/variables' as *;
+
+// ============================================
+// DIALOG — layout común de los modales (MatDialog)
+// Figma: 03 · Modales → cabecera + divisor + secciones + divisor + pie.
+// El contenedor (radio, sombra, fondo) se tematiza en styles.scss.
+// ============================================
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  max-height: 90vh;
+  padding: var(--space-xl);
+
+  @media (max-width: $breakpoint-md) {
+    max-height: 100vh;
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border-default);
+  }
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  &__title {
+    @include type(heading-l);
+    color: var(--text-primary);
+  }
+
+  &__subtitle {
+    @include type(body-s);
+    color: var(--text-secondary);
+  }
+
+  &__close {
+    @include focus-ring;
+    display: inline-flex;
+    flex-shrink: 0;
+    padding: 4px;
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    transition:
+      color var(--transition-fast),
+      background-color var(--transition-fast);
+
+    &:hover {
+      color: var(--text-primary);
+      background: var(--bg-muted);
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-lg);
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  &__section-title {
+    @include type(label-m);
+    color: var(--text-secondary);
+  }
+
+  // Datos de solo lectura con el mismo ritmo que los inputs del formulario
+  &__data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-md) var(--space-lg);
+
+    @media (max-width: $breakpoint-md) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  &__data-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--space-sm) 14px;
+    background: var(--bg-muted);
+    border-radius: var(--radius-md);
+  }
+
+  &__data-label {
+    @include type(body-xs);
+    color: var(--text-secondary);
+  }
+
+  &__data-value {
+    @include type(body-s);
+    color: var(--text-primary);
+    overflow-wrap: anywhere;
+  }
+
+  &__status {
+    @include type(body-s);
+    color: var(--text-secondary);
+  }
+
+  &__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border-default);
+
+    &:empty {
+      display: none;
+    }
+  }
+}

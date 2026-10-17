@@ -1,50 +1,46 @@
-<div class="detail-session">
-    <div class="detail-session__header">
-        <h2>Detalle de la Cita</h2>
-        <button mat-icon-button (click)="onClose()">
-            <mat-icon>close</mat-icon>
+<div class="dialog">
+    <header class="dialog__header">
+        <h2 class="dialog__title">Detalle de la Cita</h2>
+        <button type="button" class="dialog__close" aria-label="Cerrar" (click)="onClose()">
+            <ui-icon name="close-lg" [size]="24" />
         </button>
-    </div>
+    </header>
 
-    <div class="detail-session__content">
-        <div class="info-section">
-            <h3>Información de la Sesión (No editable)</h3>
-            <div class="info-grid">
-                <div class="info-item">
-                    <label>Paciente</label>
-                    <p>{{ getPatientName() }}</p>
+    <div class="dialog__body">
+        <section class="dialog__section">
+            <h3 class="dialog__section-title">Información de la Sesión (No editable)</h3>
+            <div class="dialog__data-grid">
+                <div class="dialog__data-item">
+                    <span class="dialog__data-label">Paciente</span>
+                    <span class="dialog__data-value">{{ getPatientName() }}</span>
                 </div>
-                <div class="info-item">
-                    <label>Fisioterapeuta</label>
-                    <p>{{ getPhysioName() }}</p>
+                <div class="dialog__data-item">
+                    <span class="dialog__data-label">Fisioterapeuta</span>
+                    <span class="dialog__data-value">{{ getPhysioName() }}</span>
                 </div>
-                <div class="info-item">
-                    <label>Estado</label>
-                    <p>{{ getStatusLabel(appointment.status) }}</p>
+                <div class="dialog__data-item">
+                    <span class="dialog__data-label">Estado</span>
+                    <span class="dialog__data-value">{{ getStatusLabel(appointment.status) }}</span>
                 </div>
-                <div class="info-item">
-                    <label>Número de Sesión</label>
-                    <p>{{ appointment.session_number }}ª sesión</p>
+                <div class="dialog__data-item">
+                    <span class="dialog__data-label">Número de Sesión</span>
+                    <span class="dialog__data-value">{{ appointment.session_number }}ª sesión</span>
                 </div>
             </div>
-        </div>
-        <div class="edit-section">
-            <h3>Información Editable</h3>
+        </section>
+
+        <section class="dialog__section">
+            <h3 class="dialog__section-title">Información Editable</h3>
             @if (appointmentFormConfig()) {
             <f-form [config]="appointmentFormConfig()!" [submitButtonText]="'Guardar Cambios'"
                 (formSubmit)="onSubmitAppointment($event)" [showCancelButton]="false">
             </f-form>
             }
-        </div>
+        </section>
     </div>
-    <div class="detail-session__actions">
-        <button mat-raised-button color="accent" (click)="onCancel()">
-            <mat-icon>cancel</mat-icon>
-            Cancelar Cita
-        </button>
-        <button mat-raised-button color="warn" (click)="onDelete()">
-            <mat-icon>delete</mat-icon>
-            Eliminar Cita
-        </button>
-    </div>
+
+    <footer class="dialog__footer">
+        <button-ui variant="danger" icon="trash" [title]="'Eliminar Cita'" (click)="onDelete()"></button-ui>
+        <button-ui variant="secondary" icon="close" [title]="'Cancelar Cita'" (click)="onCancel()"></button-ui>
+    </footer>
 </div>

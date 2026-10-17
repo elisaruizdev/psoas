@@ -1,47 +1,47 @@
+@use 'scss/abstracts/mixins' as *;
+@use 'scss/abstracts/variables' as *;
+
+// Figma: Components → Tab Bar / Tab Item (Default / Active)
+
 .tab-menu {
+  display: flex;
+  gap: 4px;
+  padding: 10px var(--space-xl);
+  overflow-x: auto;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-hairline);
+
+  @media (max-width: $breakpoint-sm) {
+    padding: 10px var(--space-md);
+  }
+
+  &__item {
+    @include type(nav-tab);
+    @include focus-ring;
     display: flex;
-    background: #f9fafb;
-    border-bottom: 2px solid #e5e7eb;
-    overflow-x: auto;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) 14px;
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    transition:
+      color var(--transition-fast),
+      background-color var(--transition-fast);
 
-    &__item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.875rem 1.25rem;
-        text-decoration: none;
-        color: #6b7280;
-        border-bottom: 3px solid transparent;
-        transition: all 0.2s;
-        font-weight: 500;
-        font-size: 0.875rem;
-        margin-bottom: -2px;
-        flex-shrink: 0;
-
-        &:hover {
-            color: #111827;
-            background: rgba(79, 70, 229, 0.05);
-        }
-
-        &--active {
-            color: #5b21b6;
-            border-bottom-color: #5b21b6;
-            .tab-menu__icon {
-                filter: brightness(0) saturate(100%) invert(21%) sepia(89%) saturate(4442%) hue-rotate(264deg) brightness(87%) contrast(99%);
-            }
-        }
+    &:hover {
+      color: var(--text-primary);
+      background: var(--bg-muted);
     }
 
-    &__icon {
-        width: 20px;
-        height: 20px;
-        object-fit: contain;
-        filter: brightness(0) saturate(100%) invert(47%) sepia(6%) saturate(587%) hue-rotate(179deg) brightness(92%) contrast(86%);
-        transition: filter 0.2s;
+    &--active,
+    &--active:hover {
+      color: var(--text-brand);
+      background: var(--bg-brand-subtle);
     }
+  }
 
-    &__label {
-        white-space: nowrap;
-        font-family: MuseoModerno, sans-serif;
-    }
+  &__label {
+    white-space: nowrap;
+  }
 }

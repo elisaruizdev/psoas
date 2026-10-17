@@ -4,12 +4,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RegisterForm } from '../../models/register.model';
 import { AuthService } from '../../services/auth.service';
+import { Icon } from '../../../../shared/ui/icon/icon';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, Icon],
   templateUrl: './register.html',
-  styleUrl: './register.scss',
 })
 export class Register {
   registerForm!: FormGroup;

@@ -8,7 +8,7 @@
         <div class="login-form__field">
             <label class="login-form__label" for="email">Correo</label>
             <div class="login-form__input-wrapper">
-                <img src="icons/arroba.svg" alt="email" class="login-form__icon">
+                <ui-icon class="login-form__icon" name="mail" />
                 <input class="login-form__input" type="email" id="email" formControlName="email"
                     placeholder="email@psoas.es" />
             </div>
@@ -17,7 +17,7 @@
         <div class="login-form__field">
             <label class="login-form__label" for="password">Contraseña</label>
             <div class="login-form__input-wrapper">
-                <img src="icons/asterics.svg" alt="contraseña" class="login-form__icon">
+                <ui-icon class="login-form__icon" name="lock" />
                 <input class="login-form__input" type="password" id="password" formControlName="password"
                     placeholder="********" />
             </div>
@@ -30,7 +30,7 @@
         </div>
 
         @if (errorMessage()) {
-        <div class="login-form__error-box" role="alert">
+        <div class="alert alert--error" role="alert">
             {{ errorMessage() }}
         </div>
         }

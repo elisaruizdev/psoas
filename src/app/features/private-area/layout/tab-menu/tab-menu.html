@@ -2,7 +2,9 @@
     @for (tab of tabs; track tab.route) {
     <a [routerLink]="tab.route" routerLinkActive="tab-menu__item--active"
         [routerLinkActiveOptions]="{ exact: tab.route === '/dashboard' }" class="tab-menu__item">
-        <img [src]="tab.icon" [alt]="tab.label" class="tab-menu__icon" />
+        @if (tab.icon) {
+        <ui-icon [name]="tab.icon" />
+        }
         <span class="tab-menu__label">{{ tab.label }}</span>
     </a>
     }
