@@ -3,17 +3,17 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { PhysiosService } from '../services/physios.service';
 import { Form } from '../../../../shared/ui/form/form';
+import { ButtonUI } from '../../../../shared/ui/button/button';
+import { Icon } from '../../../../shared/ui/icon/icon';
 import { FormConfig, FormValue, formText } from '../../../../shared/models/form.model';
 import { Physio } from '../models/physios.model';
 
 @Component({
   selector: 'app-detail-physio',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, Form],
+  imports: [CommonModule, MatDialogModule, Form, ButtonUI, Icon],
   templateUrl: './detail-physio.html',
   styleUrl: './detail-physio.scss',
 })
@@ -42,6 +42,7 @@ export class DetailPhysio implements OnInit {
           fields: [
             {
               name: 'identifier',
+              icon: 'user',
               label: 'DNI/NIE',
               type: 'text',
               placeholder: '12345678A',
@@ -58,6 +59,7 @@ export class DetailPhysio implements OnInit {
             },
             {
               name: 'gender',
+              icon: 'user',
               label: 'Género',
               type: 'select',
               placeholder: 'Seleccione...',
@@ -90,6 +92,7 @@ export class DetailPhysio implements OnInit {
           fields: [
             {
               name: 'license_number',
+              icon: 'list',
               label: 'Número de Colegiado',
               type: 'text',
               placeholder: 'Número de colegiado',
@@ -98,6 +101,7 @@ export class DetailPhysio implements OnInit {
             },
             {
               name: 'specialty',
+              icon: 'hand',
               label: 'Especialidad',
               type: 'text',
               placeholder: 'Ej: Traumatología',
@@ -106,6 +110,7 @@ export class DetailPhysio implements OnInit {
             },
             {
               name: 'schedule',
+              icon: 'calendar',
               label: 'Horario',
               type: 'select',
               placeholder: 'Seleccione horario...',
@@ -123,6 +128,7 @@ export class DetailPhysio implements OnInit {
           fields: [
             {
               name: 'address',
+              icon: 'home',
               label: 'Dirección Completa',
               type: 'text',
               placeholder: 'Calle, número, piso, puerta',
@@ -132,6 +138,7 @@ export class DetailPhysio implements OnInit {
             },
             {
               name: 'city',
+              icon: 'home',
               label: 'Ciudad',
               type: 'text',
               placeholder: 'Madrid',
@@ -140,6 +147,7 @@ export class DetailPhysio implements OnInit {
             },
             {
               name: 'zip',
+              icon: 'home',
               label: 'Código Postal',
               type: 'text',
               placeholder: '28001',
@@ -149,6 +157,7 @@ export class DetailPhysio implements OnInit {
             },
             {
               name: 'country',
+              icon: 'home',
               label: 'País',
               type: 'text',
               placeholder: 'España',

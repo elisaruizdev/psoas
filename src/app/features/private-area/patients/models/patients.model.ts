@@ -45,7 +45,6 @@ export type TabId = 'clinical' | 'treatments' | 'sessions';
 export interface PatientTab {
   label: string;
   id: TabId;
-  icon: string;
 }
 
 export interface Diagnosis {

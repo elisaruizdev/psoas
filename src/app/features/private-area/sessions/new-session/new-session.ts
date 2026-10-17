@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { Form } from '../../../../shared/ui/form/form';
+import { Icon } from '../../../../shared/ui/icon/icon';
 import { FormConfig, FormValue, formText } from '../../../../shared/models/form.model';
 import { AppointmentsService } from '../services/appointments.service';
 import { PatientsService } from '../../patients/services/patients.service';
@@ -10,12 +11,11 @@ import { PhysiosService } from '../../physios/services/physios.service';
 import { CreateAppointment } from '../models/appointment.model';
 import { Patient } from '../../patients/models/patients.model';
 import { Physio } from '../../physios/models/physios.model';
-import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-new-session',
   standalone: true,
-  imports: [CommonModule, Form, MatDialogModule, MatIconModule],
+  imports: [CommonModule, Form, MatDialogModule, Icon],
   templateUrl: './new-session.html',
   styleUrl: './new-session.scss',
 })
@@ -70,6 +70,7 @@ export class NewSession implements OnInit {
           fields: [
             {
               name: 'patient_id',
+              icon: 'search',
               label: 'Paciente',
               type: 'select',
               placeholder: 'Seleccione un paciente',
@@ -81,6 +82,7 @@ export class NewSession implements OnInit {
             },
             {
               name: 'physio_id',
+              icon: 'hand',
               label: 'Fisioterapeuta',
               type: 'select',
               placeholder: 'Seleccione un fisioterapeuta',
@@ -99,6 +101,7 @@ export class NewSession implements OnInit {
             },
             {
               name: 'appointment_time',
+              icon: 'calendar',
               label: 'Hora',
               type: 'select',
               placeholder: 'Seleccione una hora',
@@ -121,6 +124,7 @@ export class NewSession implements OnInit {
             },
             {
               name: 'duration',
+              icon: 'list',
               label: 'Duración',
               type: 'select',
               placeholder: 'Seleccione duración',
@@ -139,6 +143,7 @@ export class NewSession implements OnInit {
           fields: [
             {
               name: 'notes',
+              icon: 'list',
               label: 'Notas',
               type: 'textarea',
               placeholder: 'Observaciones sobre la cita...',

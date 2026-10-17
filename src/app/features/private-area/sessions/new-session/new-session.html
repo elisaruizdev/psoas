@@ -1,20 +1,18 @@
-<div class="new-session">
-    <div class="new-session__header">
-        <h2>Nueva Cita</h2>
-        <button mat-icon-button [mat-dialog-close]>
-            <mat-icon>close</mat-icon>
+<div class="dialog">
+    <header class="dialog__header">
+        <h2 class="dialog__title">Nueva Cita</h2>
+        <button type="button" class="dialog__close" aria-label="Cerrar" [mat-dialog-close]>
+            <ui-icon name="close-lg" [size]="24" />
         </button>
-    </div>
+    </header>
 
-    <div class="new-session__content">
+    <div class="dialog__body">
         @if (appointmentFormConfig()) {
         <f-form [config]="appointmentFormConfig()!" [submitButtonText]="'Crear Cita'"
             (formSubmit)="onSubmitAppointment($event)" (formCancel)="onCancelForm()" [showCancelButton]="true">
         </f-form>
         } @else {
-        <div style="padding: 2rem; text-align: center;">
-            <p>Cargando formulario...</p>
-        </div>
+        <p class="dialog__status">Cargando formulario...</p>
         }
     </div>
 </div>
