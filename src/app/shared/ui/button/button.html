@@ -1,11 +1,6 @@
-<button class="btn-primary" [class.btn-primary--full]="fullWidth" [disabled]="disabled" (click)="handleClick()">
-    <div class="btn-primary__content">
-        <div class="btn-primary__icon">
-            <img [src]="icon" [alt]="title" />
-        </div>
-        <div class="btn-primary__text">
-            <span class="btn-primary__label">{{ label }}</span>
-            <span class="btn-primary__title">{{ title }}</span>
-        </div>
-    </div>
+<button [type]="type()" [class]="'btn btn--' + variant()" [disabled]="disabled" (click)="handleClick()">
+    @if (icon) {
+    <ui-icon [name]="icon" />
+    }
+    <span class="btn__title">{{ title }}</span>
 </button>

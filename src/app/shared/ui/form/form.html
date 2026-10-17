@@ -38,18 +38,17 @@
                     <span class="f-form__required">*</span>
                     }
                 </label>
-                <div class="f-form__input-wrapper" [class.f-form__input-wrapper--error]="hasError(field.name)">
-                    @if (field.icon) {
-                    <span class="f-form__icon" [innerHTML]="getIconSvg(field.icon)"></span>
+                <div class="f-form__input-wrapper" [class.f-form__input-wrapper--error]="hasError(field.name)"
+                    [class.f-form__input-wrapper--multiline]="field.type === 'textarea'">
+                    @if (getFieldIcon(field); as icon) {
+                    <ui-icon class="f-form__icon" [name]="icon" />
                     }
                     @if (['text', 'email', 'tel', 'number', 'date', 'password'].includes(field.type)) {
                     <input [type]="field.type" [id]="field.name" [formControlName]="field.name"
-                        [placeholder]="field.placeholder || ''" class="f-form__input"
-                        [class.f-form__input--with-icon]="field.icon" />
+                        [placeholder]="field.placeholder || ''" class="f-form__input" />
                     }
                     @if (field.type === 'select') {
-                    <select [id]="field.name" [formControlName]="field.name" class="f-form__select"
-                        [class.f-form__select--with-icon]="field.icon">
+                    <select [id]="field.name" [formControlName]="field.name" class="f-form__select">
                         <option value="" disabled selected>{{ field.placeholder || 'Seleccione...' }}</option>
                         @for (option of field.options; track option.value) {
                         <option [value]="option.value">{{ option.label }}</option>
@@ -58,8 +57,7 @@
                     }
                     @if (field.type === 'textarea') {
                     <textarea [id]="field.name" [formControlName]="field.name" [placeholder]="field.placeholder || ''"
-                        [rows]="field.rows || 3" class="f-form__textarea"
-                        [class.f-form__textarea--with-icon]="field.icon"></textarea>
+                        [rows]="field.rows || 3" class="f-form__textarea"></textarea>
                     }
                 </div>
                 @if (hasError(field.name)) {
@@ -72,11 +70,11 @@
     </div>
     }
     <div class="f-form__actions">
-    @if (showCancelButton) {
-    <button-ui [title]  ="cancelButtonText" [icon]="'icons/cancel.svg'"  (click)="onCancel()">
-    </button-ui>
-    }
-    <button-ui [title]="submitButtonText" [icon]="'icons/check.svg'" [disabled]="form.invalid">  
-    </button-ui>
+        @if (showCancelButton) {
+        <button-ui class="f-form__cancel" variant="outline" [title]="cancelButtonText" (click)="onCancel()">
+        </button-ui>
+        }
+        <button-ui type="submit" [title]="submitButtonText" [disabled]="form.invalid">
+        </button-ui>
     </div>
 </form>

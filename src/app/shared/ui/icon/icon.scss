@@ -1,0 +1,6 @@
+:host {
+  display: inline-block;
+  flex-shrink: 0;
+  background-color: currentColor;
+  mask: var(--ui-icon-src) center / contain no-repeat;
+}
