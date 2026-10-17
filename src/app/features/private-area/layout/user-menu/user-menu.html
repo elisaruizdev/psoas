@@ -3,7 +3,7 @@
     <button mat-icon-button class="user-menu__trigger" [matMenuTriggerFor]="userMenuRef" aria-label="Menú de usuario">
 
         @if(userInfo?.avatar) {
-        <img [src]="userInfo.avatar" [alt]="userInfo.name" class="user-menu__avatar">
+        <img [src]="userInfo?.avatar" [alt]="userInfo?.name" class="user-menu__avatar">
         } @else {
         <mat-icon class="user-menu__avatar-icon">account_circle</mat-icon>
         }

@@ -198,6 +198,10 @@
       color: $color-primary-medium;
     }
   }
+  @media (max-width: 768px) {
+    padding: $spacing-lg $spacing-md;
+  }
+
   &__error-box {
     border: 1px solid $color-error-border;
     color: $color-error;

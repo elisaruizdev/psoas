@@ -1,15 +1,16 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, DestroyRef, signal, computed } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
-import { TableConfig } from '../../../shared/models/table.model';
+import { TableConfig, TableRowClick } from '../../../shared/models/table.model';
 import { Table } from '../../../shared/ui/table/table';
 import { ButtonUI } from '../../../shared/ui/button/button';
 import { PatientsService } from './services/patients.service';
 import { Patient } from './models/patients.model';
 import { NewPatient } from './new-patient/new-patient';
 import { DetailPatient } from './detail-patient/detail-patient';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-patients',
@@ -19,6 +20,7 @@ import { DetailPatient } from './detail-patient/detail-patient';
 })
 export class Patients {
   patients = signal<Patient[]>([]);
+  loadError = signal('');
 
   listadoPatientsConfig = computed<TableConfig>(() => ({
     columns: [
@@ -32,7 +34,7 @@ export class Patients {
       },
       {
         key: 'email',
-        label: 'Email',
+        label: 'Correo',
       },
       {
         key: 'phone',
@@ -52,19 +54,25 @@ export class Patients {
     clickableParams: 'view-patient',
   }));
 
-  constructor(private dialog: MatDialog, private patientsService: PatientsService) {}
+  constructor(
+    private dialog: MatDialog,
+    private patientsService: PatientsService,
+    private destroyRef: DestroyRef,
+  ) {}
 
   ngOnInit() {
     this.getAllPatients();
   }
 
   getAllPatients() {
-    this.patientsService.getAllPatients().subscribe({
+    this.loadError.set('');
+    this.patientsService.getAllPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (patients) => {
         this.patients.set(patients);
       },
       error: (error) => {
         console.error('Error al cargar pacientes:', error);
+        this.loadError.set('No se han podido cargar los pacientes.');
       },
     });
   }
@@ -96,12 +104,11 @@ export class Patients {
     return statusMap[status] || status;
   }
 
-  onPatientClick(event: any): void {
-    const { row } = event;
-    this.abrirDetallePaciente(row.id);
+  onPatientClick(event: TableRowClick): void {
+    this.openPatientDetail(String(event.row.id));
   }
 
-  private abrirDetallePaciente(patientId: string): void {
+  private openPatientDetail(patientId: string): void {
     const dialogRef = this.dialog.open(DetailPatient, {
       data: { id: patientId },
       width: '1000px',
@@ -117,7 +124,7 @@ export class Patients {
     });
   }
 
-  abrirNuevoPaciente(): void {
+  openNewPatient(): void {
     const dialogRef = this.dialog.open(NewPatient, {
       width: '800px',
       maxWidth: '100vw',

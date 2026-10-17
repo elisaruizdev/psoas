@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { Component, DestroyRef, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -16,7 +17,12 @@ export class ForgotPassword {
   isLoading = signal(false);
   emailSent = signal(false);
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
+    private destroyRef: DestroyRef,
+  ) {
     this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
     });
@@ -29,9 +35,9 @@ export class ForgotPassword {
 
     this.isLoading.set(true);
 
-    const { email } = this.forgotPasswordForm.value;
+    const email = this.forgotPasswordForm.getRawValue().email as string;
 
-    this.authService.forgotPassword(email).subscribe({
+    this.authService.forgotPassword({ email }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.isLoading.set(false);
         this.emailSent.set(true);

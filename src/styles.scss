@@ -26,3 +26,10 @@ td{
 mat-chip {
       font-weight: 800;
 }
+
+@media (max-width: 768px) {
+  .cdk-overlay-pane.fullscreen-dialog {
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+}

@@ -1,4 +1,5 @@
-import { Component, Input, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,7 +9,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TreatmentsService } from '../../services/treatments.service';
 import { Form } from '../../../../../shared/ui/form/form';
-import { FormConfig } from '../../../../../shared/models/form.model';
+import { FormConfig, FormValue, formChoice, formText } from '../../../../../shared/models/form.model';
 import { ButtonUI } from '../../../../../shared/ui/button/button';
 import { Treatment } from '../../models/patients.model';
 
@@ -39,7 +40,10 @@ export class Treatments implements OnInit {
   editingId = signal<string | null>(null);
   treatmentFormConfig = signal<FormConfig | null>(null);
 
-  constructor(private treatmentsService: TreatmentsService) {}
+  constructor(
+    private treatmentsService: TreatmentsService,
+    private destroyRef: DestroyRef,
+  ) {}
 
   ngOnInit(): void {
     this.loadTreatments();
@@ -47,7 +51,7 @@ export class Treatments implements OnInit {
 
   loadTreatments(): void {
     this.loading.set(true);
-    this.treatmentsService.getAllByPatient(this.patientId).subscribe({
+    this.treatmentsService.getAllByPatient(this.patientId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (treatments) => {
         this.treatments.set(treatments);
         this.loading.set(false);
@@ -85,7 +89,7 @@ export class Treatments implements OnInit {
         sessions_planned: treatment.sessions_planned,
         status: treatment.status,
       })
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.editingId.set(null);
           this.loadTreatments();
@@ -100,7 +104,7 @@ export class Treatments implements OnInit {
 
   onDelete(treatment: Treatment): void {
     if (confirm('¿Estás seguro de que deseas eliminar este tratamiento?')) {
-      this.treatmentsService.delete(treatment.id).subscribe({
+      this.treatmentsService.delete(treatment.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.loadTreatments();
           this.showSuccessNotification('Tratamiento eliminado correctamente');
@@ -113,19 +117,20 @@ export class Treatments implements OnInit {
     }
   }
 
-  onSubmitTreatment(treatmentData: any): void {
+  onSubmitTreatment(treatmentData: FormValue): void {
+    const sessionsPlanned = treatmentData['sessions_planned'];
     const formattedData = {
       patient_id: this.patientId,
-      treatment_name: treatmentData.treatment_name,
-      start_date: treatmentData.start_date,
-      end_date: treatmentData.end_date || undefined,
-      description: treatmentData.description,
-      objectives: treatmentData.objectives,
-      sessions_planned: treatmentData.sessions_planned ? Number(treatmentData.sessions_planned) : undefined,
-      status: treatmentData.status,
+      treatment_name: formText(treatmentData, 'treatment_name') ?? '',
+      start_date: formText(treatmentData, 'start_date') ?? '',
+      end_date: formText(treatmentData, 'end_date') || undefined,
+      description: formText(treatmentData, 'description') ?? '',
+      objectives: formText(treatmentData, 'objectives') ?? '',
+      sessions_planned: sessionsPlanned ? Number(sessionsPlanned) : undefined,
+      status: formChoice(treatmentData, 'status', ['active', 'completed', 'paused'] as const),
     };
 
-    this.treatmentsService.create(formattedData).subscribe({
+    this.treatmentsService.create(formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.showSuccessNotification('Tratamiento creado correctamente');
         this.showForm.set(false);

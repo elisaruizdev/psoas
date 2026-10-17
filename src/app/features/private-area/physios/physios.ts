@@ -1,14 +1,15 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, DestroyRef, signal, computed } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { TableConfig } from '../../../shared/models/table.model';
+import { TableConfig, TableRowClick } from '../../../shared/models/table.model';
 import { Table } from '../../../shared/ui/table/table';
 import { MatDialog } from '@angular/material/dialog';
 import { PhysiosService } from './services/physios.service';
 import { Physio } from './models/physios.model';
 import { DetailPhysio } from './detail-physio/detail-physio';
 import { ButtonUI } from '../../../shared/ui/button/button';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 
 @Component({
@@ -20,6 +21,8 @@ import { ButtonUI } from '../../../shared/ui/button/button';
 export class Physios {
   physios = signal<Physio[]>([]);
   showPendingRequests = signal<boolean>(false);
+  loadError = signal('');
+  openError = signal('');
 
   pendingPhysios = computed(() =>
     this.physios().filter((p) => p.status === 'pending_verification')
@@ -35,7 +38,7 @@ export class Physios {
       },
       {
         key: 'email',
-        label: 'Email',
+        label: 'Correo',
       },
       {
         key: 'phone',
@@ -63,19 +66,25 @@ export class Physios {
     clickableParams: 'view-physio',
   }));
 
-  constructor(private dialog: MatDialog, private physiosService: PhysiosService) {}
+  constructor(
+    private dialog: MatDialog,
+    private physiosService: PhysiosService,
+    private destroyRef: DestroyRef,
+  ) {}
 
   ngOnInit() {
     this.getAllPhysios();
   }
 
   getAllPhysios() {
-    this.physiosService.getAllPhysios().subscribe({
+    this.loadError.set('');
+    this.physiosService.getAllPhysios().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (physios) => {
         this.physios.set(physios);
       },
       error: (error) => {
         console.error('Error al cargar fisioterapeutas:', error);
+        this.loadError.set('No se han podido cargar los fisioterapeutas.');
       },
     });
   }
@@ -117,20 +126,24 @@ export class Physios {
     return d.toLocaleDateString('es-ES');
   }
 
-  onPhysioClick(event: any): void {
-    const { row } = event;
-    this.physiosService.getPhysioById(row.id).subscribe({
+  onPhysioClick(event: TableRowClick): void {
+    const id = event.row.id;
+    if (typeof id !== 'number') {
+      return;
+    }
+    this.openError.set('');
+    this.physiosService.getPhysioById(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (physio) => {
-        this.abrirDetallePhysio(physio);
+        this.openPhysioDetail(physio);
       },
       error: (error) => {
         console.error('Error al cargar fisioterapeuta:', error);
-        alert('Error al cargar la información del fisioterapeuta');
+        this.openError.set('No se ha podido abrir la ficha del fisioterapeuta.');
       },
     });
   }
 
-  private abrirDetallePhysio(physioID: Physio): void {
+  private openPhysioDetail(physioID: Physio): void {
     this.dialog.open(DetailPhysio, {
       data: physioID,
       width: '1000px',
@@ -146,14 +159,15 @@ export class Physios {
 
   approvePhysio(id: number): void {
     if (confirm('¿Estás seguro de aprobar esta solicitud?')) {
-      this.physiosService.approvePhysio(id).subscribe({
+      this.openError.set('');
+      this.physiosService.approvePhysio(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           alert('Fisioterapeuta aprobado. Se ha enviado el email de verificación.');
           this.getAllPhysios();
         },
         error: (error) => {
           console.error('Error al aprobar:', error);
-          alert('Error al aprobar la solicitud');
+          this.openError.set('No se ha podido aprobar la solicitud.');
         },
       });
     }
@@ -161,14 +175,15 @@ export class Physios {
 
   rejectPhysio(id: number): void {
     if (confirm('¿Estás seguro de rechazar esta solicitud?')) {
-      this.physiosService.rejectPhysio(id).subscribe({
+      this.openError.set('');
+      this.physiosService.rejectPhysio(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           alert('Solicitud rechazada correctamente');
           this.getAllPhysios();
         },
         error: (error) => {
           console.error('Error al rechazar:', error);
-          alert('Error al rechazar la solicitud');
+          this.openError.set('No se ha podido rechazar la solicitud.');
         },
       });
     }

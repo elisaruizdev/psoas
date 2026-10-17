@@ -1,8 +1,8 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, DestroyRef, signal, computed } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { TableConfig } from '../../../shared/models/table.model';
+import { TableConfig, TableRowClick } from '../../../shared/models/table.model';
 import { Table } from '../../../shared/ui/table/table';
 import { MatDialog } from '@angular/material/dialog';
 import { AppointmentsService } from './services/appointments.service';
@@ -10,6 +10,7 @@ import { Appointment } from './models/appointment.model';
 import { ButtonUI } from '../../../shared/ui/button/button';
 import { NewSession } from './new-session/new-session';
 import { DetailSession } from './detail-session/detail-session';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-sessions',
@@ -19,6 +20,8 @@ import { DetailSession } from './detail-session/detail-session';
 })
 export class Sessions {
   appointments = signal<Appointment[]>([]);
+  loadError = signal('');
+  openError = signal('');
 
   listadoAppointmentsConfig = computed<TableConfig>(() => ({
     columns: [
@@ -52,19 +55,25 @@ export class Sessions {
     clickableParams: 'view-appointment',
   }));
 
-  constructor(private dialog: MatDialog, private appointmentsService: AppointmentsService) {}
+  constructor(
+    private dialog: MatDialog,
+    private appointmentsService: AppointmentsService,
+    private destroyRef: DestroyRef,
+  ) {}
 
   ngOnInit() {
     this.getAllAppointments();
   }
 
   getAllAppointments() {
-    this.appointmentsService.getAllAppointments().subscribe({
+    this.loadError.set('');
+    this.appointmentsService.getAllAppointments().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (appointments) => {
         this.appointments.set(appointments);
       },
       error: (error) => {
         console.error('Error al cargar citas:', error);
+        this.loadError.set('No se han podido cargar las citas.');
       },
     });
   }
@@ -119,20 +128,27 @@ export class Sessions {
     return statusMap[status] || status;
   }
 
-  onAppointmentClick(event: any): void {
-    const { row } = event;
-    this.appointmentsService.getAppointmentById(row.id).subscribe({
+  onAppointmentClick(event: TableRowClick): void {
+    const id = event.row.id;
+    if (typeof id !== 'string') {
+      return;
+    }
+    this.openError.set('');
+    this.appointmentsService
+      .getAppointmentById(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
       next: (appointment) => {
-        this.abrirDetalleAppointment(appointment);
+        this.openAppointmentDetail(appointment);
       },
       error: (error) => {
         console.error('Error al cargar cita:', error);
-        alert('Error al cargar la información de la cita');
+        this.openError.set('No se ha podido abrir la ficha de la cita.');
       },
     });
   }
 
-  private abrirDetalleAppointment(appointment: Appointment): void {
+  private openAppointmentDetail(appointment: Appointment): void {
     const dialogRef = this.dialog.open(DetailSession, {
       data: appointment,
       width: '1000px',
@@ -152,7 +168,7 @@ export class Sessions {
     });
   }
 
-  abrirNuevaCita(): void {
+  openNewAppointment(): void {
     const dialogRef = this.dialog.open(NewSession, {
       width: '800px',
       maxWidth: '100vw',

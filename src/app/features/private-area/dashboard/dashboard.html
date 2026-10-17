@@ -5,6 +5,8 @@
     <div class="dashboard__loading">
         <p>Cargando estadísticas...</p>
     </div>
+    } @else if (loadError()) {
+    <p class="dashboard__error" role="alert">{{ loadError() }}</p>
     } @else {
     <section class="dashboard__cards">
         <div class="dashboard__card">

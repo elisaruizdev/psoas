@@ -14,7 +14,7 @@ import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { TableConfig } from '../../models/table.model';
+import { TableCell, TableConfig, TableRow } from '../../models/table.model';
 
 @Component({
   selector: 'f-table',
@@ -32,12 +32,12 @@ import { TableConfig } from '../../models/table.model';
 })
 export class Table implements AfterViewInit, OnChanges {
   @Input() config!: TableConfig;
-  @Output() rowClick = new EventEmitter<{ row: any; param?: string }>();
+  @Output() rowClick = new EventEmitter<{ row: TableRow; param?: string }>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  dataSource!: MatTableDataSource<any>;
+  dataSource!: MatTableDataSource<TableRow>;
   displayedColumns: string[] = [];
   filterValue: string = '';
 
@@ -85,15 +85,19 @@ export class Table implements AfterViewInit, OnChanges {
     return column?.label || columnKey;
   }
 
-  getColumnValue(row: any, columnKey: string): any {
+  getColumnValue(row: TableRow, columnKey: string): string {
     const column = this.config.columns.find((col) => col.key === columnKey);
-    const value = row[columnKey];
+    const value: TableCell = row[columnKey];
 
     if (column?.format) {
       return column.format(value);
     }
 
-    return value;
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    return String(value);
   }
 
   isColumnSortable(columnKey: string): boolean {
@@ -111,7 +115,7 @@ export class Table implements AfterViewInit, OnChanges {
     }
   }
 
-  onRowClick(row: any) {
+  onRowClick(row: TableRow) {
     if (this.config.clickableRows) {
       this.rowClick.emit({
         row,

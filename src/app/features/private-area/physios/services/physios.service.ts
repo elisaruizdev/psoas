@@ -25,15 +25,15 @@ export class PhysiosService {
     return this.http.patch<Physio>(`${this.apiUrl}/${id}`, data);
   }
 
-  approvePhysio(id: number): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/approve`, {});
+  approvePhysio(id: number): Observable<Physio> {
+    return this.http.patch<Physio>(`${this.apiUrl}/${id}/approve`, {});
   }
 
-  rejectPhysio(id: number): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/reject`, {});
+  rejectPhysio(id: number): Observable<Physio> {
+    return this.http.patch<Physio>(`${this.apiUrl}/${id}/reject`, {});
   }
 
-  deletePhysio(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  deletePhysio(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

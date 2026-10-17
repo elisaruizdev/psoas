@@ -1,0 +1,44 @@
+---
+description: Patrones de Angular 20 (standalone, signals, zoneless) usados en Psoas
+globs: **/*.ts,**/*.html
+alwaysApply: false
+---
+
+# Estilo Angular 20 en este proyecto
+
+La app usa `provideZonelessChangeDetection()` (ver `app.config.ts`): NO depende de Zone.js.
+Cualquier estado que deba refrescar la UI tiene que pasar por `signal`/`computed`/`RxJS async pipe`,
+nunca por mutación directa esperando que Angular "se entere" solo.
+
+## Componentes
+
+- Siempre `standalone` (implícito en Angular 20, no hace falta `standalone: true` explícito si no está ya en el archivo).
+- Estado local: `signal<T>(inicial)`. Derivados: `computed(() => ...)`. Evitar variables sueltas para estado que afecta a la plantilla.
+- Salidas de eventos: usar `output<T>()`, no `@Output() EventEmitter`.
+- Entradas: el proyecto tiene una mezcla histórica de `@Input()` y `output()` (p. ej. `button.ts`). Para código nuevo, preferir `input<T>()` (signal input) en vez de `@Input()`. No hace falta migrar lo existente salvo que se pida explícitamente.
+
+## Servicios / HTTP
+
+```typescript
+// ✅ Patrón usado en PatientsService, DashboardService, etc.
+@Injectable({ providedIn: 'root' })
+export class XService {
+  private apiUrl = `${environment.baseUrl}/xxx`;
+  constructor(private http: HttpClient) {}
+  getAll(): Observable<X[]> { return this.http.get<X[]>(this.apiUrl); }
+}
+```
+
+- Un método por operación CRUD, tipado con el modelo de dominio (no `any`).
+- La suscripción vive en el componente (`.subscribe({ next, error })`), no dentro del servicio.
+
+## Manejo de errores (pendiente de mejorar, no lo repliques sin más)
+
+Hoy el patrón es solo `console.error('mensaje', error)` en el `error:` del `subscribe`.
+Es un hueco conocido: no hay feedback visual al usuario ni manejo centralizado.
+Si tocas un flujo con errores, aprovecha para mostrar el error al usuario (snackbar/toast de Material)
+en vez de limitarte a copiar el `console.error` existente.
+
+## Inyección de dependencias
+
+- Constructor injection (`constructor(private foo: Foo)`), no `inject()`. Mantener consistencia con el resto del proyecto salvo que se decida migrar todo el proyecto a la vez.

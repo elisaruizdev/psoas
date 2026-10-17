@@ -1,13 +1,15 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { Validators } from '@angular/forms';
+import { Component, DestroyRef, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { Form } from '../../../../shared/ui/form/form';
-import { FormConfig } from '../../../../shared/models/form.model';
+import { FormConfig, FormValue, formText } from '../../../../shared/models/form.model';
 import { AppointmentsService } from '../services/appointments.service';
 import { PatientsService } from '../../patients/services/patients.service';
 import { PhysiosService } from '../../physios/services/physios.service';
 import { CreateAppointment } from '../models/appointment.model';
+import { Patient } from '../../patients/models/patients.model';
+import { Physio } from '../../physios/models/physios.model';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -19,14 +21,15 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class NewSession implements OnInit {
   appointmentFormConfig = signal<FormConfig | null>(null);
-  patients: any[] = [];
-  physios: any[] = [];
+  patients: Patient[] = [];
+  physios: Physio[] = [];
 
   constructor(
     private dialogRef: MatDialogRef<NewSession>,
     private appointmentsService: AppointmentsService,
     private patientsService: PatientsService,
-    private physiosService: PhysiosService
+    private physiosService: PhysiosService,
+    private destroyRef: DestroyRef,
   ) {}
 
   ngOnInit(): void {
@@ -34,7 +37,7 @@ export class NewSession implements OnInit {
   }
 
   private loadPatientsAndPhysios(): void {
-    this.patientsService.getAllPatients().subscribe({
+    this.patientsService.getAllPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (patients) => {
         this.patients = patients;
         this.loadPhysios();
@@ -47,7 +50,7 @@ export class NewSession implements OnInit {
   }
 
   private loadPhysios(): void {
-    this.physiosService.getAllPhysios().subscribe({
+    this.physiosService.getAllPhysios().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (physios) => {
         this.physios = physios.filter((p) => p.status === 'active');
         this.initializeFormConfig();
@@ -149,18 +152,18 @@ export class NewSession implements OnInit {
     });
   }
 
-  onSubmitAppointment(appointmentData: any): void {
-    const dateTime = `${appointmentData.appointment_date}T${appointmentData.appointment_time}:00`;
+  onSubmitAppointment(appointmentData: FormValue): void {
+    const dateTime = `${formText(appointmentData, 'appointment_date')}T${formText(appointmentData, 'appointment_time')}:00`;
 
     const formattedData: CreateAppointment = {
-      patient_id: appointmentData.patient_id,
-      physio_id: parseInt(appointmentData.physio_id),
+      patient_id: formText(appointmentData, 'patient_id') ?? '',
+      physio_id: Number.parseInt(formText(appointmentData, 'physio_id') ?? '', 10),
       appointment_date: new Date(dateTime).toISOString(),
-      duration: parseInt(appointmentData.duration),
-      notes: appointmentData.notes?.trim() || undefined,
+      duration: Number.parseInt(formText(appointmentData, 'duration') ?? '', 10),
+      notes: formText(appointmentData, 'notes')?.trim() || undefined,
     };
 
-    this.appointmentsService.createAppointment(formattedData).subscribe({
+    this.appointmentsService.createAppointment(formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.showSuccessNotification('Cita creada correctamente');
         this.dialogRef.close({ action: 'created' });

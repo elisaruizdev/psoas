@@ -1,6 +1,7 @@
-import { Component, Input, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { FormsModule, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -8,7 +9,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DiagnosesService } from '../../services/diagnoses.service';
 import { Form } from '../../../../../shared/ui/form/form';
-import { FormConfig } from '../../../../../shared/models/form.model';
+import { FormConfig, FormValue, formChoice, formText } from '../../../../../shared/models/form.model';
 import { Diagnosis } from '../../models/patients.model';
 import { ButtonUI } from '../../../../../shared/ui/button/button';
 
@@ -39,7 +40,10 @@ export class ClinicalHistory implements OnInit {
   editingId = signal<string | null>(null);
   diagnosisFormConfig = signal<FormConfig | null>(null);
 
-  constructor(private diagnosesService: DiagnosesService) {}
+  constructor(
+    private diagnosesService: DiagnosesService,
+    private destroyRef: DestroyRef,
+  ) {}
 
   ngOnInit(): void {
     this.loadDiagnoses();
@@ -47,7 +51,7 @@ export class ClinicalHistory implements OnInit {
 
   loadDiagnoses(): void {
     this.loading.set(true);
-    this.diagnosesService.getAllByPatient(this.patientId).subscribe({
+    this.diagnosesService.getAllByPatient(this.patientId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (diagnoses) => {
         this.diagnoses.set(diagnoses);
         this.loading.set(false);
@@ -83,7 +87,7 @@ export class ClinicalHistory implements OnInit {
         observations: diagnosis.observations,
         status: diagnosis.status,
       })
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.editingId.set(null);
           this.loadDiagnoses();
@@ -98,7 +102,7 @@ export class ClinicalHistory implements OnInit {
 
   onDelete(diagnosis: Diagnosis): void {
     if (confirm('¿Estás seguro de que deseas eliminar este diagnóstico?')) {
-      this.diagnosesService.delete(diagnosis.id).subscribe({
+      this.diagnosesService.delete(diagnosis.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.loadDiagnoses();
           this.showSuccessNotification('Diagnóstico eliminado correctamente');
@@ -111,17 +115,17 @@ export class ClinicalHistory implements OnInit {
     }
   }
 
-  onSubmitDiagnosis(diagnosisData: any): void {
+  onSubmitDiagnosis(diagnosisData: FormValue): void {
     const formattedData = {
       patient_id: this.patientId,
-      diagnosis_date: diagnosisData.diagnosis_date,
-      diagnosis_type: diagnosisData.diagnosis_type,
-      description: diagnosisData.description,
-      observations: diagnosisData.observations || '',
-      status: diagnosisData.status,
+      diagnosis_date: formText(diagnosisData, 'diagnosis_date') ?? '',
+      diagnosis_type: formText(diagnosisData, 'diagnosis_type') ?? '',
+      description: formText(diagnosisData, 'description') ?? '',
+      observations: formText(diagnosisData, 'observations') || '',
+      status: formChoice(diagnosisData, 'status', ['active', 'resolved'] as const),
     };
 
-    this.diagnosesService.create(formattedData).subscribe({
+    this.diagnosesService.create(formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.showSuccessNotification('Diagnóstico creado correctamente');
         this.showForm.set(false);

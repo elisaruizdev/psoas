@@ -94,4 +94,36 @@
         background-color: white;
         height: fit-content;
     }
+
+    @media (max-width: 900px) {
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 1.5rem;
+
+        &__left {
+            max-width: none;
+            margin-bottom: 0;
+        }
+
+        &__header {
+            margin-bottom: 1.5rem;
+        }
+
+        &__title {
+            font-size: 3rem;
+            margin: 0 0 0.5rem 0;
+        }
+
+        &__subtitle {
+            font-size: 1.125rem;
+        }
+
+        &__features {
+            display: none;
+        }
+
+        &__right {
+            width: 100%;
+        }
+    }
 }

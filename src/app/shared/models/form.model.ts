@@ -22,12 +22,36 @@ export interface CheckboxLink {
   linkUrl: string;
 }
 
+export type FormFieldValue = string | number | boolean | null;
+
+export type FormValue = Record<string, FormFieldValue>;
+
+export function formText(data: FormValue, key: string): string | undefined {
+  const raw = data[key];
+  if (raw === null || raw === undefined) {
+    return undefined;
+  }
+  return String(raw);
+}
+
+export function formChoice<T extends string>(
+  data: FormValue,
+  key: string,
+  allowed: readonly T[],
+): T | undefined {
+  const text = formText(data, key);
+  if (text === undefined) {
+    return undefined;
+  }
+  return allowed.find((item) => item === text);
+}
+
 export interface FormFieldConfig {
   name: string;
   label: string;
   type: FieldType;
   placeholder?: string;
-  value?: any;
+  value?: FormFieldValue;
   required?: boolean;
   validators?: ValidatorFn[];
   options?: SelectOption[]; 

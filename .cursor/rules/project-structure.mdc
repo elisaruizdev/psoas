@@ -1,0 +1,30 @@
+---
+description: Estructura y organización del proyecto Psoas (Angular 20, gestión de clínica de fisioterapia)
+alwaysApply: true
+---
+
+# Psoas — Frontend Angular
+
+App de gestión para clínica de fisioterapia (pacientes, fisios, sesiones/citas, dashboard).
+Backend independiente (Node/Express, otro repo) en `environment.baseUrl` (`http://localhost:3000` en dev).
+
+## Estructura de carpetas
+
+- `src/app/features/<dominio>/` — una carpeta por dominio de negocio (`auth`, `private-area/patients`, `private-area/sessions`, `private-area/physios`, `private-area/dashboard`).
+- Dentro de cada dominio: `models/`, `services/`, subcarpetas por vista (`detail-patient/`, `new-patient/`, etc.).
+- `src/app/shared/ui/` — componentes reutilizables sin lógica de negocio (`button`, `table`, `modal`, `form`, `card-info`).
+- `src/app/shared/models/` — tipos compartidos entre dominios (p. ej. `table.model.ts`, `modal.model.ts`).
+- Antes de crear un componente/servicio nuevo, comprobar si ya existe algo reutilizable en `shared/ui`.
+
+## Convenciones de nombres
+
+- Sin sufijos `.component`/`.service` en nombres de clase ni en el selector del archivo: `patients.ts` exporta `Patients`, `patients.service.ts` exporta `PatientsService`.
+- Selectores custom con prefijo `app-` para páginas/features; los `shared/ui` pueden usar su propio prefijo (p. ej. `button-ui`).
+- Cada componente trae su trío `.ts` + `.html` + `.scss` (estilos SCSS, nunca inline salvo casos triviales).
+
+## Al añadir una función nueva
+
+1. Modelo TypeScript en `models/` (nunca `any` para datos de dominio).
+2. Servicio en `services/` que solo hace llamadas HTTP y devuelve `Observable<Modelo>`.
+3. Componente standalone que consume el servicio y expone estado con `signal`/`computed`.
+4. Ruta añadida vía `loadComponent`/`loadChildren` (lazy) en el `*.routes.ts` correspondiente.

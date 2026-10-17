@@ -1,4 +1,5 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, Inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { Validators } from '@angular/forms';
@@ -6,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { PhysiosService } from '../services/physios.service';
 import { Form } from '../../../../shared/ui/form/form';
-import { FormConfig } from '../../../../shared/models/form.model';
+import { FormConfig, FormValue, formText } from '../../../../shared/models/form.model';
 import { Physio } from '../models/physios.model';
 
 @Component({
@@ -23,7 +24,8 @@ export class DetailPhysio implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Physio,
     private dialogRef: MatDialogRef<DetailPhysio>,
-    private physiosService: PhysiosService
+    private physiosService: PhysiosService,
+    private destroyRef: DestroyRef,
   ) {
     this.physio = data;
   }
@@ -159,10 +161,10 @@ export class DetailPhysio implements OnInit {
     };
   }
 
-  onSubmitPhysio(physioData: any): void {
+  onSubmitPhysio(physioData: FormValue): void {
     const formattedData = this.formatPhysioData(physioData);
 
-    this.physiosService.updatePhysio(this.physio.id_physio, formattedData).subscribe({
+    this.physiosService.updatePhysio(this.physio.id_physio, formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.showSuccessNotification('Cambios guardados correctamente');
         this.dialogRef.close({ action: 'save' });
@@ -176,7 +178,7 @@ export class DetailPhysio implements OnInit {
 
   onDelete(): void {
     if (confirm('¿Estás seguro de que deseas eliminar este fisioterapeuta?')) {
-      this.physiosService.deletePhysio(this.physio.id_physio).subscribe({
+      this.physiosService.deletePhysio(this.physio.id_physio).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.showSuccessNotification('Fisioterapeuta eliminado correctamente');
           this.dialogRef.close({ action: 'delete' });
@@ -193,19 +195,21 @@ export class DetailPhysio implements OnInit {
     this.dialogRef.close();
   }
 
-  private formatPhysioData(data: any) {
+  private formatPhysioData(data: FormValue) {
+    const city = formText(data, 'city');
+    const country = formText(data, 'country');
     return {
-      identifier: data.identifier?.toUpperCase().trim() || undefined,
-      birthdate: data.birthdate || undefined,
-      gender: data.gender || undefined,
-      phone: data.phone?.replace(/\s/g, ''),
-      license_number: data.license_number?.trim() || undefined,
-      specialty: data.specialty?.trim() || undefined,
-      schedule: data.schedule?.trim() || undefined,
-      address: data.address?.trim() || undefined,
-      city: data.city ? this.capitalizeText(data.city) : undefined,
-      zip: data.zip?.trim() || undefined,
-      country: data.country ? this.capitalizeText(data.country) : undefined,
+      identifier: formText(data, 'identifier')?.toUpperCase().trim() || undefined,
+      birthdate: formText(data, 'birthdate') || undefined,
+      gender: formText(data, 'gender') || undefined,
+      phone: formText(data, 'phone')?.replace(/\s/g, ''),
+      license_number: formText(data, 'license_number')?.trim() || undefined,
+      specialty: formText(data, 'specialty')?.trim() || undefined,
+      schedule: formText(data, 'schedule')?.trim() || undefined,
+      address: formText(data, 'address')?.trim() || undefined,
+      city: city ? this.capitalizeText(city) : undefined,
+      zip: formText(data, 'zip')?.trim() || undefined,
+      country: country ? this.capitalizeText(country) : undefined,
     };
   }
 

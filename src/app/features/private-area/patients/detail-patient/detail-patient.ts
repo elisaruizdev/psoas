@@ -1,4 +1,5 @@
-import { Component, Inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, Inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { Validators } from '@angular/forms';
@@ -7,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { PatientsService } from '../services/patients.service';
 import { Patient } from '../models/patients.model';
 import { Form } from '../../../../shared/ui/form/form';
-import { FormConfig } from '../../../../shared/models/form.model';
+import { FormConfig, FormValue, formText } from '../../../../shared/models/form.model';
 import { MenuDetailPatientComponent } from './menu-detail-patient/menu-detail-patient';
 import { ClinicalHistory } from './clinical-history/clinical-history';
 import { Treatments } from './treatments/treatments';
@@ -35,11 +36,13 @@ export class DetailPatient implements OnInit {
   patientFormConfig = signal<FormConfig | null>(null);
   activeTab: 'clinical' | 'treatments' | 'sessions' = 'clinical';
   loading = signal<boolean>(true);
+  loadError = signal('');
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: string },
     private dialogRef: MatDialogRef<DetailPatient>,
-    private patientsService: PatientsService
+    private patientsService: PatientsService,
+    private destroyRef: DestroyRef,
   ) {}
 
   ngOnInit(): void {
@@ -48,7 +51,7 @@ export class DetailPatient implements OnInit {
 
   private loadPatientData(): void {
     this.loading.set(true);
-    this.patientsService.getPatientById(this.data.id).subscribe({
+    this.patientsService.getPatientById(this.data.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (patient) => {
         this.patient.set(patient);
         this.initializeFormConfig();
@@ -57,7 +60,7 @@ export class DetailPatient implements OnInit {
       error: (error) => {
         console.error('Error al cargar paciente:', error);
         this.loading.set(false);
-        this.showErrorNotification('Error al cargar los datos del paciente');
+        this.loadError.set('No se ha podido abrir la ficha del paciente.');
       },
     });
   }
@@ -82,7 +85,7 @@ export class DetailPatient implements OnInit {
             },
             {
               name: 'email',
-              label: 'Email',
+              label: 'Correo',
               type: 'email',
               placeholder: 'paciente@email.com',
               required: true,
@@ -148,13 +151,13 @@ export class DetailPatient implements OnInit {
     });
   }
 
-  onSubmitPatient(patientData: any): void {
+  onSubmitPatient(patientData: FormValue): void {
     const patient = this.patient();
     if (!patient) return;
 
     const formattedData = this.formatPatientData(patientData);
 
-    this.patientsService.updatePatient(patient.id, formattedData).subscribe({
+    this.patientsService.updatePatient(patient.id, formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.showSuccessNotification('Paciente actualizado correctamente');
         this.dialogRef.close({ action: 'updated' });
@@ -171,7 +174,7 @@ export class DetailPatient implements OnInit {
     if (!patient) return;
 
     if (confirm('¿Estás seguro de que deseas eliminar este paciente?')) {
-      this.patientsService.deletePatient(patient.id).subscribe({
+      this.patientsService.deletePatient(patient.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.showSuccessNotification('Paciente eliminado correctamente');   
           this.dialogRef.close({ action: 'delete', id: patient.id });
@@ -192,15 +195,16 @@ export class DetailPatient implements OnInit {
     this.activeTab = tab;
   }
 
-  private formatPatientData(data: any) {
+  private formatPatientData(data: FormValue) {
+    const city = formText(data, 'city');
     return {
-      phone: data.phone?.replace(/\s/g, ''),
-      email: data.email?.toLowerCase().trim(),
-      address: data.address?.trim() || undefined,
-      city: data.city ? this.capitalizeText(data.city) : undefined,
-      zip: data.zip?.trim() || undefined,
-      emergency_contact: data.emergency_contact?.trim() || undefined,
-      health_insurance: data.health_insurance?.trim() || undefined,
+      phone: formText(data, 'phone')?.replace(/\s/g, ''),
+      email: formText(data, 'email')?.toLowerCase().trim(),
+      address: formText(data, 'address')?.trim() || undefined,
+      city: city ? this.capitalizeText(city) : undefined,
+      zip: formText(data, 'zip')?.trim() || undefined,
+      emergency_contact: formText(data, 'emergency_contact')?.trim() || undefined,
+      health_insurance: formText(data, 'health_insurance')?.trim() || undefined,
     };
   }
 

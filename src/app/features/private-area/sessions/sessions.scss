@@ -5,6 +5,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
     margin-bottom: 1.5rem;
   }
 
@@ -16,5 +18,15 @@
 
   &__table {
     margin-top: 1rem;
+  }
+
+  &__error {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border: 1px solid #fecaca;
+    border-radius: 0.5rem;
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 0.875rem;
   }
 }

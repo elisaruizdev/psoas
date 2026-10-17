@@ -2,6 +2,7 @@
     display: flex;
     background: #f9fafb;
     border-bottom: 2px solid #e5e7eb;
+    overflow-x: auto;
 
     &__item {
         display: flex;
@@ -15,6 +16,7 @@
         font-weight: 500;
         font-size: 0.875rem;
         margin-bottom: -2px;
+        flex-shrink: 0;
 
         &:hover {
             color: #111827;

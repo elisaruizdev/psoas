@@ -33,7 +33,15 @@
     }
     }
 
+    @if (openError()) {
+    <p class="physios__error" role="alert">{{ openError() }}</p>
+    }
+
+    @if (loadError()) {
+    <p class="physios__error" role="alert">{{ loadError() }}</p>
+    } @else {
     <section class="physios__table">
         <f-table [config]="listadoPhysiosConfig()" (rowClick)="onPhysioClick($event)"></f-table>
     </section>
+    }
 </div>

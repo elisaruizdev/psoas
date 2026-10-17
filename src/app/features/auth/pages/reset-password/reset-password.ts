@@ -1,4 +1,5 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -29,7 +30,8 @@ export class ResetPassword implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private destroyRef: DestroyRef,
   ) {
     this.resetPasswordForm = this.fb.group(
       {
@@ -76,9 +78,12 @@ export class ResetPassword implements OnInit {
     this.isLoading.set(true);
     this.errorMessage.set('');
 
-    const { password } = this.resetPasswordForm.value;
+    const password = this.resetPasswordForm.getRawValue().password as string;
 
-    this.authService.resetPassword(this.token, password).subscribe({
+    this.authService
+      .resetPassword({ token: this.token, password })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
       next: () => {
         this.isLoading.set(false);
         this.passwordReset.set(true);

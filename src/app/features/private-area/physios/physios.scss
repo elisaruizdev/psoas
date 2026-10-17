@@ -5,6 +5,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
   }
 
   &__title {
@@ -17,6 +19,8 @@
     display: flex;
     margin-bottom: 1rem;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
 
   &__span {
@@ -40,7 +44,9 @@
     background-color: #e5e5e5;
     padding: 1rem;
     border-radius: 1rem;
-    width: 60%;
+    width: min(100%, 40rem);
+    flex-wrap: wrap;
+    gap: 0.75rem;
 
     &__info {
       display: flex;
@@ -66,5 +72,15 @@
       display: flex;
       gap: 0.5rem;
     }
+  }
+
+  &__error {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border: 1px solid #fecaca;
+    border-radius: 0.5rem;
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 0.875rem;
   }
 }

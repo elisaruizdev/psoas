@@ -1,9 +1,10 @@
-import { Component, signal, computed, OnInit } from '@angular/core';
+import { Component, DestroyRef, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Table } from '../../../shared/ui/table/table';
 import { TableConfig } from '../../../shared/models/table.model';
 import { DashboardService } from './services/dashboard.service';
 import { DashboardStats, TodayAppointment } from './models/dashboard.model';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,6 +17,7 @@ export class Dashboard implements OnInit {
   currentDate: string = '';
   dashboardStats = signal<DashboardStats | null>(null);
   loading = signal<boolean>(true);
+  loadError = signal('');
 
   sesionesHoyConfig = computed<TableConfig>(() => {
     const stats = this.dashboardStats();
@@ -56,7 +58,7 @@ export class Dashboard implements OnInit {
   sesionesCompletadas = computed(() => this.dashboardStats()?.sessionsToday.completed || 0);
   sesionesSemana = computed(() => this.dashboardStats()?.sessionsNextWeek || 0);
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(private dashboardService: DashboardService, private destroyRef: DestroyRef) {}
 
   ngOnInit() {
     this.setCurrentDate();
@@ -78,13 +80,15 @@ export class Dashboard implements OnInit {
 
   private loadDashboardStats() {
     this.loading.set(true);
-    this.dashboardService.getDashboardStats().subscribe({
+    this.loadError.set('');
+    this.dashboardService.getDashboardStats().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (stats) => {
         this.dashboardStats.set(stats);
         this.loading.set(false);
       },
       error: (error) => {
         console.error('Error al cargar estadísticas:', error);
+        this.loadError.set('No se han podido cargar las estadísticas.');
         this.loading.set(false);
       },
     });

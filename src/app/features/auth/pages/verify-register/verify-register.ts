@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -10,29 +11,36 @@ import { AuthService } from '../../services/auth.service';
 })
 export class VerifyRegister {
   constructor(
-    private routes: Router,
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private destroyRef: DestroyRef,
   ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe((params) => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const token = params['token'];
-          if (token) {
-          } this.authService.verifyEmail(token).subscribe({
-            next: () => {
-              this.router.navigate(['/login'], { queryParams: { verified: 'true' } });
-            },
-            error: (err) => {
-              console.error('Verification failed', err);
-              this.router.navigate(['/login'], { queryParams: { verified: 'false' } });
-            },
-          });   
+      if (!token) {
+        this.goToLogin();
+        return;
+      }
+
+      this.authService
+        .verifyEmail(token)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.router.navigate(['/login'], { queryParams: { verified: 'true' } });
+          },
+          error: (err) => {
+            console.error('Verification failed', err);
+            this.router.navigate(['/login'], { queryParams: { verified: 'false' } });
+          },
+        });
     });
   }
 
   goToLogin() {
-    this.routes.navigate(['/login']);
+    this.router.navigate(['/login']);
   }
 }

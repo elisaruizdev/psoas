@@ -9,8 +9,6 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './tab-menu.scss',
 })
 export class TabMenu {
-  ngOnInit(): void {}
-
   tabs: TabItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'icons/home.svg' },
     { label: 'Pacientes', route: '/patients', icon: 'icons/patient.svg' },

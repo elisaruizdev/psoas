@@ -1,9 +1,10 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Modal } from '../../../../shared/ui/modal/modal';
 import { Form } from '../../../../shared/ui/form/form';
-import { FormConfig } from '../../../../shared/models/form.model';
+import { FormConfig, FormValue, formText } from '../../../../shared/models/form.model';
 import { CreatePatient } from '../models/patients.model';
 import { PatientsService } from '../services/patients.service';
 
@@ -19,7 +20,8 @@ export class NewPatient implements OnInit {
 
   constructor(
     private dialogRef: MatDialogRef<NewPatient>,
-    private patientsService: PatientsService
+    private patientsService: PatientsService,
+    private destroyRef: DestroyRef,
   ) {}
 
   ngOnInit(): void {
@@ -105,7 +107,7 @@ export class NewPatient implements OnInit {
             },
             {
               name: 'email',
-              label: 'Email',
+              label: 'Correo',
               type: 'email',
               placeholder: 'paciente@email.com',
               required: true,
@@ -172,10 +174,10 @@ export class NewPatient implements OnInit {
     });
   }
 
-  onSubmitPatient(patientData: any): void {
+  onSubmitPatient(patientData: FormValue): void {
     const formattedData: CreatePatient = this.formatPatientData(patientData);
 
-    this.patientsService.createPatient(formattedData).subscribe({
+    this.patientsService.createPatient(formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.showSuccessNotification('Paciente creado correctamente');
         this.dialogRef.close({ action: 'created' });
@@ -199,23 +201,25 @@ export class NewPatient implements OnInit {
     this.dialogRef.close();
   }
 
-  private formatPatientData(data: CreatePatient) {
+  private formatPatientData(data: FormValue): CreatePatient {
+    const secondSurname = formText(data, 'second_surname');
+    const city = formText(data, 'city');
     return {
-      name: this.capitalizeText(data.name),
-      surname: this.capitalizeText(data.surname),
-      second_surname: data.second_surname ? this.capitalizeText(data.second_surname) : undefined,
-      identifier: data.identifier?.toUpperCase().trim(),
-      birthdate: data.birthdate,
-      gender: data.gender || 'otro',
-      phone: data.phone?.replace(/\s/g, ''),
-      email: data.email?.toLowerCase().trim(),
-      address: data.address?.trim() || undefined,
-      city: data.city ? this.capitalizeText(data.city) : undefined,
-      zip: data.zip?.trim() || undefined,
-      emergency_contact: data.emergency_contact?.trim() || undefined,
-      health_insurance: data.health_insurance?.trim() || undefined,
-      consultation_reason: data.consultation_reason?.trim() || undefined,
-      medical_history: data.medical_history?.trim() || undefined,
+      name: this.capitalizeText(formText(data, 'name') ?? ''),
+      surname: this.capitalizeText(formText(data, 'surname') ?? ''),
+      second_surname: secondSurname ? this.capitalizeText(secondSurname) : undefined,
+      identifier: (formText(data, 'identifier') ?? '').toUpperCase().trim(),
+      birthdate: formText(data, 'birthdate') ?? '',
+      gender: formText(data, 'gender') || 'otro',
+      phone: (formText(data, 'phone') ?? '').replace(/\s/g, ''),
+      email: (formText(data, 'email') ?? '').toLowerCase().trim(),
+      address: formText(data, 'address')?.trim() || undefined,
+      city: city ? this.capitalizeText(city) : undefined,
+      zip: formText(data, 'zip')?.trim() || undefined,
+      emergency_contact: formText(data, 'emergency_contact')?.trim() || undefined,
+      health_insurance: formText(data, 'health_insurance')?.trim() || undefined,
+      consultation_reason: formText(data, 'consultation_reason')?.trim() || undefined,
+      medical_history: formText(data, 'medical_history')?.trim() || undefined,
     };
   }
 

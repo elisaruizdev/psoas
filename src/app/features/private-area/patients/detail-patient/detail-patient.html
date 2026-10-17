@@ -3,6 +3,14 @@
     <div class="detailPatient__loading">
         <p>Cargando datos del paciente...</p>
     </div>
+    } @else if (loadError()) {
+    <div class="detailPatient__header">
+        <h2 class="detailPatient__title">Ficha del paciente</h2>
+        <button mat-icon-button (click)="onClose()" class="detailPatient__close">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+    <p class="detailPatient__error" role="alert">{{ loadError() }}</p>
     } @else if (patient()) {
     <div class="detailPatient__header">
         <div class="detailPatient__header-info">
@@ -26,7 +34,7 @@
                     <span class="data-item__value">{{ patient()!.phone }}</span>
                 </div>
                 <div class="data-item">
-                    <span class="data-item__label">Email</span>
+                    <span class="data-item__label">Correo</span>
                     <span class="data-item__value">{{ patient()!.email }}</span>
                 </div>
                 <div class="data-item">

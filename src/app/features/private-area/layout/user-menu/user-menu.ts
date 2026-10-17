@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterModule } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
+import { MenuUser, UserMenuItem } from '../models/layout.model';
 
 @Component({
   selector: 'app-user-menu',
@@ -13,11 +14,11 @@ import { MatMenuModule } from '@angular/material/menu';
 })
 
 export class UserMenu {
-  @Input() userInfo!: any;
+  @Input() userInfo?: MenuUser;
 
   private router = inject(Router);
 
-  menuItems: any[] = [
+  menuItems: UserMenuItem[] = [
     {
       path: '/profile',
       label: 'Mi Perfil',

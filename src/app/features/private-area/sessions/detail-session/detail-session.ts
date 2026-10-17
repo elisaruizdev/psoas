@@ -1,12 +1,12 @@
-import { Component, Inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, Inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
-import { Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AppointmentsService } from '../services/appointments.service';
 import { Form } from '../../../../shared/ui/form/form';
-import { FormConfig } from '../../../../shared/models/form.model';
+import { FormConfig, FormValue, formText } from '../../../../shared/models/form.model';
 import { Appointment, UpdateAppointment } from '../models/appointment.model';
 
 @Component({
@@ -23,7 +23,8 @@ export class DetailSession implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Appointment,
     private dialogRef: MatDialogRef<DetailSession>,
-    private appointmentsService: AppointmentsService
+    private appointmentsService: AppointmentsService,
+    private destroyRef: DestroyRef,
   ) {
     this.appointment = data;
   }
@@ -107,16 +108,17 @@ export class DetailSession implements OnInit {
     });
   }
 
-  onSubmitAppointment(appointmentData: any): void {
-    const dateTime = `${appointmentData.appointment_date}T${appointmentData.appointment_time}:00`;
+  onSubmitAppointment(appointmentData: FormValue): void {
+    const dateTime = `${formText(appointmentData, 'appointment_date')}T${formText(appointmentData, 'appointment_time')}:00`;
+    const duration = formText(appointmentData, 'duration');
 
     const formattedData: UpdateAppointment = {
       appointment_date: new Date(dateTime).toISOString(),
-      duration: parseInt(appointmentData.duration),
-      notes: appointmentData.notes?.trim() || undefined,
+      duration: duration === undefined ? undefined : Number.parseInt(duration, 10),
+      notes: formText(appointmentData, 'notes')?.trim() || undefined,
     };
 
-    this.appointmentsService.updateAppointment(this.appointment.id, formattedData).subscribe({
+    this.appointmentsService.updateAppointment(this.appointment.id, formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.showSuccessNotification('Cita actualizada correctamente');
         this.dialogRef.close({ action: 'updated' });
@@ -134,7 +136,7 @@ export class DetailSession implements OnInit {
 
   onCancel(): void {
     if (confirm('¿Estás seguro de que deseas cancelar esta cita?')) {
-      this.appointmentsService.cancelAppointment(this.appointment.id).subscribe({
+      this.appointmentsService.cancelAppointment(this.appointment.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.showSuccessNotification('Cita cancelada correctamente');
           this.dialogRef.close({ action: 'cancelled' });
@@ -149,7 +151,7 @@ export class DetailSession implements OnInit {
 
   onDelete(): void {
     if (confirm('¿Estás seguro de que deseas eliminar esta cita?')) {
-      this.appointmentsService.deleteAppointment(this.appointment.id).subscribe({
+      this.appointmentsService.deleteAppointment(this.appointment.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.showSuccessNotification('Cita eliminada correctamente');
           this.dialogRef.close({ action: 'deleted' });

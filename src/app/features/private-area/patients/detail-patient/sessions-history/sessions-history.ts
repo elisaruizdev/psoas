@@ -1,4 +1,5 @@
-import { Component, Input, OnInit, signal, computed, effect } from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, signal, computed } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,11 +10,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { SessionsService } from '../../services/sessions.service';
 import { TreatmentsService } from '../../services/treatments.service';
 import { Form } from '../../../../../shared/ui/form/form';
-import { FormConfig } from '../../../../../shared/models/form.model';
+import { FormConfig, FormValue, formText } from '../../../../../shared/models/form.model';
 import { ButtonUI } from '../../../../../shared/ui/button/button';
 import { forkJoin } from 'rxjs';
 import { Session, Treatment, TreatmentWithSessions } from '../../models/patients.model';
 import { PhysiosService } from '../../../physios/services/physios.service';
+import { Physio } from '../../../physios/models/physios.model';
 
 
 @Component({
@@ -38,7 +40,7 @@ export class SessionsHistory implements OnInit {
 
   treatmentsWithSessions = signal<TreatmentWithSessions[]>([]);
   allTreatments = signal<Treatment[]>([]);
-  allPhysios = signal<any[]>([]);
+  allPhysios = signal<Physio[]>([]);
   loading = signal<boolean>(false);
   showForm = signal<boolean>(false);
   selectedSession = signal<Session | undefined>(undefined);
@@ -147,7 +149,8 @@ export class SessionsHistory implements OnInit {
   constructor(
     private sessionsService: SessionsService,
     private treatmentsService: TreatmentsService,
-    private physiosService: PhysiosService
+    private physiosService: PhysiosService,
+    private destroyRef: DestroyRef,
   ) {}
 
   ngOnInit(): void {
@@ -161,7 +164,7 @@ export class SessionsHistory implements OnInit {
       treatments: this.treatmentsService.getAllByPatient(this.patientId),
       sessions: this.sessionsService.getAllByPatient(this.patientId),
       physios: this.physiosService.getAllPhysios(),
-    }).subscribe({
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: ({ treatments, sessions, physios }) => {
 
         this.allTreatments.set(treatments);
@@ -192,7 +195,7 @@ export class SessionsHistory implements OnInit {
         this.treatmentsWithSessions.set(grouped);
         this.loading.set(false);
       },
-      error: (error) => {
+      error: () => {
         this.loading.set(false);
       },
     });
@@ -226,13 +229,13 @@ export class SessionsHistory implements OnInit {
           ? this.formatDateForApi(session.next_appointment)
           : undefined,
       })
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.editingId.set(null);
           this.loadAllData();
           this.showSuccessNotification('Sesión actualizada correctamente');
         },
-        error: (error) => {
+        error: () => {
           this.showErrorNotification('Error al actualizar la sesión');
         },
       });
@@ -240,38 +243,38 @@ export class SessionsHistory implements OnInit {
 
   onDelete(session: Session): void {
     if (confirm('¿Estás seguro de que deseas eliminar esta sesión?')) {
-      this.sessionsService.delete(session.id).subscribe({
+      this.sessionsService.delete(session.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.loadAllData();
           this.showSuccessNotification('Sesión eliminada correctamente');
         },
-        error: (error) => {
+        error: () => {
           this.showErrorNotification('Error al eliminar la sesión');
         },
       });
     }
   }
 
-  onSubmitSession(sessionData: any): void {
+  onSubmitSession(sessionData: FormValue): void {
     const formattedData = {
       patient_id: this.patientId,
-      treatment_id: sessionData.treatment_id || undefined,
-      physio_id: sessionData.physio_id,
-      session_date: sessionData.session_date,
-      duration: Number(sessionData.duration),
-      techniques_applied: sessionData.techniques_applied,
-      patient_evolution: sessionData.patient_evolution,
-      observations: sessionData.observations || undefined,
-      next_appointment: sessionData.next_appointment || undefined,
+      treatment_id: formText(sessionData, 'treatment_id') || undefined,
+      physio_id: Number(sessionData['physio_id']),
+      session_date: formText(sessionData, 'session_date') ?? '',
+      duration: Number(sessionData['duration']),
+      techniques_applied: formText(sessionData, 'techniques_applied') ?? '',
+      patient_evolution: formText(sessionData, 'patient_evolution') ?? '',
+      observations: formText(sessionData, 'observations') || undefined,
+      next_appointment: formText(sessionData, 'next_appointment') || undefined,
     };
 
-    this.sessionsService.create(formattedData).subscribe({
+    this.sessionsService.create(formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.showSuccessNotification('Sesión creada correctamente');
         this.showForm.set(false);
         this.loadAllData();
       },
-      error: (error) => {
+      error: () => {
         this.showErrorNotification('Error al crear la sesión');
       },
     });

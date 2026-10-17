@@ -2,6 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { LoginRequest, LoginResponse } from '../models/login.model';
+import {
+  EmailTokenResponse,
+  ForgotPasswordRequest,
+  RegisterForm,
+  RegisterResponse,
+  ResetPasswordRequest,
+} from '../models/register.model';
 
 @Injectable({
   providedIn: 'root',
@@ -11,23 +19,23 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  verifyEmail(token: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/verify-email?token=${token}`);
+  verifyEmail(token: string): Observable<EmailTokenResponse> {
+    return this.http.get<EmailTokenResponse>(`${this.apiUrl}/verify-email?token=${token}`);
   }
 
-  registerForm(form: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, form);
+  registerForm(form: RegisterForm): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, form);
   }
 
-  login(email: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { email, password });
+  login(credentials: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials);
   }
 
-  forgotPassword(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/forgot-password`, { email });
+  forgotPassword(request: ForgotPasswordRequest): Observable<EmailTokenResponse> {
+    return this.http.post<EmailTokenResponse>(`${this.apiUrl}/forgot-password`, request);
   }
 
-  resetPassword(token: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/reset-password`, { token, password });
+  resetPassword(request: ResetPasswordRequest): Observable<EmailTokenResponse> {
+    return this.http.post<EmailTokenResponse>(`${this.apiUrl}/reset-password`, request);
   }
 }

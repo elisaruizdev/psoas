@@ -1,9 +1,3 @@
-interface TabItem {
-  label: string;
-  id: 'clinical' | 'treatments' | 'sessions';
-  icon: string;
-}
-
 export interface Patient {
   id: string;
   name: string;
@@ -131,8 +125,11 @@ export interface Session {
   next_appointment?: Date | string;
   createdAt: Date | string;
   updatedAt: Date | string;
-  physio?: any; 
-  treatment?: any; 
+  physio?: {
+    name: string;
+    surname: string;
+  };
+  treatment?: Treatment; 
 }
 
 export interface CreateSession {

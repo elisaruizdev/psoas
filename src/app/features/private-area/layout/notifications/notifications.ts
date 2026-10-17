@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDividerModule } from '@angular/material/divider';
+import { ClinicNotification } from '../models/layout.model';
 @Component({
   selector: 'app-notifications',
   imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule, MatBadgeModule,MatDividerModule],
@@ -13,21 +14,21 @@ import { MatDividerModule } from '@angular/material/divider';
 })
 export class Notifications {
 
-  @Input() notifications: any[] = [];
+  @Input() notifications: ClinicNotification[] = [];
 
   get notificationCount(): number {
     return this.notifications.length;
   }
 
-  trackByNotification(index: number, notification: any): string {
+  trackByNotification(index: number, notification: ClinicNotification): string {
     return notification.index || `${notification.icon}-${notification.message}-${index}`;
   }
 
-  onNotificationClick(notification: Notification): void {
+  onNotificationClick(_notification: ClinicNotification): void {
     // TODO: Implementar navegación o acción según el tipo de notificación
   }
 
-  onDismissNotification(event: Event, notification: Notification): void {
+  onDismissNotification(event: Event, _notification: ClinicNotification): void {
     event.stopPropagation(); // Evitar que se ejecute onNotificationClick
     // TODO: Implementar dismiss de notificación
     // this.notificationService.dismiss(notification.id);

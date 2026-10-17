@@ -10,3 +10,9 @@
       padding: 2rem;
       overflow-y: auto;
   }
+
+  @media (max-width: 768px) {
+      .private-layout__content {
+          padding: 1rem;
+      }
+  }

@@ -3,12 +3,20 @@
         <div>
             <p class="sessions__subtitle">Administra las citas y sesiones de tus pacientes</p>
         </div>
-        <button-ui [title]="'Nueva sesión'" [icon]="'icons/add.svg'" (click)="abrirNuevaCita()">
+        <button-ui [title]="'Nueva sesión'" [icon]="'icons/add.svg'" (click)="openNewAppointment()">
         </button-ui>
     </div>
 
+    @if (openError()) {
+    <p class="sessions__error" role="alert">{{ openError() }}</p>
+    }
+
+    @if (loadError()) {
+    <p class="sessions__error" role="alert">{{ loadError() }}</p>
+    } @else {
     <section class="sessions__table">
         <f-table [config]="listadoAppointmentsConfig()" (rowClick)="onAppointmentClick($event)">
         </f-table>
     </section>
+    }
 </div>

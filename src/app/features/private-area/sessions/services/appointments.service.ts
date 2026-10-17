@@ -33,7 +33,7 @@ export class AppointmentsService {
     return this.http.patch<Appointment>(`${this.apiUrl}/${id}/cancel`, {});
   }
 
-  deleteAppointment(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  deleteAppointment(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

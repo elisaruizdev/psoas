@@ -3,6 +3,8 @@ import { Component, input, Input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
+import { SessionService } from '../../../auth/services/session.service';
+import { ClinicNotification, MenuUser } from '../models/layout.model';
 
 
 @Component({
@@ -14,29 +16,29 @@ import { Router } from '@angular/router';
 export class Header {
   @Input() isMobile: boolean | null = false;
   @Input() currentPageTitle: string = '';
-  notifications = input<any[]>();
+  notifications = input<ClinicNotification[]>([]);
 
-  userInfo = input<any>();
+  userInfo = input<MenuUser | null>(null);
   toggleSidenav = output<void>();
 
   userName!: string;
   userRole!: string;
   initials!: string;
 
-  constructor(private routes: Router) {}
+  constructor(private routes: Router, private session: SessionService) {}
 
   onToggleSidenav(): void {
     this.toggleSidenav.emit();
   }
 
   ngOnInit(): void {
-    this.userName = sessionStorage.getItem('name') || 'Usuario';
+    this.userName = this.session.name() || 'Usuario';
     this.initials = this.userName
       .split(' ')
       .map((n) => n.slice(0, 2))
       .join('')
       .toUpperCase();
-    this.userRole = sessionStorage.getItem('id_physio') ? 'Fisioterapeuta' : 'Desconocido';
+    this.userRole = this.session.idPhysio() ? 'Fisioterapeuta' : 'Desconocido';
   }
 
   logout() {
@@ -45,7 +47,7 @@ export class Header {
   }
 
   clearSessionStorage(): void {
-    sessionStorage.clear();
+    this.session.clear();
   }
 
   goToLogin(): void {
