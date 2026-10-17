@@ -7,7 +7,8 @@
             <span class="header-private__user-name">{{userName}}</span>
             <span class="header-private__user-role">{{userRole}}</span>
         </div>
-        <img class="header-private__logout" src="icons/logout.svg" alt="Cerrar sesión" (click)="logout()"/>
+        <button type="button" class="header-private__logout" aria-label="Cerrar sesión" (click)="logout()">
+            <ui-icon name="logout" [size]="24" />
+        </button>
     </div>
-     
 </header>
