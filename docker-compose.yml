@@ -1,0 +1,58 @@
+# Levanta Psoas completo: base de datos + API + web
+#   docker compose up -d --build
+#   Web: http://localhost:8080  ·  Usuario demo: demo@psoas.dev / Demo1234!
+#   Si los puertos están ocupados: WEB_PORT=8081 API_PORT=3001 docker compose up -d --build
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: psoas
+      POSTGRES_USER: psoas
+      POSTGRES_PASSWORD: psoas
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U psoas -d psoas"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    # Por defecto se descarga de GitHub. Para usar una copia local:
+    #   BACKEND_PATH=../ruta/a/psoas_api docker compose up -d --build
+    build: ${BACKEND_PATH:-https://github.com/elisaruizdev/psoas-backend.git#main}
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: psoas
+      DB_PASSWORD: psoas
+      DB_DATABASE: psoas
+      JWT_SECRET: solo-para-la-demo-local
+      JWT_EXPIRATION: 1d
+      FRONTEND_URL: http://localhost:${WEB_PORT:-8080}
+      CORS_ORIGINS: http://localhost:${WEB_PORT:-8080}
+      DEMO_SEED: "true"
+      TZ: Europe/Madrid
+    ports:
+      - "${API_PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      args:
+        # La usa el navegador, por eso es localhost y no "api"
+        API_URL: http://localhost:${API_PORT:-3000}
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  db-data:
