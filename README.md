@@ -38,7 +38,7 @@ This repository holds the frontend, built with Angular 20. It talks to a separat
 - Angular 20 with standalone components, lazy-loaded routes and zoneless change detection
 - Signals for screen state
 - Angular Material and CDK
-- Angular SSR, with routes prerendered at build time
+- Docker: multi-stage build served by nginx, plus a Compose file for the full stack
 - Karma + Jasmine for unit tests, Playwright for end-to-end tests
 - ESLint (`angular-eslint`, `typescript-eslint`) and Prettier
 
@@ -66,6 +66,34 @@ Each feature keeps its own `models/` and `services/` folders. Services wrap the 
 1. `POST /auth/login` returns an access token. `SessionService` stores the token, the physiotherapist's id and their name in `sessionStorage`.
 2. `authInterceptor` adds `Authorization: Bearer <token>` to every request except the `/auth/` ones. On a `401` it clears the session and sends the user back to `/login`.
 3. `authGuard` protects the private area. `publicGuard` sends users who are already logged in from the access screens to `/dashboard`.
+
+## Run the whole app with Docker
+
+The quickest way to try Psoas. `docker-compose.yml` starts the full stack: PostgreSQL, the [backend API](https://github.com/elisaruizdev/psoas-backend) (pulled straight from GitHub) and this frontend served by nginx. The only requirement is [Docker](https://www.docker.com/products/docker-desktop/).
+
+```bash
+git clone https://github.com/elisaruizdev/psoas.git
+cd psoas
+docker compose up -d --build
+```
+
+Open `http://localhost:8080` and log in with the demo account:
+
+| Email            | Password    |
+| ---------------- | ----------- |
+| `demo@psoas.dev` | `Demo1234!` |
+
+On first start the API fills the database with sample patients, treatments, sessions and appointments for today and the coming days, so the dashboard has data from the start. There is also a pending sign-up request to approve.
+
+| Service | What it runs                                 | Port   |
+| ------- | -------------------------------------------- | ------ |
+| `web`   | Angular build served by nginx (multi-stage)  | `8080` |
+| `api`   | NestJS API                                   | `3000` |
+| `db`    | PostgreSQL 16, data kept in a Docker volume  | —      |
+
+If those ports are taken, pick others: `WEB_PORT=8081 API_PORT=3001 docker compose up -d --build`.
+
+Stop it with `docker compose down`, or `docker compose down -v` to also wipe the database.
 
 ## Getting started
 
@@ -109,3 +137,10 @@ Before the first end-to-end run, install the Playwright browser with `npx playwr
 ## Deployment
 
 The frontend is set up for Vercel. `vercel.json` sends every route to `index.html`, so deep links such as `/patients` work when the page is reloaded.
+
+It can also run on any server as a Docker image. The `Dockerfile` builds the app with Node and copies only the static files into an nginx image. `nginx.conf` does the same SPA fallback as `vercel.json` and caches the hashed JS and CSS files. The API URL is baked in at build time:
+
+```bash
+docker build --build-arg API_URL=https://my-api.example.com -t psoas-front .
+docker run -p 8080:80 psoas-front
+```
