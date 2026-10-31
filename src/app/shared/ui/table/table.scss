@@ -49,6 +49,14 @@
     &:hover {
       background-color: var(--bg-muted);
     }
+
+    // Solo con teclado: el anillo no aparece al hacer clic con el ratón.
+    // El cambio de fondo solo no basta (WCAG 2.4.7): contorno sólido de marca.
+    &:focus-visible {
+      outline: 2px solid var(--border-strong);
+      outline-offset: -2px;
+      background-color: var(--bg-muted);
+    }
   }
 
   .mat-row.mat-no-data-row td {
