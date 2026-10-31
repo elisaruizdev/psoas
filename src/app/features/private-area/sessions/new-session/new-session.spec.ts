@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideTestHttp, provideTestRouter, provideTestDialog } from '../../../../../testing/providers';
 
 import { NewSession } from './new-session';
 
@@ -8,7 +9,8 @@ describe('NewSession', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NewSession]
+      imports: [NewSession],
+      providers: [...provideTestDialog().providers, ...provideTestHttp(), ...provideTestRouter()],
     })
     .compileComponents();
 

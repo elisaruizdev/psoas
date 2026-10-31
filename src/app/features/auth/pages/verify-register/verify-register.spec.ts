@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideTestHttp, provideTestRouter } from '../../../../../testing/providers';
 
 import { VerifyRegister } from './verify-register';
 
@@ -8,7 +9,8 @@ describe('VerifyRegister', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [VerifyRegister]
+      imports: [VerifyRegister],
+      providers: [...provideTestHttp(), ...provideTestRouter()],
     })
     .compileComponents();
 

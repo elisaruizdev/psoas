@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideTestHttp, provideTestRouter, provideTestDialog } from '../../../../../testing/providers';
+import { anAppointment } from '../../../../../testing/fixtures';
 
 import { DetailSession } from './detail-session';
 
@@ -8,7 +10,8 @@ describe('DetailSession', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DetailSession]
+      imports: [DetailSession],
+      providers: [...provideTestDialog(anAppointment()).providers, ...provideTestHttp(), ...provideTestRouter()],
     })
     .compileComponents();
 

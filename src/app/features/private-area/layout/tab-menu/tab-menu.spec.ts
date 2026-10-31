@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideTestHttp, provideTestRouter } from '../../../../../testing/providers';
 
 import { TabMenu } from './tab-menu';
 
@@ -8,7 +9,8 @@ describe('TabMenu', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TabMenu]
+      imports: [TabMenu],
+      providers: [...provideTestHttp(), ...provideTestRouter()],
     })
     .compileComponents();
 
