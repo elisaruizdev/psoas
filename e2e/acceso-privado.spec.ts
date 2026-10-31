@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('sin token, /patients redirige a /login', async ({ page }) => {
+test('sin token, /patients redirige a /login', { tag: '@smoke' }, async ({ page }) => {
   await page.addInitScript(() => sessionStorage.clear());
 
   await page.goto('/patients', { waitUntil: 'domcontentloaded' });
@@ -12,7 +12,7 @@ test('sin token, /patients redirige a /login', async ({ page }) => {
   expect(token).toBeNull();
 });
 
-test('con token, /patients sigue en el área privada', async ({ page }) => {
+test('con token, /patients sigue en el área privada', { tag: '@smoke' }, async ({ page }) => {
   await page.addInitScript(() => {
     sessionStorage.setItem('token', 'token-de-prueba');
     sessionStorage.setItem('id_physio', '7');
@@ -37,7 +37,7 @@ test('con token, /patients sigue en el área privada', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('si el API responde 401, cierra la sesión y vuelve a /login', async ({ page }) => {
+test('si el API responde 401, cierra la sesión y vuelve a /login', { tag: '@smoke' }, async ({ page }) => {
   await page.addInitScript(() => {
     sessionStorage.setItem('token', 'token-caducado');
     sessionStorage.setItem('id_physio', '7');

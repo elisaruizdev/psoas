@@ -1,5 +1,7 @@
 # Psoas
 
+[![CI](https://github.com/elisaruizdev/psoas/actions/workflows/ci.yml/badge.svg)](https://github.com/elisaruizdev/psoas/actions/workflows/ci.yml)
+
 Psoas is a web app for running a physiotherapy clinic. Physiotherapists use it to keep patient records, follow each patient's clinical history and treatments, log therapy sessions and schedule appointments, all from one private area.
 
 This repository holds the frontend, built with Angular 20. It talks to a separate REST API ([psoas-backend](https://psoas-backend.onrender.com) in production). The interface is in Spanish.
@@ -39,7 +41,10 @@ This repository holds the frontend, built with Angular 20. It talks to a separat
 - Signals for screen state
 - Angular Material and CDK
 - Docker: multi-stage build served by nginx, plus a Compose file for the full stack
-- Karma + Jasmine for unit tests, Playwright for end-to-end tests
+- Karma + Jasmine for unit and component tests (HttpTestingController, Angular Material harnesses, coverage threshold)
+- Playwright for end-to-end, visual, accessibility (axe-core), mobile and cross-browser tests
+- Pact for consumer-driven contract tests against the API
+- GitHub Actions CI: lint, unit tests, build, sharded E2E, visual tests in the Playwright image, Docker image checks
 - ESLint (`angular-eslint`, `typescript-eslint`) and Prettier
 
 ## Project structure
@@ -127,18 +132,44 @@ The API URL is set in `src/environments/`:
 | `npm start`               | Starts the dev server on port 4200                    |
 | `npm run build`           | Builds for production into `dist/psoas/`              |
 | `npm run watch`           | Rebuilds in development mode on every change          |
-| `npm test`                | Runs the unit tests with Karma                        |
-| `npm run e2e`             | Runs the Playwright tests in `e2e/` (starts the dev server if it isn't running) |
+| `npm test`                | Runs the unit tests with Karma (watch mode)           |
+| `npm run test:ci`         | Unit tests once, headless, with coverage and its minimum threshold |
+| `npm run e2e`             | Runs every Playwright project (starts the dev server if it isn't running) |
+| `npm run e2e:smoke`       | Only `@smoke` tests                                   |
+| `npm run e2e:a11y`        | Accessibility audit with axe-core (WCAG 2.1 AA)       |
+| `npm run e2e:visual`      | Visual regression tests (`toHaveScreenshot`)          |
+| `npm run e2e:visual:update` | Accepts intended visual changes as the new baseline |
+| `npm run e2e:mobile`      | Pixel 7 and iPhone 14 emulation                       |
+| `npm run e2e:contrato`    | Pact contract tests; writes `pacts/psoas-web-psoas-api.json` |
+| `npm run e2e:docker`      | Tests the Docker image (needs `WEB_URL`, e.g. `http://localhost:8080`) |
+| `npm run e2e:ui`          | Playwright UI mode                                    |
+| `npm run e2e:debug`       | Runs with the Playwright inspector                    |
+| `npm run e2e:report`      | Opens the last HTML report                            |
+| `npm run e2e:codegen`     | Records a test by clicking through the app            |
 | `npm run lint`            | Runs ESLint                                           |
 | `npm run serve:ssr:psoas` | Serves the SSR build with Node                        |
 
-Before the first end-to-end run, install the Playwright browser with `npx playwright install chromium`.
+Before the first end-to-end run, install the Playwright browsers with `npx playwright install`.
+
+## Testing
+
+| Layer | Tool | Where |
+| ----- | ---- | ----- |
+| Unit and component | Karma + Jasmine, `HttpTestingController`, Material harnesses | `src/**/*.spec.ts`, helpers in `src/testing/` |
+| End-to-end | Playwright with fixtures and page objects | `e2e/*.spec.ts`, `e2e/fixtures.ts`, `e2e/pages/` |
+| Accessibility | `@axe-core/playwright`, keyboard-only flows, ARIA snapshots | `e2e/accesibilidad.spec.ts` |
+| Visual | `toHaveScreenshot`, baselines per OS in `e2e/__screenshots__/` | `e2e/visual.spec.ts` |
+| Cross-browser and mobile | Chromium, Firefox, WebKit, Pixel 7, iPhone 14 | projects in `playwright.config.ts` |
+| Contract | Pact (consumer side) | `e2e/contrato/` |
+| Container | Playwright `request` + browser against nginx | `e2e/docker/` |
+
+The E2E tests never hit a real backend: `e2e/support/api-mock.ts` intercepts every call to `localhost:3000` and freezes the browser clock, so results and screenshots are the same on every run. A study guide with every concept, in Spanish, is in `docs/guia-testing.md`.
 
 ## Deployment
 
 The frontend is set up for Vercel. `vercel.json` sends every route to `index.html`, so deep links such as `/patients` work when the page is reloaded.
 
-It can also run on any server as a Docker image. The `Dockerfile` builds the app with Node and copies only the static files into an nginx image. `nginx.conf` does the same SPA fallback as `vercel.json` and caches the hashed JS and CSS files. The API URL is baked in at build time:
+It can also run on any server as a Docker image. The `Dockerfile` builds the app with Node and copies only the static files into an nginx image. `docker/nginx/` does the same SPA fallback as `vercel.json`, caches the hashed JS and CSS files and sends security headers (Content-Security-Policy, `nosniff`, `X-Frame-Options`, Referrer-Policy, Permissions-Policy, HSTS) with `server_tokens off`. The API URL is baked into the bundle at build time; the CSP `connect-src` reads it from `API_ORIGIN` when the container starts:
 
 ```bash
 docker build --build-arg API_URL=https://my-api.example.com -t psoas-front .

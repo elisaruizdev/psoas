@@ -171,7 +171,8 @@
 
   &__divider-text {
     @include type(body-xs);
-    color: var(--text-tertiary);
+    // texto real (no decorativo): secondary cumple 4.5:1, tertiary no (axe)
+    color: var(--text-secondary);
   }
 
   &__register-link {

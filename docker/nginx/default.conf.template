@@ -1,14 +1,21 @@
+# Plantilla: al arrancar, la imagen oficial de nginx sustituye las variables de entorno
+# (${API_ORIGIN}) y deja el resultado en /etc/nginx/conf.d/. Las variables propias de
+# nginx ($uri) no se tocan porque no existen como variables de entorno.
 server {
     listen 80;
     server_name _;
     root /usr/share/nginx/html;
     index index.html;
 
+    # No anunciar la versión de nginx en la cabecera Server ni en las páginas de error.
+    server_tokens off;
+
     gzip on;
     gzip_types text/css application/javascript application/json image/svg+xml;
 
     # Los JS y CSS llevan hash en el nombre: se pueden cachear un año
     location ~* \.(js|css|woff2?|ico|png|svg|jpg|webp)$ {
+        include /etc/nginx/conf.d/security-headers.inc;
         expires 1y;
         add_header Cache-Control "public, immutable";
         try_files $uri =404;
@@ -16,11 +23,13 @@ server {
 
     # index.html nunca se cachea, para que cada despliegue se vea al momento
     location = /index.html {
+        include /etc/nginx/conf.d/security-headers.inc;
         add_header Cache-Control "no-cache";
     }
 
     # Rutas de Angular (/patients, /dashboard...): todo cae en index.html
     location / {
+        include /etc/nginx/conf.d/security-headers.inc;
         try_files $uri $uri/ /index.html;
     }
 }

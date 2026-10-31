@@ -102,8 +102,8 @@
 
   &__feature-description {
     @include type(body-s);
+    // sin opacity: rebajaba el contraste por debajo de 4.5:1 (axe)
     color: var(--text-secondary);
-    opacity: 0.85;
   }
 
   &__card {

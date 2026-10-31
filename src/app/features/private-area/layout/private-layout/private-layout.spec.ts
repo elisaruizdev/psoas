@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideTestHttp, provideTestRouter } from '../../../../../testing/providers';
 
 import { PrivateLayout } from './private-layout';
 
@@ -8,7 +9,8 @@ describe('PrivateLayout', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PrivateLayout]
+      imports: [PrivateLayout],
+      providers: [...provideTestHttp(), ...provideTestRouter()],
     })
     .compileComponents();
 

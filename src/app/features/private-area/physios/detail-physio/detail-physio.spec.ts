@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideTestHttp, provideTestRouter, provideTestDialog } from '../../../../../testing/providers';
+import { aPhysio } from '../../../../../testing/fixtures';
 
 import { DetailPhysio } from './detail-physio';
 
@@ -8,7 +10,8 @@ describe('DetailPhysio', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DetailPhysio]
+      imports: [DetailPhysio],
+      providers: [...provideTestDialog(aPhysio()).providers, ...provideTestHttp(), ...provideTestRouter()],
     })
     .compileComponents();
 

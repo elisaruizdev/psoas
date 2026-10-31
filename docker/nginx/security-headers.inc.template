@@ -1,0 +1,28 @@
+# Cabeceras de seguridad de Psoas.
+#
+# Se incluye en CADA location: en nginx, si un location define algún add_header,
+# deja de heredar todos los add_header del bloque server.
+# `always` las añade también en respuestas de error (404, 500).
+
+# CSP: de dónde puede cargar cosas la página. Si alguien consigue inyectar HTML (XSS),
+# el navegador se niega a ejecutar scripts que no vengan de aquí.
+#  - script-src: solo nuestros JS. El hash permite el único JS inline que genera Angular:
+#    onload="this.media='all'", con el que carga el CSS sin bloquear el pintado.
+#    'unsafe-hashes' es lo que permite usar un hash en un atributo de evento.
+#  - style-src 'unsafe-inline': Angular inyecta los estilos de los componentes en <style>.
+#  - connect-src: a qué API puede llamar HttpClient (se inyecta al arrancar el contenedor).
+#  - frame-ancestors 'none': nadie puede meter Psoas en un iframe (clickjacking).
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' ${API_ORIGIN}; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+
+# El navegador no adivina tipos: un .txt subido no se ejecutará como script.
+add_header X-Content-Type-Options "nosniff" always;
+# Lo mismo que frame-ancestors, para navegadores antiguos.
+add_header X-Frame-Options "DENY" always;
+# Al salir hacia otra web, solo se envía el dominio, no la ruta (/patients/123...).
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+# La app no usa cámara, micrófono ni ubicación: se bloquean.
+add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()" always;
+# Aísla la ventana de las que se abran desde otros orígenes.
+add_header Cross-Origin-Opener-Policy "same-origin" always;
+# HSTS: solo cuenta cuando se sirve por HTTPS (el TLS lo pone el proxy o la plataforma).
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;

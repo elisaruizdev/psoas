@@ -9,7 +9,7 @@ const statsVacias = {
   todayAppointments: [],
 };
 
-test.describe('login', () => {
+test.describe('login', { tag: '@smoke' }, () => {
   test('con token, /login redirige al dashboard', async ({ page }) => {
     await page.addInitScript(() => {
       sessionStorage.setItem('token', 'token-de-prueba');

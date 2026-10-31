@@ -42,6 +42,7 @@
   --color-red-100: #fee2e2;
   --color-red-200: #fecaca;
   --color-red-600: #dc2626;
+  --color-red-700: #b91c1c;
   --color-green-200: #bbf7d0;
   --color-amber-100: #fef3c7;
   --color-amber-200: #fde68a;
@@ -76,7 +77,8 @@
   --text-on-brand: var(--color-neutral-0);
   --text-metric: var(--color-apple-ink);
 
-  --feedback-error-fg: var(--color-red-600);
+  // red-700 y no red-600: sobre red-100 el 600 da 3.95:1 y WCAG AA pide 4.5:1
+  --feedback-error-fg: var(--color-red-700);
   --feedback-error-bg: var(--color-red-100);
   --feedback-error-border: var(--color-red-200);
   --feedback-success-fg: var(--color-apple-green-fg);

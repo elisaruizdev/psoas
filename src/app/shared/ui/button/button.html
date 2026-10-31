@@ -1,6 +1,6 @@
-<button [type]="type()" [class]="'btn btn--' + variant()" [disabled]="disabled" (click)="handleClick()">
-    @if (icon) {
-    <ui-icon [name]="icon" />
+<button [type]="type()" [class]="'btn btn--' + variant()" [disabled]="disabled()" (click)="handleClick()">
+    @if (icon(); as iconName) {
+    <ui-icon [name]="iconName" />
     }
-    <span class="btn__title">{{ title }}</span>
+    <span class="btn__title">{{ title() }}</span>
 </button>

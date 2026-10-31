@@ -1,14 +1,14 @@
 <div class="table-container">
-<!--     @if (showFilter) {
+<!--     @if (showFilter()) {
     <mat-form-field class="filter-field">
         <mat-label>Buscar</mat-label>
-        <input matInput (keyup)="applyFilter($event)" [placeholder]="filterPlaceholder">
+        <input matInput (keyup)="applyFilter($event)" [placeholder]="filterPlaceholder()">
     </mat-form-field>
     } -->
 
     <div class="table-container__surface">
         <table mat-table [dataSource]="dataSource" matSort>
-            @for (column of displayedColumns; track column) {
+            @for (column of displayedColumns(); track column) {
             <ng-container [matColumnDef]="column">
                 <th mat-header-cell *matHeaderCellDef [mat-sort-header]="isColumnSortable(column) ? column : ''"
                     [disabled]="!isColumnSortable(column)">
@@ -20,23 +20,27 @@
             </ng-container>
             }
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row 
-                *matRowDef="let row; columns: displayedColumns;"
-                [class.clickable-row]="isClickable"
-                (click)="onRowClick(row)">
+            <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+            <tr mat-row
+                *matRowDef="let row; columns: displayedColumns();"
+                [class.clickable-row]="isClickable()"
+                [attr.tabindex]="isClickable() ? 0 : null"
+                [attr.aria-label]="isClickable() ? getRowLabel(row) : null"
+                (click)="onRowClick(row)"
+                (keydown.enter)="onRowClick(row)"
+                (keydown.space)="onRowSpace($event, row)">
             </tr>
 
             <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
-                    {{ noDataMessage }}
-                    @if (showFilter && filterValue) {
+                <td class="mat-cell" [attr.colspan]="displayedColumns().length">
+                    {{ noDataMessage() }}
+                    @if (showFilter() && filterValue) {
                     <span> "{{ filterValue }}"</span>
                     }
                 </td>
             </tr>
         </table>
 
-<!--         <mat-paginator [pageSizeOptions]="pageSizeOptions" aria-label="Seleccionar página"></mat-paginator> -->
+<!--         <mat-paginator [pageSizeOptions]="pageSizeOptions()" aria-label="Seleccionar página"></mat-paginator> -->
     </div>
 </div>

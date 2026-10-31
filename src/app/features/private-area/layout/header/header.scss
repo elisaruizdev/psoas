@@ -55,8 +55,8 @@
 
   &__user-role {
     @include type(body-xs);
+    // sin opacity: rebajaba el contraste por debajo de 4.5:1 (axe)
     color: var(--text-secondary);
-    opacity: 0.9;
   }
 
   &__logout {
