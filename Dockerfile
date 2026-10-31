@@ -14,7 +14,13 @@ RUN sed -i "s|baseUrl: '.*'|baseUrl: '${API_URL}'|" src/environments/environment
 
 # Etapa 2: sirve los archivos estáticos con nginx
 FROM nginx:1.27-alpine
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Origen del API para la CSP (connect-src). Se puede cambiar al arrancar sin recompilar:
+#   docker run -e API_ORIGIN=https://api.ejemplo.com ...
+ARG API_URL=https://psoas-backend.onrender.com
+ENV API_ORIGIN=${API_URL}
+# Las plantillas de /etc/nginx/templates se procesan al arrancar (envsubst).
+RUN rm /etc/nginx/conf.d/default.conf
+COPY docker/nginx/ /etc/nginx/templates/
 COPY --from=build /app/dist/psoas/browser /usr/share/nginx/html
 
 EXPOSE 80
