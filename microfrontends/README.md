@@ -55,7 +55,7 @@ npm run build      # dist/psoas-resumen-citas.js (un único ES module, ~8 kB gzi
 Si el contrato cambia de forma incompatible, se publica una versión nueva en otra URL
 (`/resumen-citas/2.0.0/...`) y cada app migra cuando puede.
 
-## Preguntas de entrevista que esto responde
+## Preguntas para repasar
 
 **¿Por qué Web Components para microfrontends?** Son estándar del navegador: el widget
 funciona en Angular, React, Vue o HTML plano (lo demuestra `index.html`). Cada equipo elige

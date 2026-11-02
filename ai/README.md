@@ -81,7 +81,7 @@ pestaña **Asistente** (http://localhost:8080). En ese modo:
 - **Clave del LLM**: la lee de `ai/.env` al arrancar el contenedor; no se copia en la imagen.
   Sin ese archivo, funciona en modo demo (sin LLM).
 
-## Decisiones (y cómo defenderlas)
+## Decisiones y por qué
 
 **¿Por qué una capa propia sobre los SDK y no LangChain?** Para la demo, escribir el bucle del
 agente y el RAG a mano enseña qué hacen los frameworks por dentro, y el adaptador ocupa unas
@@ -142,5 +142,5 @@ ai/
 │   ├── evals/                 casos y métricas
 │   ├── privacidad.py          seudonimización
 │   ├── datos.py · servicio.py · api.py · cli.py · config.py
-└── tests/                     51 tests sin red (FakeProvider con guion)
+└── tests/                     77 tests sin red (FakeProvider con guion)
 ```

@@ -6,6 +6,8 @@ Psoas is a web app for running a physiotherapy clinic. Physiotherapists use it t
 
 This repository holds the frontend, built with Angular 20. It talks to a separate REST API ([psoas-backend](https://psoas-backend.onrender.com) in production). The interface is in Spanish.
 
+It also works as a study project: [`docs/README.md`](docs/README.md) (in Spanish) maps each topic (testing, CI/CD, microfrontends, Python, LLMs, RAG, agents, AI tooling for teams) to the code that applies it, with guides, exercises and review questions.
+
 ## Features
 
 **Access**
