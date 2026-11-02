@@ -74,7 +74,6 @@ describe('Sessions', () => {
   });
 
   it('si la API falla, muestra el error', () => {
-    spyOn(console, 'error');
     service.getAllAppointments.and.returnValue(throwError(() => new Error('500')));
     fixture.detectChanges();
 
@@ -99,7 +98,6 @@ describe('Sessions', () => {
   });
 
   it('no abre nada si el id de la fila no es válido; y avisa si la cita no carga', () => {
-    spyOn(console, 'error');
     fixture.detectChanges();
     component.onAppointmentClick({ row: { id: 99 } });
     expect(service.getAppointmentById).not.toHaveBeenCalled();

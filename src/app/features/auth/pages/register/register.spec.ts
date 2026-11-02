@@ -116,7 +116,6 @@ describe('Register', () => {
   });
 
   it('si la API falla, muestra el error', () => {
-    spyOn(console, 'error');
     component.registerForm.setValue(validos);
     component.sendFormRegister();
 

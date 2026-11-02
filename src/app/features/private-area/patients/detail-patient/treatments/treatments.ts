@@ -63,8 +63,7 @@ export class Treatments implements OnInit {
         this.treatments.set(treatments);
         this.loading.set(false);
       },
-      error: (error) => {
-        console.error('Error al cargar tratamientos:', error);
+      error: () => {
         this.loading.set(false);
         this.showErrorNotification('No se han podido cargar los tratamientos');
       },
@@ -103,8 +102,7 @@ export class Treatments implements OnInit {
           this.loadTreatments();
           this.showSuccessNotification('Tratamiento actualizado correctamente');
         },
-        error: (error) => {
-          console.error('Error al actualizar tratamiento:', error);
+        error: () => {
           this.showErrorNotification('Error al actualizar el tratamiento');
         },
       });
@@ -117,8 +115,7 @@ export class Treatments implements OnInit {
           this.loadTreatments();
           this.showSuccessNotification('Tratamiento eliminado correctamente');
         },
-        error: (error) => {
-          console.error('Error al eliminar tratamiento:', error);
+        error: () => {
           this.showErrorNotification('Error al eliminar el tratamiento');
         },
       });
@@ -148,8 +145,7 @@ export class Treatments implements OnInit {
         this.showForm.set(false);
         this.loadTreatments();
       },
-      error: (error) => {
-        console.error('Error al crear tratamiento:', error);
+      error: () => {
         this.showErrorNotification('Error al crear el tratamiento');
       },
     });

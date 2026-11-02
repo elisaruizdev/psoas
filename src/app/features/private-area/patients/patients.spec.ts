@@ -59,7 +59,6 @@ describe('Patients', () => {
   });
 
   it('si la API falla, muestra el error en un role="alert" y no pinta la tabla', () => {
-    spyOn(console, 'error');
     service.getAllPatients.and.returnValue(throwError(() => new Error('500')));
 
     fixture.detectChanges();

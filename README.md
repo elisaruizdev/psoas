@@ -164,7 +164,6 @@ The API URL is set in `src/environments/`:
 | `npm run e2e:report`      | Opens the last HTML report                            |
 | `npm run e2e:codegen`     | Records a test by clicking through the app            |
 | `npm run lint`            | Runs ESLint                                           |
-| `npm run serve:ssr:psoas` | Serves the SSR build with Node                        |
 
 Before the first end-to-end run, install the Playwright browsers with `npx playwright install`.
 

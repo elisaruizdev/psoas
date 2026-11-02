@@ -211,7 +211,6 @@ export class NewPatient implements OnInit {
         this.dialogRef.close({ action: 'created' });
       },
       error: (error) => {
-        console.error('Error al crear paciente:', error);
         if (error.status === 409) {
           this.showErrorNotification(
             error.error.message || 'Ya existe un paciente con ese DNI/NIE'

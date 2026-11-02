@@ -139,8 +139,7 @@ export class Dashboard implements OnInit {
         this.dashboardStats.set(stats);
         this.loading.set(false);
       },
-      error: (error) => {
-        console.error('Error al cargar estadísticas:', error);
+      error: () => {
         this.loadError.set('No se han podido cargar las estadísticas.');
         this.loading.set(false);
       },

@@ -40,7 +40,6 @@ export class Notifications {
   }
 
   onViewAll(): void {
-    console.log('View all notifications');
     // TODO: Navegar a página de todas las notificaciones
   }
 }

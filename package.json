@@ -20,8 +20,7 @@
     "e2e:debug": "playwright test --debug",
     "e2e:report": "playwright show-report",
     "e2e:codegen": "playwright codegen http://localhost:4200",
-    "lint": "eslint .",
-    "serve:ssr:psoas": "node dist/psoas/server/server.mjs"
+    "lint": "eslint ."
   },
   "prettier": {
     "printWidth": 100,
@@ -44,13 +43,8 @@
     "@angular/forms": "^20.1.0",
     "@angular/material": "^20.2.4",
     "@angular/platform-browser": "^20.1.0",
-    "@angular/platform-server": "^20.1.0",
     "@angular/router": "^20.1.0",
-    "@angular/ssr": "^20.1.6",
-    "express": "^5.1.0",
-    "ng": "^0.0.0",
     "rxjs": "~7.8.0",
-    "serve": "^14.2.5",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
@@ -61,7 +55,6 @@
     "@eslint/js": "^9.39.5",
     "@pact-foundation/pact": "^17.1.4",
     "@playwright/test": "^1.63.0",
-    "@types/express": "^5.0.1",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.17.19",
     "angular-eslint": "^20.7.0",
@@ -73,6 +66,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "karma-junit-reporter": "^2.0.1",
+    "serve": "^14.2.6",
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.71.0"
   }
