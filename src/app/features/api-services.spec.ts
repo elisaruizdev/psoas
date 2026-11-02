@@ -126,4 +126,14 @@ describe('servicios de la API (contrato HTTP)', () => {
       req.flush({});
     }
   });
+
+  it('auth.verifyEmail codifica el token: un "+" o un "&" no lo rompen', () => {
+    auth().verifyEmail('a+b&c=d').subscribe();
+
+    const req = http.expectOne((r) => r.url === `${api}/auth/verify-email`);
+    // Se lee la URL como la leería el servidor (que trata "+" como espacio).
+    const enviado = new URL(req.request.urlWithParams).searchParams.get('token');
+    expect(enviado).toBe('a+b&c=d');
+    req.flush({});
+  });
 });

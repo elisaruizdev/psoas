@@ -1,6 +1,6 @@
 <modal [title]="'Crear paciente'">
     @if (patientFormConfig()) {
-    <f-form [config]="patientFormConfig()!" [submitButtonText]="'Crear Paciente'" (formSubmit)="onSubmitPatient($event)"
+    <f-form [submitting]="saving()" [config]="patientFormConfig()!" [submitButtonText]="'Crear Paciente'" (formSubmit)="onSubmitPatient($event)"
         [showCancelButton]="false">
     </f-form>
     }

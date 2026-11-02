@@ -1,5 +1,6 @@
 import { Component, DestroyRef, Inject, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { Validators } from '@angular/forms';
@@ -44,6 +45,8 @@ export class DetailPatient implements OnInit {
   loadError = signal('');
 
   private readonly notifications = inject(NotificationService);
+  /** true mientras se guarda: el formulario desactiva el botón de enviar. */
+  readonly saving = signal(false);
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: string },
@@ -169,7 +172,11 @@ export class DetailPatient implements OnInit {
 
     const formattedData = this.formatPatientData(patientData);
 
-    this.patientsService.updatePatient(patient.id, formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.saving.set(true);
+    this.patientsService.updatePatient(patient.id, formattedData).pipe(
+      finalize(() => this.saving.set(false)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
       next: () => {
         this.showSuccessNotification('Paciente actualizado correctamente');
         this.dialogRef.close({ action: 'updated' });

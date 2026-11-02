@@ -1,5 +1,6 @@
-import { Component, DestroyRef, Inject, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, Inject, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { Validators } from '@angular/forms';
@@ -29,6 +30,8 @@ export class DetailPhysio implements OnInit {
   physioFormConfig!: FormConfig;
 
   private readonly notifications = inject(NotificationService);
+  /** true mientras se guarda: el formulario desactiva el botón de enviar. */
+  readonly saving = signal(false);
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Physio,
@@ -183,7 +186,11 @@ export class DetailPhysio implements OnInit {
   onSubmitPhysio(physioData: FormValue): void {
     const formattedData = this.formatPhysioData(physioData);
 
-    this.physiosService.updatePhysio(this.physio.id_physio, formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.saving.set(true);
+    this.physiosService.updatePhysio(this.physio.id_physio, formattedData).pipe(
+      finalize(() => this.saving.set(false)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
       next: () => {
         this.showSuccessNotification('Cambios guardados correctamente');
         this.dialogRef.close({ action: 'save' });

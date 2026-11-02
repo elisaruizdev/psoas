@@ -9,7 +9,7 @@
     @if (showForm() && treatmentFormConfig()) {
     <div class="treatments__form">
         <h3>Nuevo Tratamiento</h3>
-        <f-form [config]="treatmentFormConfig()!" (formSubmit)="onSubmitTreatment($event)" [showCancelButton]="false"></f-form>
+        <f-form [submitting]="saving()" [config]="treatmentFormConfig()!" (formSubmit)="onSubmitTreatment($event)" [showCancelButton]="false"></f-form>
         <div class="form-actions">
             <button mat-button (click)="onCancelForm()">Cancelar</button>
         </div>

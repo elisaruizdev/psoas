@@ -43,18 +43,26 @@ describe('ClinicalHistory', () => {
     expect(fixture.nativeElement.textContent).toContain('Lumbalgia');
   });
 
-  it('si la carga falla, deja de cargar sin romper', () => {
+  it('si la carga falla, deja de cargar y avisa', () => {
     spyOn(console, 'error');
     diagnoses.getAllByPatient.and.returnValue(throwError(() => new Error('500')));
     component.loadDiagnoses();
     expect(component.loading()).toBeFalse();
+    expect(notifications.error).toHaveBeenCalledWith('No se han podido cargar los diagnósticos');
   });
 
-  it('nuevo diagnóstico: abre el formulario con la fecha de hoy', () => {
-    component.onNewDiagnosis();
+  it('nuevo diagnóstico: abre el formulario con la fecha de hoy (local, no UTC)', () => {
+    // 00:30 en hora local: con toISOString() saldría el día anterior en España.
+    jasmine.clock().install();
+    jasmine.clock().mockDate(new Date(2026, 10, 3, 0, 30));
+    try {
+      component.onNewDiagnosis();
+    } finally {
+      jasmine.clock().uninstall();
+    }
     expect(component.showForm()).toBeTrue();
     const fecha = component.diagnosisFormConfig()!.sections[0].fields[0];
-    expect(fecha.value).toBe(new Date().toISOString().split('T')[0]);
+    expect(fecha.value).toBe('2026-11-03');
 
     component.onCancelForm();
     expect(component.showForm()).toBeFalse();

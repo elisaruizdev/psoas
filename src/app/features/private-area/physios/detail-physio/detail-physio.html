@@ -31,7 +31,7 @@
 
         <section class="dialog__section">
             <h3 class="dialog__section-title">Información Editable</h3>
-            <f-form [config]="physioFormConfig" [submitButtonText]="'Guardar Cambios'"
+            <f-form [submitting]="saving()" [config]="physioFormConfig" [submitButtonText]="'Guardar Cambios'"
                 (formSubmit)="onSubmitPhysio($event)" [showCancelButton]="false">
             </f-form>
         </section>

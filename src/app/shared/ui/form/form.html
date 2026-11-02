@@ -15,7 +15,7 @@
                 @if (field.type === 'checkbox') {
                 <div class="f-form__checkbox-wrapper">
                     <label class="f-form__checkbox-label">
-                        <input type="checkbox" [id]="field.name" [formControlName]="field.name"
+                        <input type="checkbox" [id]="field.name" [formControlName]="field.name" [attr.aria-invalid]="hasError(field.name)" [attr.aria-describedby]="hasError(field.name) ? errorId(field.name) : null"
                             class="f-form__checkbox-input" />
                         <span class="f-form__checkbox-custom"></span>
                         <span class="f-form__checkbox-text">
@@ -28,7 +28,7 @@
                         </span>
                     </label>
                     @if (hasError(field.name)) {
-                    <span class="f-form__error">{{ getFieldError(field.name) }}</span>
+                    <span class="f-form__error" [id]="errorId(field.name)">{{ getFieldError(field.name) }}</span>
                     }
                 </div>
                 } @else {
@@ -44,11 +44,11 @@
                     <ui-icon class="f-form__icon" [name]="icon" />
                     }
                     @if (['text', 'email', 'tel', 'number', 'date', 'password'].includes(field.type)) {
-                    <input [type]="field.type" [id]="field.name" [formControlName]="field.name"
+                    <input [type]="field.type" [id]="field.name" [formControlName]="field.name" [attr.aria-invalid]="hasError(field.name)" [attr.aria-describedby]="hasError(field.name) ? errorId(field.name) : null"
                         [placeholder]="field.placeholder || ''" class="f-form__input" />
                     }
                     @if (field.type === 'select') {
-                    <select [id]="field.name" [formControlName]="field.name" class="f-form__select">
+                    <select [id]="field.name" [formControlName]="field.name" [attr.aria-invalid]="hasError(field.name)" [attr.aria-describedby]="hasError(field.name) ? errorId(field.name) : null" class="f-form__select">
                         <option value="" disabled selected>{{ field.placeholder || 'Seleccione...' }}</option>
                         @for (option of field.options; track option.value) {
                         <option [value]="option.value">{{ option.label }}</option>
@@ -56,12 +56,12 @@
                     </select>
                     }
                     @if (field.type === 'textarea') {
-                    <textarea [id]="field.name" [formControlName]="field.name" [placeholder]="field.placeholder || ''"
+                    <textarea [id]="field.name" [formControlName]="field.name" [attr.aria-invalid]="hasError(field.name)" [attr.aria-describedby]="hasError(field.name) ? errorId(field.name) : null" [placeholder]="field.placeholder || ''"
                         [rows]="field.rows || 3" class="f-form__textarea"></textarea>
                     }
                 </div>
                 @if (hasError(field.name)) {
-                <span class="f-form__error">{{ getFieldError(field.name) }}</span>
+                <span class="f-form__error" [id]="errorId(field.name)">{{ getFieldError(field.name) }}</span>
                 }
                 }
             </div>
@@ -74,7 +74,7 @@
         <button-ui class="f-form__cancel" variant="outline" [title]="cancelButtonText" (click)="onCancel()">
         </button-ui>
         }
-        <button-ui type="submit" [title]="submitButtonText" [disabled]="form.invalid">
+        <button-ui type="submit" [title]="submitButtonText" [disabled]="submitting()">
         </button-ui>
     </div>
 </form>

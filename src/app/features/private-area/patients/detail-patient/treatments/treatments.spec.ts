@@ -40,11 +40,12 @@ describe('Treatments', () => {
     expect(fixture.nativeElement.textContent).toContain('Rehabilitación lumbar');
   });
 
-  it('si la carga falla, deja de cargar', () => {
+  it('si la carga falla, deja de cargar y avisa', () => {
     spyOn(console, 'error');
     treatments.getAllByPatient.and.returnValue(throwError(() => new Error('500')));
     component.loadTreatments();
     expect(component.loading()).toBeFalse();
+    expect(notifications.error).toHaveBeenCalledWith('No se han podido cargar los tratamientos');
   });
 
   it('nuevo tratamiento: formulario con estado "active" por defecto', () => {
