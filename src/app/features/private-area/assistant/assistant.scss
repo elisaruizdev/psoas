@@ -1,0 +1,202 @@
+@use 'scss/abstracts/mixins' as *;
+
+// Pantalla del asistente de IA: conversación + formulario. Mismos tokens que el resto del área privada.
+
+.assistant {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 56rem;
+
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+  }
+
+  &__subtitle {
+    @include type(body-m);
+    color: var(--text-secondary);
+    max-width: 40rem;
+  }
+
+  &__provider,
+  &__badge {
+    @include type(label-s);
+    padding: 2px var(--space-sm);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-full);
+    color: var(--text-secondary);
+    background: var(--bg-surface);
+  }
+
+  // text-secondary y no text-tertiary: el terciario no llega a 4.5:1 sobre blanco (axe).
+  &__privacy,
+  &__hint,
+  &__tokens {
+    @include type(body-xs);
+    color: var(--text-secondary);
+  }
+
+  &__chat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    min-height: 16rem;
+    padding: var(--space-lg);
+    background: var(--bg-surface);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  &__message {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    max-width: 85%;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-lg);
+
+    &--user {
+      align-self: flex-end;
+      background: var(--bg-brand-subtle);
+    }
+
+    &--assistant {
+      align-self: flex-start;
+      background: var(--bg-muted);
+    }
+  }
+
+  &__author {
+    @include type(label-s);
+    color: var(--text-primary);
+  }
+
+  &__text {
+    @include type(body-m);
+    color: var(--text-primary);
+    white-space: pre-line;
+  }
+
+  &__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  // Texto en color principal: el verde de feedback sobre su fondo se queda en 3.97:1.
+  &__badge--ok {
+    color: var(--text-primary);
+    background: var(--feedback-success-bg);
+    border-color: var(--feedback-success-border);
+  }
+
+  &__badge--warning {
+    color: var(--text-primary);
+    background: var(--feedback-warning-bg);
+    border-color: var(--feedback-warning-border);
+  }
+
+  &__trace {
+    @include type(body-s);
+    color: var(--text-secondary);
+
+    summary {
+      cursor: pointer;
+      width: fit-content;
+      border-radius: var(--radius-sm);
+
+      &:focus-visible {
+        @include focus-ring;
+      }
+    }
+
+    ol {
+      margin: var(--space-xs) 0;
+      padding-left: var(--space-lg);
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__empty {
+    @include type(body-m);
+    color: var(--text-secondary);
+  }
+
+  &__suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    padding: 0;
+    margin: var(--space-sm) 0 0;
+    list-style: none;
+  }
+
+  &__suggestion {
+    @include type(body-s);
+    padding: var(--space-xs) var(--space-md);
+    border: 1px solid var(--border-brand);
+    border-radius: var(--radius-full);
+    color: var(--text-brand);
+    background: transparent;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+
+    &:hover {
+      background: var(--bg-brand-subtle);
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+
+  &__pending {
+    @include type(body-s);
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  &__label {
+    @include type(label-m);
+    color: var(--text-primary);
+  }
+
+  &__row {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: flex-end;
+  }
+
+  &__input {
+    @include type(body-m);
+    flex: 1;
+    min-width: 0;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    background: var(--bg-surface);
+    resize: vertical;
+
+    &::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+}

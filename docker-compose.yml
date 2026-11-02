@@ -1,7 +1,13 @@
-# Levanta Psoas completo: base de datos + API + web
+# Levanta Psoas completo: base de datos + API + asistente de IA + web
 #   docker compose up -d --build
 #   Web: http://localhost:8080  ·  Usuario demo: demo@psoas.dev / Demo1234!
-#   Si los puertos están ocupados: WEB_PORT=8081 API_PORT=3001 docker compose up -d --build
+#   Si los puertos están ocupados: WEB_PORT=8081 API_PORT=3001 AI_PORT=8001 docker compose up -d --build
+#
+# Asistente de IA: sin configurar funciona en modo demo (sin LLM). Para usar Gemini (gratis),
+# crea ai/.env con LLM_PROVIDER=gemini y GEMINI_API_KEY=... (plantilla en ai/.env.example).
+
+# El mismo secreto firma los JWT en la API y los verifica en el asistente. Solo para la demo.
+x-jwt-secret: &jwt-secret solo-para-la-demo-local
 
 services:
   db:
@@ -29,7 +35,7 @@ services:
       DB_USERNAME: psoas
       DB_PASSWORD: psoas
       DB_DATABASE: psoas
-      JWT_SECRET: solo-para-la-demo-local
+      JWT_SECRET: *jwt-secret
       JWT_EXPIRATION: 1d
       FRONTEND_URL: http://localhost:${WEB_PORT:-8080}
       CORS_ORIGINS: http://localhost:${WEB_PORT:-8080}
@@ -42,16 +48,35 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  ai:
+    build: ./ai
+    # Proveedor y clave del LLM. Opcional: sin el archivo, modo demo sin LLM.
+    env_file:
+      - path: ./ai/.env
+        required: false
+    environment:
+      # Lee los datos reales de la API con el token de cada usuario (red interna de Docker).
+      PSOAS_API_URL: http://api:3000
+      JWT_SECRET: *jwt-secret
+      CORS_ORIGINS: http://localhost:${WEB_PORT:-8080}
+    ports:
+      - "${AI_PORT:-8000}:8000"
+    depends_on:
+      - api
+    restart: unless-stopped
+
   web:
     build:
       context: .
       args:
-        # La usa el navegador, por eso es localhost y no "api"
+        # Las usa el navegador, por eso son localhost y no "api" ni "ai"
         API_URL: http://localhost:${API_PORT:-3000}
+        AI_URL: http://localhost:${AI_PORT:-8000}
     ports:
       - "${WEB_PORT:-8080}:80"
     depends_on:
       - api
+      - ai
     restart: unless-stopped
 
 volumes:

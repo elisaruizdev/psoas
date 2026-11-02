@@ -48,11 +48,19 @@ def anonimizar(
     texto: str, pacientes: Iterable[Paciente] = (), seudonimos: Seudonimos | None = None
 ) -> tuple[str, Seudonimos]:
     s = seudonimos or Seudonimos()
-    # Primero los nombres conocidos (completos, del más largo al más corto).
-    for p in sorted(pacientes, key=lambda p: -len(p.nombre)):
-        marcador = f"[PACIENTE_{p.id}]"
-        s.mapa[marcador] = p.nombre
-        texto = re.sub(re.escape(p.nombre), marcador, texto, flags=re.IGNORECASE)
+    # Primero los nombres conocidos: el completo y "nombre + primer apellido", que es como
+    # se suele escribir ("Ana López" por "Ana López Serrano"). Del más largo al más corto
+    # para que el completo gane al parcial.
+    variantes = []
+    for p in pacientes:
+        s.mapa[f"[PACIENTE_{p.id}]"] = p.nombre
+        palabras = p.nombre.split()
+        variantes.append((p.nombre, p.id))
+        if len(palabras) > 2:
+            variantes.append((" ".join(palabras[:2]), p.id))
+    for nombre, pid in sorted(variantes, key=lambda v: -len(v[0])):
+        patron = rf"(?<!\w){re.escape(nombre)}(?!\w)"
+        texto = re.sub(patron, f"[PACIENTE_{pid}]", texto, flags=re.IGNORECASE)
     for tipo, patron in PATRONES:
         texto = patron.sub(lambda m, tipo=tipo: s.marcador(tipo, m.group(0).strip()), texto)
     return texto, s

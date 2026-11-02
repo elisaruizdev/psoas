@@ -1,0 +1,85 @@
+<div class="assistant">
+    <header class="assistant__header">
+        <p class="assistant__subtitle">
+            Pregunta por la historia clínica o la agenda de tus pacientes. Las respuestas se basan
+            solo en sus notas y un revisor las comprueba antes de mostrarlas.
+        </p>
+        @if (providerLabel()) {
+        <p class="assistant__provider">{{ providerLabel() }}</p>
+        }
+    </header>
+
+    <p class="assistant__privacy">
+        Los nombres, DNI, teléfonos y correos se anonimizan antes de enviarse al modelo.
+    </p>
+
+    <section class="assistant__chat" role="log" aria-live="polite" aria-label="Conversación con el asistente">
+        @for (message of messages(); track message.id) {
+        @if (message.author === 'user') {
+        <div class="assistant__message assistant__message--user">
+            <p class="assistant__author">Tú</p>
+            <p class="assistant__text">{{ message.text }}</p>
+        </div>
+        } @else {
+        <article class="assistant__message assistant__message--assistant">
+            <p class="assistant__author">Asistente</p>
+            <p class="assistant__text">{{ message.text }}</p>
+            @if (message.reply; as reply) {
+            <ul class="assistant__badges" aria-label="Detalles de la respuesta">
+                <li class="assistant__badge">{{ routeLabel(reply.ruta) }}</li>
+                @if (reply.ruta !== 'fuera_de_ambito') {
+                @if (reply.aprobado) {
+                <li class="assistant__badge assistant__badge--ok">Revisada</li>
+                } @else {
+                <li class="assistant__badge assistant__badge--warning">Sin verificar</li>
+                }
+                }
+            </ul>
+            <details class="assistant__trace">
+                <summary>Cómo se ha respondido</summary>
+                <ol>
+                    @for (step of reply.traza; track $index) {
+                    <li>{{ step }}</li>
+                    }
+                </ol>
+                <p class="assistant__tokens">{{ reply.tokens }} tokens · {{ reply.intentos }}
+                    {{ reply.intentos === 1 ? 'intento' : 'intentos' }}</p>
+            </details>
+            }
+        </article>
+        }
+        } @empty {
+        <div class="assistant__empty">
+            <p>Prueba con alguna de estas preguntas:</p>
+            <ul class="assistant__suggestions">
+                @for (suggestion of suggestions; track suggestion) {
+                <li>
+                    <button type="button" class="assistant__suggestion" (click)="useSuggestion(suggestion)">
+                        {{ suggestion }}
+                    </button>
+                </li>
+                }
+            </ul>
+        </div>
+        }
+
+        @if (pending()) {
+        <p class="assistant__pending">El asistente está consultando las notas…</p>
+        }
+    </section>
+
+    @if (error()) {
+    <p class="alert alert--error" role="alert">{{ error() }}</p>
+    }
+
+    <form class="assistant__form" (submit)="onSubmit($event)">
+        <label class="assistant__label" for="assistant-question">Tu pregunta</label>
+        <div class="assistant__row">
+            <textarea #questionInput id="assistant-question" class="assistant__input" rows="2"
+                [formControl]="question" (keydown)="onKeydown($event)"
+                placeholder="Ej.: ¿Cómo va la lumbalgia de Ana López?" aria-describedby="assistant-hint"></textarea>
+            <button-ui type="submit" title="Preguntar" [disabled]="pending() || question.invalid"></button-ui>
+        </div>
+        <p id="assistant-hint" class="assistant__hint">Enter para enviar · Mayús + Enter para una línea nueva</p>
+    </form>
+</div>

@@ -10,9 +10,10 @@
 #    onload="this.media='all'", con el que carga el CSS sin bloquear el pintado.
 #    'unsafe-hashes' es lo que permite usar un hash en un atributo de evento.
 #  - style-src 'unsafe-inline': Angular inyecta los estilos de los componentes en <style>.
-#  - connect-src: a qué API puede llamar HttpClient (se inyecta al arrancar el contenedor).
+#  - connect-src: a qué APIs puede llamar HttpClient: el backend y el asistente de IA
+#    (se inyectan al arrancar el contenedor).
 #  - frame-ancestors 'none': nadie puede meter Psoas en un iframe (clickjacking).
-add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' ${API_ORIGIN}; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' ${API_ORIGIN} ${AI_ORIGIN}; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
 
 # El navegador no adivina tipos: un .txt subido no se ejecutará como script.
 add_header X-Content-Type-Options "nosniff" always;

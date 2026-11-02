@@ -12,18 +12,46 @@ from google import genai
 from google.genai import types
 
 from .base import LLMResponse, Message, ToolCall, ToolSpec, Usage
-from .reintentos import con_reintentos
+from .reintentos import REINTENTABLES, codigo_http, con_reintentos
 
 LOTE_EMBEDDINGS = 100  # máximo de textos por petición de embeddings
+# El SDK no pone límite de espera por defecto: un modelo saturado puede dejar la conexión
+# abierta sin responder y colgar la petición del usuario indefinidamente.
+TIMEOUT_MS = 20_000
+# Con modelos de respaldo no compensa insistir mucho en el saturado: mejor cambiar pronto.
+INTENTOS_CHAT = 2
 
 
 class GeminiProvider:
     nombre = "gemini"
 
     def __init__(self, api_key: str, modelo: str, modelo_embeddings: str) -> None:
-        self._client = genai.Client(api_key=api_key)
-        self._modelo = modelo
+        self._client = genai.Client(
+            api_key=api_key, http_options=types.HttpOptions(timeout=TIMEOUT_MS)
+        )
+        # "a,b,c": el primero es el preferido y el resto, respaldos por si está saturado.
+        self._modelos = [m.strip() for m in modelo.split(",") if m.strip()]
+        self._actual = 0
         self._modelo_embeddings = modelo_embeddings
+
+    @property
+    def modelo(self) -> str:
+        return self._modelos[self._actual]
+
+    def _generar(self, **kwargs: Any):
+        """Prueba el modelo actual con reintentos; si sigue saturado (429/5xx), pasa al
+        siguiente de la lista y se queda en él para las próximas llamadas."""
+        while True:
+            try:
+                return con_reintentos(
+                    lambda: self._client.models.generate_content(model=self.modelo, **kwargs),
+                    intentos=INTENTOS_CHAT,
+                )
+            except Exception as error:
+                ultimo = self._actual == len(self._modelos) - 1
+                if ultimo or codigo_http(error) not in REINTENTABLES:
+                    raise
+                self._actual += 1
 
     # --- Chat -------------------------------------------------------------------
     def chat(
@@ -40,11 +68,7 @@ class GeminiProvider:
             tools=[self._tool(tools)] if tools else None,
             response_mime_type="application/json" if json_output else None,
         )
-        respuesta = con_reintentos(
-            lambda: self._client.models.generate_content(
-                model=self._modelo, contents=self._contents(messages), config=config
-            )
-        )
+        respuesta = self._generar(contents=self._contents(messages), config=config)
 
         llamadas = [
             ToolCall(

@@ -161,3 +161,12 @@ def test_fuera_de_ambito_o_salida_rara_responde_fijo_sin_mas_llamadas(clinica, i
     llm = FakeProvider([LLMResponse(text=salida)])
     r = Orquestador(llm, clinica, indice, "2026-11-10").atender("¿Me recetas ibuprofeno?")
     assert r.texto == FUERA_DE_AMBITO and r.ruta == "fuera_de_ambito" and len(llm.llamadas) == 1
+
+
+def test_buscar_paciente_acepta_el_marcador_anonimizado(herramientas):
+    assert json.loads(herramientas.ejecutar("buscar_paciente", {"nombre": "[PACIENTE_p-3]"})) == [
+        {"paciente_id": "p-3"}
+    ]
+    assert "aviso" in json.loads(
+        herramientas.ejecutar("buscar_paciente", {"nombre": "[PACIENTE_zz]"})
+    )

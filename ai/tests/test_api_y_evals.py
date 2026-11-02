@@ -17,7 +17,7 @@ def test_salud(cliente):
     assert cliente.get("/salud").json() == {
         "estado": "ok",
         "proveedor": "fake",
-        "fragmentos_indexados": 9,
+        "origen_datos": "fijo",
     }
 
 

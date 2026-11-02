@@ -14,6 +14,7 @@ Buenas prácticas que se aplican aquí:
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
@@ -101,6 +102,10 @@ def herramientas_clinica(
         {"nombre": {"type": "string", "description": "Nombre o apellido, p. ej. 'Lucía'"}},
     )
     def buscar_paciente(nombre: str):
+        # El modelo solo ve marcadores: si recibe "[PACIENTE_x]", el id ya va dentro.
+        marcador = re.fullmatch(r"\[PACIENTE_(.+)\]", nombre.strip())
+        if marcador and clinica.paciente(marcador.group(1)):
+            return [{"paciente_id": marcador.group(1)}]
         return [{"paciente_id": p.id} for p in clinica.buscar_pacientes(nombre)] or {
             "aviso": "No hay pacientes con ese nombre"
         }

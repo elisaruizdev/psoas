@@ -102,9 +102,12 @@ On first start the API fills the database with sample patients, treatments, sess
 | ------- | -------------------------------------------- | ------ |
 | `web`   | Angular build served by nginx (multi-stage)  | `8080` |
 | `api`   | NestJS API                                   | `3000` |
+| `ai`    | AI assistant (Python, FastAPI)               | `8000` |
 | `db`    | PostgreSQL 16, data kept in a Docker volume  | —      |
 
-If those ports are taken, pick others: `WEB_PORT=8081 API_PORT=3001 docker compose up -d --build`.
+The **Asistente** tab answers questions about patients' clinical history and appointments, reading the real data through the API with the logged-in user's token. Without configuration it runs in demo mode (no LLM). To use Gemini (free tier), create `ai/.env` from `ai/.env.example` with `LLM_PROVIDER=gemini` and your `GEMINI_API_KEY`. See [`ai/README.md`](ai/README.md).
+
+If those ports are taken, pick others: `WEB_PORT=8081 API_PORT=3001 AI_PORT=8001 docker compose up -d --build`.
 
 Stop it with `docker compose down`, or `docker compose down -v` to also wipe the database.
 

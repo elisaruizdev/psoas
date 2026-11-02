@@ -9,7 +9,9 @@ COPY . .
 
 # URL del backend. Se fija al compilar porque Angular la mete en el bundle.
 ARG API_URL=https://psoas-backend.onrender.com
-RUN sed -i "s|baseUrl: '.*'|baseUrl: '${API_URL}'|" src/environments/environment.production.ts \
+# URL del asistente de IA. Vacía = la pestaña "Asistente" no aparece.
+ARG AI_URL=
+RUN sed -i "s|baseUrl: '.*'|baseUrl: '${API_URL}'|; s|aiUrl: '.*'|aiUrl: '${AI_URL}'|" src/environments/environment.production.ts \
  && npm run build
 
 # Etapa 2: sirve los archivos estáticos con nginx
@@ -18,6 +20,9 @@ FROM nginx:1.27-alpine
 #   docker run -e API_ORIGIN=https://api.ejemplo.com ...
 ARG API_URL=https://psoas-backend.onrender.com
 ENV API_ORIGIN=${API_URL}
+# Lo mismo para el asistente de IA (vacío si no hay asistente).
+ARG AI_URL=
+ENV AI_ORIGIN=${AI_URL}
 # Las plantillas de /etc/nginx/templates se procesan al arrancar (envsubst).
 RUN rm /etc/nginx/conf.d/default.conf
 COPY docker/nginx/ /etc/nginx/templates/

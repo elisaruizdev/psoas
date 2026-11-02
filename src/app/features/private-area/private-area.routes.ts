@@ -23,6 +23,10 @@ export const privateAreaRoutes: Routes = [
         loadComponent: () => import('./physios/physios').then((m) => m.Physios),
       },
       {
+        path: 'assistant',
+        loadComponent: () => import('./assistant/assistant').then((m) => m.Assistant),
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',
