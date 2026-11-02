@@ -65,7 +65,6 @@ describe('DetailPhysio', () => {
   });
 
   it('guardar con error: avisa y no cierra', () => {
-    spyOn(console, 'error');
     service.updatePhysio.and.returnValue(throwError(() => new Error('500')));
     component.onSubmitPhysio({});
     expect(notifications.error).toHaveBeenCalledWith('Error al guardar los cambios');
@@ -82,7 +81,6 @@ describe('DetailPhysio', () => {
     component.onDelete();
     expect(dialogRef.close).toHaveBeenCalledWith({ action: 'delete' });
 
-    spyOn(console, 'error');
     service.deletePhysio.and.returnValue(throwError(() => new Error('500')));
     component.onDelete();
     expect(notifications.error).toHaveBeenCalledWith('Error al eliminar el fisioterapeuta');

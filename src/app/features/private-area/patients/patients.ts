@@ -67,8 +67,7 @@ export class Patients {
       next: (patients) => {
         this.patients.set(patients);
       },
-      error: (error) => {
-        console.error('Error al cargar pacientes:', error);
+      error: () => {
         this.loadError.set('No se han podido cargar los pacientes.');
       },
     });

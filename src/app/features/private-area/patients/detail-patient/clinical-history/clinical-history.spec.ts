@@ -44,7 +44,6 @@ describe('ClinicalHistory', () => {
   });
 
   it('si la carga falla, deja de cargar y avisa', () => {
-    spyOn(console, 'error');
     diagnoses.getAllByPatient.and.returnValue(throwError(() => new Error('500')));
     component.loadDiagnoses();
     expect(component.loading()).toBeFalse();
@@ -91,7 +90,6 @@ describe('ClinicalHistory', () => {
   });
 
   it('crear con error: avisa del error', () => {
-    spyOn(console, 'error');
     diagnoses.create.and.returnValue(throwError(() => new Error('400')));
     component.onSubmitDiagnosis({ status: 'active' });
     expect(notifications.error).toHaveBeenCalledWith('Error al crear el diagnóstico');
@@ -114,7 +112,6 @@ describe('ClinicalHistory', () => {
   });
 
   it('guardar con error: avisa y sigue en edición', () => {
-    spyOn(console, 'error');
     diagnoses.update.and.returnValue(throwError(() => new Error('500')));
     component.onEdit(aDiagnosis());
     component.onSaveEdit(aDiagnosis());
@@ -133,7 +130,6 @@ describe('ClinicalHistory', () => {
 
   it('borrar confirmado: borra, avisa y recarga; si falla, avisa del error', () => {
     spyOn(window, 'confirm').and.returnValue(true);
-    spyOn(console, 'error');
     diagnoses.delete.and.returnValue(of(undefined));
     component.onDelete(aDiagnosis());
     expect(diagnoses.delete).toHaveBeenCalledWith('d-1');

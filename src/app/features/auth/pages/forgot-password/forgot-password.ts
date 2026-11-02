@@ -42,8 +42,7 @@ export class ForgotPassword {
         this.isLoading.set(false);
         this.emailSent.set(true);
       },
-      error: (error) => {
-        console.error('Error al enviar email de recuperación:', error);
+      error: () => {
         this.isLoading.set(false);
         this.emailSent.set(true);
       },

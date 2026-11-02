@@ -32,7 +32,7 @@ npm run build      # dist/psoas-resumen-citas.js (un único ES module, ~8 kB gzi
 | Pieza | Dónde | Qué hace |
 |---|---|---|
 | Web Component | `resumen-citas/src/psoas-resumen-citas.ts` | `LitElement` con Shadow DOM. Se registra como `<psoas-resumen-citas>`. |
-| Cargador | `src/app/shared/microfrontends/microfrontend-loader.service.ts` | Inserta `<script type="module">`, espera a `customElements.whenDefined()`, cachea por URL, no hace nada en SSR y devuelve `false` si falla. |
+| Cargador | `src/app/shared/microfrontends/microfrontend-loader.service.ts` | Inserta `<script type="module">`, espera a `customElements.whenDefined()`, cachea por URL, no hace nada en el servidor (SSR) y devuelve `false` si falla. |
 | URL del MFE | `src/environments/*.ts` → `microfrontends.resumenCitas` | En local, el servidor de Vite; en producción, vacío (desactivado) o la URL versionada del CDN. |
 | Uso en Angular | `dashboard.ts` / `dashboard.html` | `CUSTOM_ELEMENTS_SCHEMA`, `[citas]="..."` (propiedad) y `(cita-seleccionada)="..."` (evento). |
 | Tema | `dashboard.scss` → `.dashboard__mfe` | Variables CSS `--psoas-*`: atraviesan el Shadow DOM; las clases no. |
@@ -74,8 +74,9 @@ La pega es tematizar: por eso se usan variables CSS (o `::part()`).
 **¿Qué pasa si el MFE cae?** El cargador devuelve `false` (por error o a los 5 s) y el
 dashboard no lo pinta. Hay un E2E que lo comprueba abortando la petición.
 
-**SSR.** La app prerenderiza. En el servidor no hay `customElements`, así que el cargador
-no hace nada y el widget aparece solo en el navegador.
+**SSR.** La app de la clínica se renderiza solo en el navegador. Aun así, el cargador
+comprueba la plataforma: si algún día se usa en una app con SSR (p. ej. un portal público),
+en el servidor no hay `customElements`, no hace nada y el widget aparece solo en el navegador.
 
 **Seguridad.** Cargar JS de otro origen es confiar en él. En producción iría en un CDN propio,
 con la CSP (`script-src`) permitiendo ese origen y, si se puede, con Subresource Integrity.

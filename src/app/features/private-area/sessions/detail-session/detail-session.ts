@@ -137,7 +137,6 @@ export class DetailSession implements OnInit {
         this.dialogRef.close({ action: 'updated' });
       },
       error: (error) => {
-        console.error('Error al actualizar cita:', error);
         if (error.status === 409) {
           this.showErrorNotification('El fisioterapeuta ya tiene una cita en ese horario');
         } else {
@@ -154,8 +153,7 @@ export class DetailSession implements OnInit {
           this.showSuccessNotification('Cita cancelada correctamente');
           this.dialogRef.close({ action: 'cancelled' });
         },
-        error: (error) => {
-          console.error('Error al cancelar cita:', error);
+        error: () => {
           this.showErrorNotification('Error al cancelar la cita');
         },
       });
@@ -169,8 +167,7 @@ export class DetailSession implements OnInit {
           this.showSuccessNotification('Cita eliminada correctamente');
           this.dialogRef.close({ action: 'deleted' });
         },
-        error: (error) => {
-          console.error('Error al eliminar cita:', error);
+        error: () => {
           this.showErrorNotification('Error al eliminar la cita');
         },
       });

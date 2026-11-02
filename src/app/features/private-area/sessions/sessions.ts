@@ -68,8 +68,7 @@ export class Sessions {
       next: (appointments) => {
         this.appointments.set(appointments);
       },
-      error: (error) => {
-        console.error('Error al cargar citas:', error);
+      error: () => {
         this.loadError.set('No se han podido cargar las citas.');
       },
     });
@@ -138,8 +137,7 @@ export class Sessions {
       next: (appointment) => {
         this.openAppointmentDetail(appointment);
       },
-      error: (error) => {
-        console.error('Error al cargar cita:', error);
+      error: () => {
         this.openError.set('No se ha podido abrir la ficha de la cita.');
       },
     });

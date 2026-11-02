@@ -48,8 +48,7 @@ export class NewSession implements OnInit {
         this.patients = patients;
         this.loadPhysios();
       },
-      error: (error) => {
-        console.error('Error al cargar pacientes:', error);
+      error: () => {
         this.showErrorNotification('Error al cargar los pacientes');
       },
     });
@@ -61,8 +60,7 @@ export class NewSession implements OnInit {
         this.physios = physios.filter((p) => p.status === 'active');
         this.initializeFormConfig();
       },
-      error: (error) => {
-        console.error('Error al cargar fisioterapeutas:', error);
+      error: () => {
         this.showErrorNotification('Error al cargar los fisioterapeutas');
       },
     });
@@ -184,7 +182,6 @@ export class NewSession implements OnInit {
         this.dialogRef.close({ action: 'created' });
       },
       error: (error) => {
-        console.error('Error al crear cita:', error);
         if (error.status === 409) {
           this.showErrorNotification('El fisioterapeuta ya tiene una cita en ese horario');
         } else {

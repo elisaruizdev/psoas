@@ -30,6 +30,11 @@ module.exports = tseslint.config(
     },
   },
   {
+    // En la app los errores se cuentan al usuario (avisos o role="alert"), no en la consola.
+    files: ['src/**/*.ts'],
+    rules: { 'no-console': 'error' },
+  },
+  {
     files: ['**/*.html'],
     extends: [...angular.configs.templateRecommended],
     rules: {},

@@ -63,8 +63,7 @@ export class ClinicalHistory implements OnInit {
         this.diagnoses.set(diagnoses);
         this.loading.set(false);
       },
-      error: (error) => {
-        console.error('Error al cargar diagnósticos:', error);
+      error: () => {
         this.loading.set(false);
         this.showErrorNotification('No se han podido cargar los diagnósticos');
       },
@@ -101,8 +100,7 @@ export class ClinicalHistory implements OnInit {
           this.loadDiagnoses();
           this.showSuccessNotification('Diagnóstico actualizado correctamente');
         },
-        error: (error) => {
-          console.error('Error al actualizar diagnóstico:', error);
+        error: () => {
           this.showErrorNotification('Error al actualizar el diagnóstico');
         },
       });
@@ -115,8 +113,7 @@ export class ClinicalHistory implements OnInit {
           this.loadDiagnoses();
           this.showSuccessNotification('Diagnóstico eliminado correctamente');
         },
-        error: (error) => {
-          console.error('Error al eliminar diagnóstico:', error);
+        error: () => {
           this.showErrorNotification('Error al eliminar el diagnóstico');
         },
       });
@@ -143,8 +140,7 @@ export class ClinicalHistory implements OnInit {
         this.showForm.set(false);
         this.loadDiagnoses();
       },
-      error: (error) => {
-        console.error('Error al crear diagnóstico:', error);
+      error: () => {
         this.showErrorNotification('Error al crear el diagnóstico');
       },
     });
