@@ -37,7 +37,10 @@ desarrollo. Cada guía explica qué es cada cosa, dónde está en el código y p
 ## Cómo practicar
 
 - **Ejecutar**: `docker compose up -d --build` y entra en http://localhost:8080 con
-  `demo@psoas.dev` / `Demo1234!`.
+  `demo@psoas.dev` / `Demo1234!`. Todo corre en local y gratis; no hay nada desplegado.
+- **Backend local**: clona [psoas-backend](https://github.com/elisaruizdev/psoas-backend) y crea
+  un `.env` junto a `docker-compose.yml` con `BACKEND_PATH=<ruta del clon>` (por ejemplo
+  `../../back/psoas-backend`). Así Docker usa tu copia y puedes estudiar y cambiar también el backend.
 - **Romper y arreglar**: cambia algo, ejecuta los tests y mira qué falla y por qué.
 - **Ejercicios**: al final de la [guía de IA](guia-ia.md#12-ejercicios-sobre-el-proyecto) hay
   ejercicios sobre el propio código, y en cada guía, preguntas para repasar.

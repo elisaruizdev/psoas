@@ -26,8 +26,8 @@ services:
     restart: unless-stopped
 
   api:
-    # Por defecto se descarga de GitHub. Para usar una copia local:
-    #   BACKEND_PATH=../ruta/a/psoas_api docker compose up -d --build
+    # Por defecto se descarga de GitHub (main). Para usar una copia local, crea un .env junto
+    # a este archivo (ignorado por git) con: BACKEND_PATH=../../back/psoas-backend
     build: ${BACKEND_PATH:-https://github.com/elisaruizdev/psoas-backend.git#main}
     environment:
       DB_HOST: db
