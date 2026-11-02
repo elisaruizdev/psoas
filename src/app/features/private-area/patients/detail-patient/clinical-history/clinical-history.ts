@@ -1,5 +1,6 @@
 import { Component, DestroyRef, Input, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,6 +14,7 @@ import { FormConfig, FormValue, formChoice, formText } from '../../../../../shar
 import { Diagnosis } from '../../models/patients.model';
 import { ButtonUI } from '../../../../../shared/ui/button/button';
 import { NotificationService } from '../../../../../shared/notifications/notification.service';
+import { localIsoDate } from '../../../../../shared/utils/dates';
 
 @Component({
   selector: 'app-clinical-history',
@@ -42,6 +44,8 @@ export class ClinicalHistory implements OnInit {
   diagnosisFormConfig = signal<FormConfig | null>(null);
 
   private readonly notifications = inject(NotificationService);
+  /** true mientras se guarda: el formulario desactiva el botón de enviar. */
+  readonly saving = signal(false);
 
   constructor(
     private diagnosesService: DiagnosesService,
@@ -62,6 +66,7 @@ export class ClinicalHistory implements OnInit {
       error: (error) => {
         console.error('Error al cargar diagnósticos:', error);
         this.loading.set(false);
+        this.showErrorNotification('No se han podido cargar los diagnósticos');
       },
     });
   }
@@ -128,7 +133,11 @@ export class ClinicalHistory implements OnInit {
       status: formChoice(diagnosisData, 'status', ['active', 'resolved'] as const),
     };
 
-    this.diagnosesService.create(formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.saving.set(true);
+    this.diagnosesService.create(formattedData).pipe(
+      finalize(() => this.saving.set(false)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
       next: () => {
         this.showSuccessNotification('Diagnóstico creado correctamente');
         this.showForm.set(false);
@@ -157,7 +166,7 @@ export class ClinicalHistory implements OnInit {
               label: 'Fecha del diagnóstico',
               type: 'date',
               required: true,
-              value: new Date().toISOString().split('T')[0],
+              value: localIsoDate(),
             },
             {
               name: 'diagnosis_type',

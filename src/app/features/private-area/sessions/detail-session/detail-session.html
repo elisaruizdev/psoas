@@ -32,7 +32,7 @@
         <section class="dialog__section">
             <h3 class="dialog__section-title">Información Editable</h3>
             @if (appointmentFormConfig()) {
-            <f-form [config]="appointmentFormConfig()!" [submitButtonText]="'Guardar Cambios'"
+            <f-form [submitting]="saving()" [config]="appointmentFormConfig()!" [submitButtonText]="'Guardar Cambios'"
                 (formSubmit)="onSubmitAppointment($event)" [showCancelButton]="false">
             </f-form>
             }

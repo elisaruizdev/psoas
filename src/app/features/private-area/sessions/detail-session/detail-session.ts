@@ -1,5 +1,6 @@
 import { Component, DestroyRef, Inject, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { AppointmentsService } from '../services/appointments.service';
@@ -22,6 +23,8 @@ export class DetailSession implements OnInit {
   appointmentFormConfig = signal<FormConfig | null>(null);
 
   private readonly notifications = inject(NotificationService);
+  /** true mientras se guarda: el formulario desactiva el botón de enviar. */
+  readonly saving = signal(false);
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Appointment,
@@ -124,7 +127,11 @@ export class DetailSession implements OnInit {
       notes: formText(appointmentData, 'notes')?.trim() || undefined,
     };
 
-    this.appointmentsService.updateAppointment(this.appointment.id, formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.saving.set(true);
+    this.appointmentsService.updateAppointment(this.appointment.id, formattedData).pipe(
+      finalize(() => this.saving.set(false)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
       next: () => {
         this.showSuccessNotification('Cita actualizada correctamente');
         this.dialogRef.close({ action: 'updated' });

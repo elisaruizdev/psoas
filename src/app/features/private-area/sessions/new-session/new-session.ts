@@ -1,5 +1,6 @@
 import { Component, DestroyRef, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { Form } from '../../../../shared/ui/form/form';
@@ -26,6 +27,8 @@ export class NewSession implements OnInit {
   physios: Physio[] = [];
 
   private readonly notifications = inject(NotificationService);
+  /** true mientras se guarda: el formulario desactiva el botón de enviar. */
+  readonly saving = signal(false);
 
   constructor(
     private dialogRef: MatDialogRef<NewSession>,
@@ -171,7 +174,11 @@ export class NewSession implements OnInit {
       notes: formText(appointmentData, 'notes')?.trim() || undefined,
     };
 
-    this.appointmentsService.createAppointment(formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.saving.set(true);
+    this.appointmentsService.createAppointment(formattedData).pipe(
+      finalize(() => this.saving.set(false)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
       next: () => {
         this.showSuccessNotification('Cita creada correctamente');
         this.dialogRef.close({ action: 'created' });

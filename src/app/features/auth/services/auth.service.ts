@@ -20,7 +20,8 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   verifyEmail(token: string): Observable<EmailTokenResponse> {
-    return this.http.get<EmailTokenResponse>(`${this.apiUrl}/verify-email?token=${token}`);
+    // Con `params` Angular codifica el token; pegado a mano en la URL, un "+" o "&" lo rompería.
+    return this.http.get<EmailTokenResponse>(`${this.apiUrl}/verify-email`, { params: { token } });
   }
 
   registerForm(form: RegisterForm): Observable<RegisterResponse> {

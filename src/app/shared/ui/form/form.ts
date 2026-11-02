@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  booleanAttribute,
+  inject,
+  input,
+} from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { FormConfig, FormFieldConfig, FormFieldValue, FormValue } from '../../models/form.model';
 import { ButtonUI } from '../button/button';
@@ -18,11 +27,15 @@ export class Form {
   @Input() submitButtonText: string = 'Enviar';
   @Input() cancelButtonText: string = 'Cancelar';
   @Input() showCancelButton: boolean = true;
+  /** El padre lo pone a true mientras guarda: desactiva el botón y evita envíos dobles. */
+  submitting = input(false, { transform: booleanAttribute });
 
   @Output() formSubmit = new EventEmitter<FormValue>();
   @Output() formCancel = new EventEmitter<void>();
 
   form!: FormGroup<Record<string, FormControl<FormFieldValue>>>;
+
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   ngOnInit(): void {
     this.buildForm();
@@ -64,13 +77,27 @@ export class Form {
   }
 
   onSubmit(): void {
+    if (this.submitting()) {
+      return;
+    }
     if (this.form.valid) {
       this.formSubmit.emit(this.form.getRawValue());
     } else {
-      Object.keys(this.form.controls).forEach((key) => {
-        this.form.controls[key].markAsTouched();
-      });
+      // El botón no se desactiva por errores: al pulsarlo se enseñan y el foco va al primero.
+      this.markAllAsTouched();
+      this.focusFirstInvalid();
     }
+  }
+
+  private focusFirstInvalid(): void {
+    this.host.nativeElement
+      .querySelector<HTMLElement>('input.ng-invalid, select.ng-invalid, textarea.ng-invalid')
+      ?.focus();
+  }
+
+  /** Id del mensaje de error, para enlazarlo al campo con aria-describedby. */
+  errorId(fieldName: string): string {
+    return `${fieldName}-error`;
   }
 
   onCancel(): void {

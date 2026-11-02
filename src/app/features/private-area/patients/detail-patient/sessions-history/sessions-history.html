@@ -9,7 +9,7 @@
     @if (showForm() && sessionFormConfig()) {
     <div class="sessions-history__form">
         <h3>Nueva Sesión</h3>
-        <f-form [config]="sessionFormConfig()!" (formSubmit)="onSubmitSession($event)" (formCancel)="onCancelForm()">
+        <f-form [submitting]="saving()" [config]="sessionFormConfig()!" (formSubmit)="onSubmitSession($event)" (formCancel)="onCancelForm()">
         </f-form>
     </div>
     }

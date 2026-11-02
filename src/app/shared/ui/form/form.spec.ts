@@ -110,6 +110,42 @@ describe('Form (formulario dinámico)', () => {
     expect(component.hasError('name')).toBeTrue();
   });
 
+  it('el botón de enviar no se desactiva por errores: al pulsarlo los enseña y enfoca el primero', async () => {
+    const boton = element.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    expect(boton.disabled).toBeFalse();
+
+    boton.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(element.querySelectorAll('.f-form__error').length).toBeGreaterThan(0);
+    expect(document.activeElement).toBe(element.querySelector('#name'));
+  });
+
+  it('el error queda asociado a su campo (aria-describedby y aria-invalid)', async () => {
+    tocar('dni', '123');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const input = element.querySelector('#dni')!;
+    expect(input.getAttribute('aria-invalid')).toBe('true');
+    const descripcion = element.querySelector(`#${input.getAttribute('aria-describedby')}`);
+    expect(descripcion?.textContent).toContain('DNI (8 cifras y letra)');
+    expect(element.querySelector('#name')?.hasAttribute('aria-describedby')).toBeFalse();
+  });
+
+  it('mientras el padre guarda (submitting), el botón se desactiva y no se reenvía', async () => {
+    const emitido = spyOn(component.formSubmit, 'emit');
+    component.setFormValue({ name: 'Ana', dni: '12345678Z', terms: true });
+    fixture.componentRef.setInput('submitting', true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(element.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBeTrue();
+    component.onSubmit();
+    expect(emitido).not.toHaveBeenCalled();
+  });
+
   it('enviar válido emite los valores', () => {
     const emitido = spyOn(component.formSubmit, 'emit');
     component.setFormValue({ name: 'Ana', dni: '12345678Z', terms: true });

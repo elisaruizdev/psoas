@@ -1,5 +1,6 @@
 import { Component, DestroyRef, Input, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,6 +14,7 @@ import { FormConfig, FormValue, formChoice, formText } from '../../../../../shar
 import { ButtonUI } from '../../../../../shared/ui/button/button';
 import { Treatment } from '../../models/patients.model';
 import { NotificationService } from '../../../../../shared/notifications/notification.service';
+import { localIsoDate } from '../../../../../shared/utils/dates';
 
 @Component({
   selector: 'app-treatments',
@@ -42,6 +44,8 @@ export class Treatments implements OnInit {
   treatmentFormConfig = signal<FormConfig | null>(null);
 
   private readonly notifications = inject(NotificationService);
+  /** true mientras se guarda: el formulario desactiva el botón de enviar. */
+  readonly saving = signal(false);
 
   constructor(
     private treatmentsService: TreatmentsService,
@@ -62,6 +66,7 @@ export class Treatments implements OnInit {
       error: (error) => {
         console.error('Error al cargar tratamientos:', error);
         this.loading.set(false);
+        this.showErrorNotification('No se han podido cargar los tratamientos');
       },
     });
   }
@@ -133,7 +138,11 @@ export class Treatments implements OnInit {
       status: formChoice(treatmentData, 'status', ['active', 'completed', 'paused'] as const),
     };
 
-    this.treatmentsService.create(formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.saving.set(true);
+    this.treatmentsService.create(formattedData).pipe(
+      finalize(() => this.saving.set(false)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
       next: () => {
         this.showSuccessNotification('Tratamiento creado correctamente');
         this.showForm.set(false);
@@ -171,7 +180,7 @@ export class Treatments implements OnInit {
               label: 'Fecha de inicio',
               type: 'date',
               required: true,
-              value: new Date().toISOString().split('T')[0],
+              value: localIsoDate(),
             },
             {
               name: 'end_date',

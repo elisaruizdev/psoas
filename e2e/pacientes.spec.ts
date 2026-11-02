@@ -69,12 +69,17 @@ test.describe('alta de paciente', () => {
       await patientsPage.abrir();
       await patientsPage.botonNuevo.click();
       await expect(patientsPage.modalAlta).toBeVisible();
-      await expect(patientsPage.botonCrear).toBeDisabled();
+    });
+
+    await test.step('enviar vacío enseña los errores y lleva el foco al primer campo', async () => {
+      await patientsPage.botonCrear.click();
+      await expect(patientsPage.modalAlta.getByText('Este campo es obligatorio').first()).toBeVisible();
+      await expect(patientsPage.modalAlta.getByLabel('Nombre')).toBeFocused();
+      expect(api.llamadasA('POST', '/patients')).toHaveLength(0);
     });
 
     await test.step('rellenar el formulario', async () => {
       await patientsPage.rellenarAlta(nueva);
-      await expect(patientsPage.botonCrear).toBeEnabled();
     });
 
     const body = await test.step('enviar y capturar la petición', async () => {
@@ -126,12 +131,42 @@ test.describe('alta de paciente', () => {
     expect(nativos).toEqual([]);
   });
 
-  test('un DNI con la letra equivocada no deja crear el paciente', async ({ patientsPage }) => {
+  test('un DNI con la letra equivocada no deja crear el paciente', async ({ patientsPage, api }) => {
     await patientsPage.abrir();
     await patientsPage.botonNuevo.click();
     await patientsPage.rellenarAlta({ ...nueva, dni: '11223344C' });
 
-    await expect(patientsPage.modalAlta.getByText('La letra del DNI/NIE no corresponde al número')).toBeVisible();
+    const error = patientsPage.modalAlta.getByText('La letra del DNI/NIE no corresponde al número');
+    await expect(error).toBeVisible();
+
+    await patientsPage.botonCrear.click();
+    await expect(patientsPage.modalAlta.getByLabel('DNI/NIE')).toBeFocused();
+    await expect(patientsPage.modalAlta.getByLabel('DNI/NIE')).toHaveAccessibleDescription(
+      'La letra del DNI/NIE no corresponde al número',
+    );
+    expect(api.llamadasA('POST', '/patients')).toHaveLength(0);
+  });
+
+  test('con el servidor lento, el botón de crear se desactiva y no hay doble alta', async ({
+    page,
+    patientsPage,
+    api,
+  }) => {
+    await page.route('**/patients', async (route) => {
+      if (route.request().method() !== 'POST') return route.fallback();
+      await new Promise((resolve) => setTimeout(resolve, 1_000)); // servidor lento
+      await route.fallback();
+    });
+
+    await patientsPage.abrir();
+    await patientsPage.botonNuevo.click();
+    await patientsPage.rellenarAlta(nueva);
+
+    await patientsPage.botonCrear.click();
     await expect(patientsPage.botonCrear).toBeDisabled();
+    await patientsPage.botonCrear.click({ force: true });
+
+    await expect(patientsPage.aviso).toContainText('Paciente creado correctamente');
+    expect(api.llamadasA('POST', '/patients')).toHaveLength(1);
   });
 });

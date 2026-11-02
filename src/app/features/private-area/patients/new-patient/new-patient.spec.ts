@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatDialogRef } from '@angular/material/dialog';
-import { of, throwError } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
+import { Patient } from '../models/patients.model';
 import { provideTestDialog, provideTestNotifications } from '../../../../../testing/providers';
 import { aPatient } from '../../../../../testing/fixtures';
 import { PatientsService } from '../services/patients.service';
@@ -104,6 +105,26 @@ describe('NewPatient', () => {
     service.createPatient.and.returnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
     component.onSubmitPatient(formulario);
     expect(notifications.error).toHaveBeenCalledWith('Error al crear el paciente');
+  });
+
+  it('mientras se guarda, el botón de crear está desactivado; si falla, se puede reintentar', async () => {
+    const respuesta = new Subject<Patient>();
+    service.createPatient.and.returnValue(respuesta);
+    const botonCrear = () =>
+      fixture.nativeElement.querySelector('button[type="submit"]') as HTMLButtonElement;
+
+    component.onSubmitPatient(formulario);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(component.saving()).toBeTrue();
+    expect(botonCrear().disabled).toBeTrue();
+
+    spyOn(console, 'error');
+    respuesta.error(new HttpErrorResponse({ status: 500 }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(component.saving()).toBeFalse();
+    expect(botonCrear().disabled).toBeFalse();
   });
 
   it('cancelar cierra el modal sin resultado', () => {

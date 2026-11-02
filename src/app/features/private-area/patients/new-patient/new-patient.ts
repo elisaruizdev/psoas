@@ -1,5 +1,6 @@
 import { Component, DestroyRef, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
 import { Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Modal } from '../../../../shared/ui/modal/modal';
@@ -26,6 +27,8 @@ export class NewPatient implements OnInit {
   patientFormConfig = signal<FormConfig | null>(null);
 
   private readonly notifications = inject(NotificationService);
+  /** true mientras se guarda: el formulario desactiva el botón de enviar. */
+  readonly saving = signal(false);
 
   constructor(
     private dialogRef: MatDialogRef<NewPatient>,
@@ -198,7 +201,11 @@ export class NewPatient implements OnInit {
   onSubmitPatient(patientData: FormValue): void {
     const formattedData: CreatePatient = this.formatPatientData(patientData);
 
-    this.patientsService.createPatient(formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.saving.set(true);
+    this.patientsService.createPatient(formattedData).pipe(
+      finalize(() => this.saving.set(false)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
       next: () => {
         this.showSuccessNotification('Paciente creado correctamente');
         this.dialogRef.close({ action: 'created' });

@@ -8,7 +8,7 @@
 
     <div class="dialog__body">
         @if (appointmentFormConfig()) {
-        <f-form [config]="appointmentFormConfig()!" [submitButtonText]="'Crear Cita'"
+        <f-form [submitting]="saving()" [config]="appointmentFormConfig()!" [submitButtonText]="'Crear Cita'"
             (formSubmit)="onSubmitAppointment($event)" (formCancel)="onCancelForm()" [showCancelButton]="true">
         </f-form>
         } @else {

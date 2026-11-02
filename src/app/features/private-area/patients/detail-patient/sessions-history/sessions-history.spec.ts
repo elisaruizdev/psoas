@@ -76,7 +76,7 @@ describe('SessionsHistory', () => {
     expect(grupos[0].sessions.map((s) => s.id)).toEqual(['s-x']);
   });
 
-  it('sin tratamientos, no hay grupos; y si la carga falla, deja de cargar', async () => {
+  it('sin tratamientos, no hay grupos; y si la carga falla, deja de cargar y avisa', async () => {
     treatments.getAllByPatient.and.returnValue(of([]));
     await crear();
     expect(component.treatmentsWithSessions()).toEqual([]);
@@ -84,6 +84,7 @@ describe('SessionsHistory', () => {
     physios.getAllPhysios.and.returnValue(throwError(() => new Error('500')));
     component.loadAllData();
     expect(component.loading()).toBeFalse();
+    expect(notifications.error).toHaveBeenCalledWith('No se han podido cargar las sesiones');
   });
 
   it('el formulario de nueva sesión ofrece tratamientos y fisios del centro', async () => {

@@ -12,11 +12,12 @@ import { TreatmentsService } from '../../services/treatments.service';
 import { Form } from '../../../../../shared/ui/form/form';
 import { FormConfig, FormValue, formText } from '../../../../../shared/models/form.model';
 import { ButtonUI } from '../../../../../shared/ui/button/button';
-import { forkJoin } from 'rxjs';
+import { forkJoin, finalize } from 'rxjs';
 import { Session, Treatment, TreatmentWithSessions } from '../../models/patients.model';
 import { PhysiosService } from '../../../physios/services/physios.service';
 import { Physio } from '../../../physios/models/physios.model';
 import { NotificationService } from '../../../../../shared/notifications/notification.service';
+import { localIsoDate } from '../../../../../shared/utils/dates';
 
 
 @Component({
@@ -97,7 +98,7 @@ export class SessionsHistory implements OnInit {
               label: 'Fecha de la sesión',
               type: 'date',
               required: true,
-              value: new Date().toISOString().split('T')[0],
+              value: localIsoDate(),
             },
             {
               name: 'duration',
@@ -148,6 +149,8 @@ export class SessionsHistory implements OnInit {
   });
 
   private readonly notifications = inject(NotificationService);
+  /** true mientras se guarda: el formulario desactiva el botón de enviar. */
+  readonly saving = signal(false);
 
   constructor(
     private sessionsService: SessionsService,
@@ -200,6 +203,7 @@ export class SessionsHistory implements OnInit {
       },
       error: () => {
         this.loading.set(false);
+        this.showErrorNotification('No se han podido cargar las sesiones');
       },
     });
   }
@@ -271,7 +275,11 @@ export class SessionsHistory implements OnInit {
       next_appointment: formText(sessionData, 'next_appointment') || undefined,
     };
 
-    this.sessionsService.create(formattedData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.saving.set(true);
+    this.sessionsService.create(formattedData).pipe(
+      finalize(() => this.saving.set(false)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
       next: () => {
         this.showSuccessNotification('Sesión creada correctamente');
         this.showForm.set(false);
