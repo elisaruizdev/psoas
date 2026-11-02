@@ -121,7 +121,7 @@ describe('DetailPatient', () => {
   it('pestañas, cierre y fechas', async () => {
     await crear();
     component.onTabChange('sessions');
-    expect(component.activeTab).toBe('sessions');
+    expect(component.activeTab()).toBe('sessions');
     component.onClose();
     expect(dialogRef.close).toHaveBeenCalledWith();
     expect(component.formatDate(null)).toBe('No especificado');

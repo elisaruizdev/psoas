@@ -1,4 +1,4 @@
-import { Component, DestroyRef, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, signal, computed, inject, OnInit } from '@angular/core';
 import { TableConfig, TableRowClick } from '../../../shared/models/table.model';
 import { Table } from '../../../shared/ui/table/table';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,13 +14,18 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [Table, ButtonUI],
   templateUrl: './sessions.html',
   styleUrl: './sessions.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Sessions {
-  appointments = signal<Appointment[]>([]);
-  loadError = signal('');
-  openError = signal('');
+export class Sessions implements OnInit {
+  private dialog = inject(MatDialog);
+  private appointmentsService = inject(AppointmentsService);
+  private destroyRef = inject(DestroyRef);
 
-  listadoAppointmentsConfig = computed<TableConfig>(() => ({
+  readonly appointments = signal<Appointment[]>([]);
+  readonly loadError = signal('');
+  readonly openError = signal('');
+
+  readonly listadoAppointmentsConfig = computed<TableConfig>(() => ({
     columns: [
       {
         key: 'appointmentDate',
@@ -51,12 +56,6 @@ export class Sessions {
     clickableRows: true,
     clickableParams: 'view-appointment',
   }));
-
-  constructor(
-    private dialog: MatDialog,
-    private appointmentsService: AppointmentsService,
-    private destroyRef: DestroyRef,
-  ) {}
 
   ngOnInit() {
     this.getAllAppointments();

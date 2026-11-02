@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,15 +10,13 @@ import { ClinicNotification } from '../models/layout.model';
   selector: 'app-notifications',
   imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule, MatBadgeModule,MatDividerModule],
   templateUrl: './notifications.html',
-  styleUrl: './notifications.scss'
+  styleUrl: './notifications.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Notifications {
+  readonly notifications = input<ClinicNotification[]>([]);
 
-  @Input() notifications: ClinicNotification[] = [];
-
-  get notificationCount(): number {
-    return this.notifications.length;
-  }
+  readonly notificationCount = computed(() => this.notifications().length);
 
   trackByNotification(index: number, notification: ClinicNotification): string {
     return notification.index || `${notification.icon}-${notification.message}-${index}`;

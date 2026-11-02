@@ -1,5 +1,4 @@
-// card-info.component.ts
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, model, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,37 +9,37 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule],
   templateUrl: './card-info.html',
   styleUrls: ['./card-info.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardInfo {
-  @Input() label: string = '';
-  @Input() value: string = '';
-  @Input() placeholder: string = '';
-  @Input() type: string = 'text';
-  @Input() editable: boolean = false; 
+  readonly label = input<string>('');
+  /** Enlazable con [(value)]: al guardar, el nuevo valor sale por `valueChange`. */
+  readonly value = model<string>('');
+  readonly placeholder = input<string>('');
+  readonly type = input<string>('text');
+  readonly editable = input<boolean>(false);
 
-  @Output() valueChange = new EventEmitter<string>();
-  @Output() onSave = new EventEmitter<string>();
-  @Output() onCancel = new EventEmitter<void>();
+  readonly saved = output<string>();
+  readonly cancelled = output<void>();
 
-  isEditing: boolean = false;
-  editValue: string = '';
+  readonly isEditing = signal(false);
+  readonly editValue = signal('');
 
   startEdit(): void {
-    if (!this.editable) return;
-    this.isEditing = true;
-    this.editValue = this.value;
+    if (!this.editable()) return;
+    this.isEditing.set(true);
+    this.editValue.set(this.value());
   }
 
   save(): void {
-    this.value = this.editValue;
-    this.valueChange.emit(this.editValue);
-    this.onSave.emit(this.editValue);
-    this.isEditing = false;
+    this.value.set(this.editValue());
+    this.saved.emit(this.editValue());
+    this.isEditing.set(false);
   }
 
   cancel(): void {
-    this.editValue = this.value;
-    this.isEditing = false;
-    this.onCancel.emit();
+    this.editValue.set(this.value());
+    this.isEditing.set(false);
+    this.cancelled.emit();
   }
 }

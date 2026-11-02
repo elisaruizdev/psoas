@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
@@ -15,9 +15,9 @@ import {
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly apiUrl = `${environment.baseUrl}/auth`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private readonly apiUrl = `${environment.baseUrl}/auth`;
 
   verifyEmail(token: string): Observable<EmailTokenResponse> {
     // Con `params` Angular codifica el token; pegado a mano en la URL, un "+" o "&" lo rompería.

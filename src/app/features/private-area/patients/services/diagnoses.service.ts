@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
@@ -8,9 +8,9 @@ import { CreateDiagnosis, Diagnosis, UpdateDiagnosis } from '../models/patients.
   providedIn: 'root',
 })
 export class DiagnosesService {
-  private apiUrl = `${environment.baseUrl}/diagnoses`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = `${environment.baseUrl}/diagnoses`;
 
   create(diagnosis: CreateDiagnosis): Observable<Diagnosis> {
     return this.http.post<Diagnosis>(this.apiUrl, diagnosis);

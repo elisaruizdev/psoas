@@ -1,4 +1,4 @@
-import { Component, DestroyRef, signal, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, signal, computed, inject, OnInit } from '@angular/core';
 import { TableConfig, TableRowClick } from '../../../shared/models/table.model';
 import { Table } from '../../../shared/ui/table/table';
 import { MatDialog } from '@angular/material/dialog';
@@ -16,20 +16,25 @@ import { NotificationService } from '../../../shared/notifications/notification.
   imports: [Table, ButtonUI, Icon],
   templateUrl: './physios.html',
   styleUrl: './physios.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Physios {
-  physios = signal<Physio[]>([]);
-  showPendingRequests = signal<boolean>(false);
-  loadError = signal('');
-  openError = signal('');
+export class Physios implements OnInit {
+  private dialog = inject(MatDialog);
+  private physiosService = inject(PhysiosService);
+  private destroyRef = inject(DestroyRef);
 
-  pendingPhysios = computed(() =>
+  readonly physios = signal<Physio[]>([]);
+  readonly showPendingRequests = signal<boolean>(false);
+  readonly loadError = signal('');
+  readonly openError = signal('');
+
+  readonly pendingPhysios = computed(() =>
     this.physios().filter((p) => p.status === 'pending_verification')
   );
 
-  hasPendingPhysios = computed(() => this.pendingPhysios().length > 0);
+  readonly hasPendingPhysios = computed(() => this.pendingPhysios().length > 0);
 
-  listadoPhysiosConfig = computed<TableConfig>(() => ({
+  readonly listadoPhysiosConfig = computed<TableConfig>(() => ({
     columns: [
       {
         key: 'fullName',
@@ -66,12 +71,6 @@ export class Physios {
   }));
 
   private readonly notifications = inject(NotificationService);
-
-  constructor(
-    private dialog: MatDialog,
-    private physiosService: PhysiosService,
-    private destroyRef: DestroyRef,
-  ) {}
 
   ngOnInit() {
     this.getAllPhysios();

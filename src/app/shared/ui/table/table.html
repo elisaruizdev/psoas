@@ -34,8 +34,8 @@
             <tr class="mat-row" *matNoDataRow>
                 <td class="mat-cell" [attr.colspan]="displayedColumns().length">
                     {{ noDataMessage() }}
-                    @if (showFilter() && filterValue) {
-                    <span> "{{ filterValue }}"</span>
+                    @if (showFilter() && filterValue()) {
+                    <span> "{{ filterValue() }}"</span>
                     }
                 </td>
             </tr>

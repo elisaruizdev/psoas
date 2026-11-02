@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Input, OnInit, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, signal, inject, input } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -18,7 +18,6 @@ import { localIsoDate } from '../../../../../shared/utils/dates';
 
 @Component({
   selector: 'app-treatments',
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -32,25 +31,24 @@ import { localIsoDate } from '../../../../../shared/utils/dates';
   ],
   templateUrl: './treatments.html',
   styleUrl: './treatments.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Treatments implements OnInit {
-  @Input() patientId!: string;
+  private treatmentsService = inject(TreatmentsService);
+  private destroyRef = inject(DestroyRef);
 
-  treatments = signal<Treatment[]>([]);
-  loading = signal<boolean>(false);
-  showForm = signal<boolean>(false);
-  selectedTreatment = signal<Treatment | undefined>(undefined);
-  editingId = signal<string | null>(null);
-  treatmentFormConfig = signal<FormConfig | null>(null);
+  readonly patientId = input.required<string>();
+
+  readonly treatments = signal<Treatment[]>([]);
+  readonly loading = signal<boolean>(false);
+  readonly showForm = signal<boolean>(false);
+  readonly selectedTreatment = signal<Treatment | undefined>(undefined);
+  readonly editingId = signal<string | null>(null);
+  readonly treatmentFormConfig = signal<FormConfig | null>(null);
 
   private readonly notifications = inject(NotificationService);
   /** true mientras se guarda: el formulario desactiva el botón de enviar. */
   readonly saving = signal(false);
-
-  constructor(
-    private treatmentsService: TreatmentsService,
-    private destroyRef: DestroyRef,
-  ) {}
 
   ngOnInit(): void {
     this.loadTreatments();
@@ -58,7 +56,7 @@ export class Treatments implements OnInit {
 
   loadTreatments(): void {
     this.loading.set(true);
-    this.treatmentsService.getAllByPatient(this.patientId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.treatmentsService.getAllByPatient(this.patientId()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (treatments) => {
         this.treatments.set(treatments);
         this.loading.set(false);
@@ -125,7 +123,7 @@ export class Treatments implements OnInit {
   onSubmitTreatment(treatmentData: FormValue): void {
     const sessionsPlanned = treatmentData['sessions_planned'];
     const formattedData = {
-      patient_id: this.patientId,
+      patient_id: this.patientId(),
       treatment_name: formText(treatmentData, 'treatment_name') ?? '',
       start_date: formText(treatmentData, 'start_date') ?? '',
       end_date: formText(treatmentData, 'end_date') || undefined,

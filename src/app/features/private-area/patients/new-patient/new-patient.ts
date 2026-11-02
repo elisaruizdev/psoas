@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { Validators } from '@angular/forms';
@@ -18,23 +18,21 @@ import {
 
 @Component({
   selector: 'app-new-patient',
-  standalone: true,
   imports: [Modal, Form],
   templateUrl: './new-patient.html',
   styleUrl: './new-patient.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewPatient implements OnInit {
-  patientFormConfig = signal<FormConfig | null>(null);
+  private dialogRef = inject<MatDialogRef<NewPatient>>(MatDialogRef);
+  private patientsService = inject(PatientsService);
+  private destroyRef = inject(DestroyRef);
+
+  readonly patientFormConfig = signal<FormConfig | null>(null);
 
   private readonly notifications = inject(NotificationService);
   /** true mientras se guarda: el formulario desactiva el botón de enviar. */
   readonly saving = signal(false);
-
-  constructor(
-    private dialogRef: MatDialogRef<NewPatient>,
-    private patientsService: PatientsService,
-    private destroyRef: DestroyRef,
-  ) {}
 
   ngOnInit(): void {
     this.initializeFormConfig();

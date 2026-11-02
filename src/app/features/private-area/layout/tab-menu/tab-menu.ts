@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TabItem } from '../models/layout.model';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Icon } from '../../../../shared/ui/icon/icon';
@@ -9,6 +9,7 @@ import { AssistantService } from '../../assistant/services/assistant.service';
   imports: [RouterLink, RouterLinkActive, Icon],
   templateUrl: './tab-menu.html',
   styleUrl: './tab-menu.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TabMenu {
   tabs: TabItem[] = [

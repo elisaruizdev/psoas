@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Inject, OnInit, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -13,25 +13,27 @@ import { NotificationService } from '../../../../shared/notifications/notificati
 
 @Component({
   selector: 'app-detail-session',
-  standalone: true,
   imports: [CommonModule, MatDialogModule, Form, ButtonUI, Icon],
   templateUrl: './detail-session.html',
   styleUrl: './detail-session.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailSession implements OnInit {
+  data = inject<Appointment>(MAT_DIALOG_DATA);
+  private dialogRef = inject<MatDialogRef<DetailSession>>(MatDialogRef);
+  private appointmentsService = inject(AppointmentsService);
+  private destroyRef = inject(DestroyRef);
+
   appointment: Appointment;
-  appointmentFormConfig = signal<FormConfig | null>(null);
+  readonly appointmentFormConfig = signal<FormConfig | null>(null);
 
   private readonly notifications = inject(NotificationService);
   /** true mientras se guarda: el formulario desactiva el botón de enviar. */
   readonly saving = signal(false);
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: Appointment,
-    private dialogRef: MatDialogRef<DetailSession>,
-    private appointmentsService: AppointmentsService,
-    private destroyRef: DestroyRef,
-  ) {
+  constructor() {
+    const data = this.data;
+
     this.appointment = data;
   }
 

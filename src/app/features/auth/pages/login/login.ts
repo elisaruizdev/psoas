@@ -1,4 +1,4 @@
-import { Component, DestroyRef, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -11,26 +11,26 @@ import { LoginRequest } from '../../models/login.model';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
   imports: [RouterLink, ReactiveFormsModule, CommonModule, Icon],
   templateUrl: './login.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Login {
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+  private session = inject(SessionService);
+  private route = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
+
   loginForm: FormGroup<{
     email: FormControl<string>;
     password: FormControl<string>;
   }>;
-  isLoading = signal(false);
-  errorMessage = signal('');
+  readonly isLoading = signal(false);
+  readonly errorMessage = signal('');
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private authService: AuthService,
-    private session: SessionService,
-    private route: ActivatedRoute,
-    private destroyRef: DestroyRef,
-  ) {
+  constructor() {
     if (this.route.snapshot.queryParamMap.get('verified') === 'false') {
       this.errorMessage.set('No se ha podido verificar el email.');
     }

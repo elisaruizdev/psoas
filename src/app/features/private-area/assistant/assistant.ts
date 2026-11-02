@@ -1,12 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  ElementRef,
-  afterNextRender,
-  computed,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRender, computed, signal, viewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -25,8 +17,12 @@ const ROUTE_LABELS: Record<AssistantRoute, string> = {
   imports: [ReactiveFormsModule, ButtonUI],
   templateUrl: './assistant.html',
   styleUrl: './assistant.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Assistant {
+  private assistant = inject(AssistantService);
+  private destroyRef = inject(DestroyRef);
+
   readonly suggestions = [
     '¿Cómo ha evolucionado el dolor lumbar de Ana López?',
     '¿Qué tratamiento sigue Carlos Fernández?',
@@ -34,12 +30,12 @@ export class Assistant {
     '¿Me recomiendas ibuprofeno para el dolor?',
   ];
 
-  messages = signal<ChatMessage[]>([]);
-  pending = signal(false);
-  error = signal('');
-  health = signal<AssistantHealth | null>(null);
+  readonly messages = signal<ChatMessage[]>([]);
+  readonly pending = signal(false);
+  readonly error = signal('');
+  readonly health = signal<AssistantHealth | null>(null);
 
-  providerLabel = computed(() => {
+  readonly providerLabel = computed(() => {
     const h = this.health();
     if (!h) return '';
     return h.proveedor === 'fake' ? 'Modo demo, sin modelo de IA' : `Modelo: ${h.proveedor}`;
@@ -53,10 +49,7 @@ export class Assistant {
   private readonly input = viewChild<ElementRef<HTMLTextAreaElement>>('questionInput');
   private nextId = 1;
 
-  constructor(
-    private assistant: AssistantService,
-    private destroyRef: DestroyRef,
-  ) {
+  constructor() {
     // Tras el primer pintado: la comprobación no retrasa que se vea la pantalla.
     afterNextRender(() => this.checkHealth());
   }

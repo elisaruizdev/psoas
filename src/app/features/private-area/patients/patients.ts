@@ -1,4 +1,4 @@
-import { Component, DestroyRef, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, signal, computed, inject, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TableConfig, TableRowClick } from '../../../shared/models/table.model';
 import { Table } from '../../../shared/ui/table/table';
@@ -14,12 +14,17 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [Table, ButtonUI],
   templateUrl: './patients.html',
   styleUrl: './patients.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Patients {
-  patients = signal<Patient[]>([]);
-  loadError = signal('');
+export class Patients implements OnInit {
+  private dialog = inject(MatDialog);
+  private patientsService = inject(PatientsService);
+  private destroyRef = inject(DestroyRef);
 
-  listadoPatientsConfig = computed<TableConfig>(() => ({
+  readonly patients = signal<Patient[]>([]);
+  readonly loadError = signal('');
+
+  readonly listadoPatientsConfig = computed<TableConfig>(() => ({
     columns: [
       {
         key: 'fullName',
@@ -50,12 +55,6 @@ export class Patients {
     clickableRows: true,
     clickableParams: 'view-patient',
   }));
-
-  constructor(
-    private dialog: MatDialog,
-    private patientsService: PatientsService,
-    private destroyRef: DestroyRef,
-  ) {}
 
   ngOnInit() {
     this.getAllPatients();

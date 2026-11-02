@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Icon } from '../icon/icon';
 
@@ -7,12 +7,13 @@ import { Icon } from '../icon/icon';
   imports: [Icon],
   templateUrl: './modal.html',
   styleUrl: './modal.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Modal {
-  @Input() title: string = '';
-  @Input() subtitle: string = '';
+  readonly title = input<string>('');
+  readonly subtitle = input<string>('');
 
-  dialogRef = inject(MatDialogRef<Modal>);
+  private readonly dialogRef = inject(MatDialogRef<Modal>);
 
   close(): void {
     this.dialogRef.close();

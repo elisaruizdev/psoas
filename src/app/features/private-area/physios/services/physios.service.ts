@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
@@ -9,9 +9,9 @@ import { Physio } from '../models/physios.model';
   providedIn: 'root',
 })
 export class PhysiosService {
-  private apiUrl = `${environment.baseUrl}/physios`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = `${environment.baseUrl}/physios`;
 
   getAllPhysios(): Observable<Physio[]> {
     return this.http.get<Physio[]>(this.apiUrl);

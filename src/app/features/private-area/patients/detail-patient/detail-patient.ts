@@ -1,11 +1,11 @@
-import { Component, DestroyRef, Inject, OnInit, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { Validators } from '@angular/forms';
 import { PatientsService } from '../services/patients.service';
-import { Patient } from '../models/patients.model';
+import { Patient, TabId } from '../models/patients.model';
 import { Form } from '../../../../shared/ui/form/form';
 import { ButtonUI } from '../../../../shared/ui/button/button';
 import { Icon } from '../../../../shared/ui/icon/icon';
@@ -22,7 +22,6 @@ import { NotificationService } from '../../../../shared/notifications/notificati
 
 @Component({
   selector: 'app-detail-patient',
-  standalone: true,
   imports: [
     CommonModule,
     MatDialogModule,
@@ -36,24 +35,23 @@ import { NotificationService } from '../../../../shared/notifications/notificati
   ],
   templateUrl: './detail-patient.html',
   styleUrl: './detail-patient.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailPatient implements OnInit {
-  patient = signal<Patient | null>(null);
-  patientFormConfig = signal<FormConfig | null>(null);
-  activeTab: 'clinical' | 'treatments' | 'sessions' = 'clinical';
-  loading = signal<boolean>(true);
-  loadError = signal('');
+  readonly data = inject<{ id: string }>(MAT_DIALOG_DATA);
+  private dialogRef = inject<MatDialogRef<DetailPatient>>(MatDialogRef);
+  private patientsService = inject(PatientsService);
+  private destroyRef = inject(DestroyRef);
+
+  readonly patient = signal<Patient | null>(null);
+  readonly patientFormConfig = signal<FormConfig | null>(null);
+  readonly activeTab = signal<TabId>('clinical');
+  readonly loading = signal<boolean>(true);
+  readonly loadError = signal('');
 
   private readonly notifications = inject(NotificationService);
   /** true mientras se guarda: el formulario desactiva el botón de enviar. */
   readonly saving = signal(false);
-
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: { id: string },
-    private dialogRef: MatDialogRef<DetailPatient>,
-    private patientsService: PatientsService,
-    private destroyRef: DestroyRef,
-  ) {}
 
   ngOnInit(): void {
     this.loadPatientData();
@@ -207,8 +205,8 @@ export class DetailPatient implements OnInit {
     this.dialogRef.close();
   }
 
-  onTabChange(tab: 'clinical' | 'treatments' | 'sessions'): void {
-    this.activeTab = tab;
+  onTabChange(tab: TabId): void {
+    this.activeTab.set(tab);
   }
 
   private formatPatientData(data: FormValue) {

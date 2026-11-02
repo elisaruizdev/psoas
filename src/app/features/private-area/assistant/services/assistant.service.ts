@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
@@ -10,9 +10,9 @@ import { AssistantHealth, AssistantReply } from '../models/assistant.model';
  */
 @Injectable({ providedIn: 'root' })
 export class AssistantService {
-  private readonly apiUrl = environment.aiUrl;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private readonly apiUrl = environment.aiUrl;
 
   /** ¿Hay asistente configurado en este entorno? (en Vercel, no). */
   static get enabled(): boolean {

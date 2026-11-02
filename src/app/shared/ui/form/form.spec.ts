@@ -46,7 +46,7 @@ describe('Form (formulario dinámico)', () => {
 
     fixture = TestBed.createComponent(Form);
     component = fixture.componentInstance;
-    component.config = config;
+    fixture.componentRef.setInput('config', config);
     element = fixture.nativeElement;
     fixture.detectChanges();
   });

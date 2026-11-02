@@ -1,4 +1,4 @@
-import { Component, computed, effect, input, output, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
@@ -19,25 +19,26 @@ import { TableCell, TableConfig, TableRow, TableRowClick } from '../../models/ta
   ],
   templateUrl: './table.html',
   styleUrl: './table.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Table {
-  config = input.required<TableConfig>();
+  readonly config = input.required<TableConfig>();
   rowClick = output<TableRowClick>();
 
-  private paginator = viewChild(MatPaginator);
-  private sort = viewChild(MatSort);
+  private readonly paginator = viewChild(MatPaginator);
+  private readonly sort = viewChild(MatSort);
 
   readonly dataSource = new MatTableDataSource<TableRow>([]);
-  filterValue = '';
+  readonly filterValue = signal('');
 
   // Todo lo que sale de la configuración se deriva con computed: si el padre
   // cambia `config`, se recalcula solo. Sustituye a ngOnInit + ngOnChanges.
-  displayedColumns = computed(() => this.config().columns.map((col) => col.key));
-  showFilter = computed(() => this.config().showFilter ?? true);
-  filterPlaceholder = computed(() => this.config().filterPlaceholder ?? 'Buscar...');
-  pageSizeOptions = computed(() => this.config().pageSizeOptions ?? [5, 10, 20]);
-  noDataMessage = computed(() => this.config().noDataMessage ?? 'No hay datos disponibles');
-  isClickable = computed(() => this.config().clickableRows ?? false);
+  readonly displayedColumns = computed(() => this.config().columns.map((col) => col.key));
+  readonly showFilter = computed(() => this.config().showFilter ?? true);
+  readonly filterPlaceholder = computed(() => this.config().filterPlaceholder ?? 'Buscar...');
+  readonly pageSizeOptions = computed(() => this.config().pageSizeOptions ?? [5, 10, 20]);
+  readonly noDataMessage = computed(() => this.config().noDataMessage ?? 'No hay datos disponibles');
+  readonly isClickable = computed(() => this.config().clickableRows ?? false);
 
   constructor() {
     // MatTableDataSource no es reactivo a signals: se sincroniza con efectos.
@@ -79,8 +80,8 @@ export class Table {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.filterValue = filterValue.trim().toLowerCase();
-    this.dataSource.filter = this.filterValue;
+    this.filterValue.set(filterValue.trim().toLowerCase());
+    this.dataSource.filter = this.filterValue();
     this.dataSource.paginator?.firstPage();
   }
 

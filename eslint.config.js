@@ -19,10 +19,11 @@ module.exports = tseslint.config(
     rules: {
       '@angular-eslint/directive-selector': 'off',
       '@angular-eslint/component-selector': 'off',
-      '@angular-eslint/prefer-inject': 'off',
-      '@angular-eslint/use-lifecycle-interface': 'off',
-      '@angular-eslint/no-output-on-prefix': 'off',
-      '@angular-eslint/no-output-native': 'off',
+      // Angular moderno (AGENTS.md): signals para inputs, outputs y consultas, inject() y OnPush.
+      // Ya lo cumple todo el código: estas reglas evitan volver atrás.
+      '@angular-eslint/prefer-signals': 'error',
+      '@angular-eslint/prefer-output-emitter-ref': 'error',
+      '@angular-eslint/prefer-on-push-component-change-detection': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },

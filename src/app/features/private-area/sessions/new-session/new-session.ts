@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -16,27 +16,25 @@ import { NotificationService } from '../../../../shared/notifications/notificati
 
 @Component({
   selector: 'app-new-session',
-  standalone: true,
   imports: [CommonModule, Form, MatDialogModule, Icon],
   templateUrl: './new-session.html',
   styleUrl: './new-session.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewSession implements OnInit {
-  appointmentFormConfig = signal<FormConfig | null>(null);
+  private dialogRef = inject<MatDialogRef<NewSession>>(MatDialogRef);
+  private appointmentsService = inject(AppointmentsService);
+  private patientsService = inject(PatientsService);
+  private physiosService = inject(PhysiosService);
+  private destroyRef = inject(DestroyRef);
+
+  readonly appointmentFormConfig = signal<FormConfig | null>(null);
   patients: Patient[] = [];
   physios: Physio[] = [];
 
   private readonly notifications = inject(NotificationService);
   /** true mientras se guarda: el formulario desactiva el botón de enviar. */
   readonly saving = signal(false);
-
-  constructor(
-    private dialogRef: MatDialogRef<NewSession>,
-    private appointmentsService: AppointmentsService,
-    private patientsService: PatientsService,
-    private physiosService: PhysiosService,
-    private destroyRef: DestroyRef,
-  ) {}
 
   ngOnInit(): void {
     this.loadPatientsAndPhysios();
