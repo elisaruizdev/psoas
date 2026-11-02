@@ -54,6 +54,16 @@
     color: var(--text-secondary);
   }
 
+  // El microfrontend vive en Shadow DOM: no le llegan nuestras clases, pero sí las variables
+  // CSS. Así se le pasa el tema de Psoas sin acoplarlo a nuestros estilos.
+  &__mfe {
+    --psoas-fondo: var(--bg-surface);
+    --psoas-texto: var(--text-heading);
+    --psoas-borde: var(--border-default);
+    --psoas-primario: var(--border-brand);
+    --psoas-radio: var(--radius-card);
+  }
+
   &__table {
     display: flex;
     flex-direction: column;

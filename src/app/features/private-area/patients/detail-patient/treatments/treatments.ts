@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Input, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,6 +12,7 @@ import { Form } from '../../../../../shared/ui/form/form';
 import { FormConfig, FormValue, formChoice, formText } from '../../../../../shared/models/form.model';
 import { ButtonUI } from '../../../../../shared/ui/button/button';
 import { Treatment } from '../../models/patients.model';
+import { NotificationService } from '../../../../../shared/notifications/notification.service';
 
 @Component({
   selector: 'app-treatments',
@@ -39,6 +40,8 @@ export class Treatments implements OnInit {
   selectedTreatment = signal<Treatment | undefined>(undefined);
   editingId = signal<string | null>(null);
   treatmentFormConfig = signal<FormConfig | null>(null);
+
+  private readonly notifications = inject(NotificationService);
 
   constructor(
     private treatmentsService: TreatmentsService,
@@ -258,11 +261,10 @@ export class Treatments implements OnInit {
   }
 
   private showSuccessNotification(message: string): void {
-    alert(message);
+    this.notifications.success(message);
   }
 
   private showErrorNotification(message: string): void {
-    console.error('ERROR:', message);
-    alert(message);
+    this.notifications.error(message);
   }
 }

@@ -8,10 +8,10 @@ const nueva: DatosPaciente = {
   nombre: 'marta',
   primerApellido: 'pérez',
   segundoApellido: 'gil',
-  dni: '11223344C', // el validador exige la letra en mayúscula
+  dni: '11223344b', // letra de control correcta (11223344 % 23 → B); el front la pasa a mayúscula
   nacimiento: '1992-03-14',
   genero: 'femenino',
-  telefono: '611223344', // el validador no admite espacios
+  telefono: '611 22 33 44', // se escribe con espacios y se envía sin ellos
   correo: 'Marta@Example.com',
   direccion: 'Calle Sol 3',
   ciudad: 'sevilla',
@@ -19,15 +19,15 @@ const nueva: DatosPaciente = {
 };
 
 /**
- * La app avisa con alert() nativo. Sin manejador, Playwright los descarta solo;
- * con page.on('dialog') se leen y se aceptan. El manejador se registra ANTES de la
- * acción: un alert bloquea la página hasta que alguien lo cierra.
+ * La app ya no usa alert(): avisa con un MatSnackBar. Por si alguien vuelve a meter un
+ * alert/confirm nativo, se registra un manejador que los recoge (si no, Playwright los
+ * descarta en silencio) y el test comprueba que no ha saltado ninguno.
  */
-function capturarAlertas(page: Page): string[] {
+function capturarDialogosNativos(page: Page): string[] {
   const mensajes: string[] = [];
   page.on('dialog', async (dialogo) => {
     mensajes.push(dialogo.message());
-    await dialogo.accept();
+    await dialogo.dismiss();
   });
   return mensajes;
 }
@@ -63,7 +63,7 @@ test.describe('pacientes', { tag: '@smoke' }, () => {
 
 test.describe('alta de paciente', () => {
   test('envía los datos normalizados y recarga el listado', async ({ page, patientsPage, api }) => {
-    const alertas = capturarAlertas(page);
+    const nativos = capturarDialogosNativos(page);
 
     await test.step('abrir el modal de alta', async () => {
       await patientsPage.abrir();
@@ -90,15 +90,16 @@ test.describe('alta de paciente', () => {
       // expect.soft: si una falla, el test sigue y al final informa de todas.
       expect.soft(body.name).toBe('Marta');
       expect.soft(body.surname).toBe('Pérez');
-      expect.soft(body.identifier).toBe('11223344C');
+      expect.soft(body.identifier).toBe('11223344B');
       expect.soft(body.phone).toBe('611223344');
       expect.soft(body.email).toBe('marta@example.com');
       expect.soft(body.city).toBe('Sevilla');
     });
 
     await test.step('avisa del alta, cierra el modal y vuelve a pedir el listado', async () => {
-      await expect.poll(() => alertas).toEqual(['Paciente creado correctamente']);
+      await expect(patientsPage.aviso).toContainText('Paciente creado correctamente');
       await expect(patientsPage.modalAlta).toBeHidden();
+      expect(nativos).toEqual([]);
       // expect.poll repite la función hasta que cumple (o se acaba el tiempo).
       await expect.poll(() => api.llamadasA('GET', '/patients').length).toBe(2);
     });
@@ -110,16 +111,27 @@ test.describe('alta de paciente', () => {
     api,
   }) => {
     // Simulación de error del back solo para este endpoint; el resto sigue igual.
-    api.responder('POST', '/patients', 409, { message: 'Ya existe un paciente con DNI 11223344C' });
+    api.responder('POST', '/patients', 409, { message: 'Ya existe un paciente con DNI 11223344B' });
 
     await patientsPage.abrir();
     await patientsPage.botonNuevo.click();
     await patientsPage.rellenarAlta(nueva);
 
-    const alertas = capturarAlertas(page);
+    const nativos = capturarDialogosNativos(page);
     await patientsPage.botonCrear.click();
 
-    await expect.poll(() => alertas).toEqual(['Ya existe un paciente con DNI 11223344C']);
+    // El aviso se ve por encima del modal y el modal sigue abierto para corregir.
+    await expect(patientsPage.aviso).toContainText('Ya existe un paciente con DNI 11223344B');
     await expect(patientsPage.modalAlta).toBeVisible();
+    expect(nativos).toEqual([]);
+  });
+
+  test('un DNI con la letra equivocada no deja crear el paciente', async ({ patientsPage }) => {
+    await patientsPage.abrir();
+    await patientsPage.botonNuevo.click();
+    await patientsPage.rellenarAlta({ ...nueva, dni: '11223344C' });
+
+    await expect(patientsPage.modalAlta.getByText('La letra del DNI/NIE no corresponde al número')).toBeVisible();
+    await expect(patientsPage.botonCrear).toBeDisabled();
   });
 });

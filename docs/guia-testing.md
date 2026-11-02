@@ -162,8 +162,9 @@ Si Material cambia su DOM en una versión nueva, el harness se actualiza con él
 ### 1.14 Orden aleatorio, cobertura y umbral
 
 - `karma.conf.js` → `jasmine.random: true`. Si un test depende de otro, falla de forma intermitente y lo detectas.
-- `npm run test:ci` → `--code-coverage`: informe HTML en `coverage/psoas/index.html` y `lcov` para herramientas como SonarQube.
-- **Umbral (ratchet)**: `coverageReporter.check.global` falla la ejecución si la cobertura baja de 45 % de líneas. Se sube cuando se añaden tests, nunca se baja. Cobertura actual: 46 % de líneas y 23 % de ramas. Las pantallas grandes (detalle de paciente, sesiones) solo tienen el test "should create".
+- `npm run test:ci` → `--code-coverage`: informe HTML en `coverage/psoas/index.html`, `lcov` para herramientas como SonarQube y `cobertura.xml` para Azure DevOps. Además deja `test-results/unit/junit.xml` (resultados test a test).
+- **Umbral (ratchet)**: `coverageReporter.check.global` falla la ejecución si la cobertura baja de 90 % de líneas y sentencias, 88 % de funciones u 80 % de ramas. Se sube cuando se añaden tests, nunca se baja.
+- **Cómo se pasó del 46 % al 93 %** (216 tests): primero lo que más líneas sin cubrir tenía (pestañas del detalle de paciente, fichas, listados, formulario dinámico). Los componentes se prueban con **dobles de los servicios** (`jasmine.createSpyObj` + `of()`/`throwError()`): así se cubren los caminos de error sin HTTP. Los servicios HTTP se prueban **por tablas** en `src/app/features/api-services.spec.ts`: cada fila es método + URL + cuerpo.
 - La cobertura dice qué líneas **se ejecutaron**, no qué se **comprobó**. *"Coverage is a smell detector, not a quality metric."*
 
 ### 1.15 Helpers compartidos (`src/testing/`)
@@ -401,38 +402,24 @@ WebKit es el motor de Safari: si funciona en WebKit, es muy probable que funcion
 | `informe-e2e` | Une los blobs en un informe HTML |
 | `visual` | Dentro de `mcr.microsoft.com/playwright:v1.63.0-noble` para que las capturas sean reproducibles |
 | `docker` | Construye la imagen, la arranca y ejecuta `e2e/docker` (cabeceras, CSP, caché) |
+| `microfrontend` | Tests (Vitest) y build del Web Component de Lit, independiente de Angular |
 
 Detalles: `concurrency` cancela ejecuciones viejas de la misma rama, `cache: npm` acelera `npm ci`, los artefactos (cobertura, informe, capturas, contrato) se suben aunque falle algo (`if: always()`).
 
-**Equivalencia en Azure DevOps** (la oferta lo pide):
+**Azure DevOps** (la oferta lo pide): el mismo pipeline está en [`azure-pipelines.yml`](../azure-pipelines.yml):
 
-```yaml
-trigger: [main]
-pool: { vmImage: ubuntu-latest }
-stages:
-  - stage: Calidad
-    jobs:
-      - job: lint_y_unit
-        steps:
-          - task: NodeTool@0
-            inputs: { versionSpec: '22.x' }
-          - script: npm ci
-          - script: npm run lint
-          - script: npm run test:ci
-          - task: PublishCodeCoverageResults@2
-            inputs: { summaryFileLocation: coverage/psoas/lcov.info }
-  - stage: E2E
-    dependsOn: Calidad
-    jobs:
-      - job: playwright
-        strategy: { parallel: 2 }   # sharding
-        steps:
-          - script: npm ci && npx playwright install --with-deps
-          - script: npx ng build --configuration development
-          - script: npx playwright test --shard=$(System.JobPositionInPhase)/$(System.TotalJobsInPhase)
+```
+Calidad (lint + Karma + build  ‖  microfrontend) ─┬─► E2E (2 shards) ─┬─► Despliegue (solo main,
+                                                  └─► Docker ─────────┘    con aprobación)
 ```
 
-GitHub Actions → Azure: `jobs` ≈ `jobs`, `needs` ≈ `dependsOn`, `matrix` ≈ `strategy.matrix`/`parallel`, `actions/upload-artifact` ≈ `PublishPipelineArtifact`.
+- **Stages → jobs → steps**, con `dependsOn` para el orden y `condition` para el despliegue solo en `main`.
+- **Plantilla reutilizable** `.azure/pasos-node.yml` (Node + caché de npm + `npm ci`), el equivalente a una *composite action*.
+- **`PublishTestResults@2`** con el JUnit de Karma y de Playwright → pestaña *Tests* con cada test, su duración y su historial (detecta los *flaky*).
+- **`PublishCodeCoverageResults@2`** con `cobertura.xml` → pestaña *Code Coverage*.
+- **`deployment` job + Environment `produccion`**: las aprobaciones manuales se configuran en el Environment, no en el YAML.
+
+GitHub Actions → Azure: `jobs` ≈ `jobs`, `needs` ≈ `dependsOn`, `matrix` ≈ `strategy.matrix`, `uses:` ≈ `task:`, `actions/upload-artifact` ≈ `PublishPipelineArtifact`, *environments* con revisores ≈ *Environments* con *Approvals and checks*, *secrets* ≈ *variable groups* / Key Vault.
 
 ---
 
@@ -454,8 +441,10 @@ GitHub Actions → Azure: `jobs` ≈ `jobs`, `needs` ≈ `dependsOn`, `matrix` �
 | 4 fallos de contraste WCAG AA | axe-core | Tokens y opacidades |
 | Filas de tabla no usables con teclado | TDD + test E2E solo con teclado | `tabindex`, Enter/Espacio, `aria-label`, foco visible |
 | Foco casi invisible | Revisión de la captura visual | Contorno de marca de 2 px |
-| El formulario rechaza la letra del DNI en minúscula y el teléfono con espacios, aunque el código luego los normaliza | Test de alta | Pendiente: aceptar y normalizar, o avisar mejor |
-| La app avisa con `alert()` nativo | Test de alta | Pendiente: un aviso accesible (`role="status"` o snackbar) |
+| El formulario rechaza la letra del DNI en minúscula y el teléfono con espacios, aunque el código luego los normaliza; y acepta un DNI con la letra equivocada (solo miraba el formato) | Test de alta | Validadores propios en `shared/validators/spanish-id.validators.ts`: calculan la **letra de control** (número % 23; en el NIE, X/Y/Z → 0/1/2), aceptan espacios, puntos y guiones, y explican el error («la letra no corresponde al número»). Funciones puras probadas por tablas |
+| La app avisaba con `alert()` nativo (18 sitios): bloquea la página y no es accesible | Test de alta | `NotificationService` sobre `MatSnackBar`: `politeness` *polite* para éxitos y *assertive* para errores. Va en el overlay del CDK, así que se anuncia aunque haya un diálogo abierto (lo que hay detrás de un modal queda `aria-hidden`). Los componentes dependen del servicio, no de Material |
+| En el registro, el campo «Contraseña» no estaba enlazado al formulario y la que se enviaba era «Confirmar contraseña» | Al escribir el test del registro | `formControlName` en los dos campos + validador de grupo `passwordMismatch` |
+| «Segundo apellido» era obligatorio en el registro sin que el código lo pidiera | Test del registro | El atributo HTML `required` añade el validador también en formularios reactivos. Se quita |
 | Test flaky: `acceso-privado` falló 1 vez en Firefox con la suite completa en local | Pasó 15 de 15 con `--repeat-each=5` y 68 de 68 en la siguiente ejecución completa | Causa probable: `ng serve` compilando chunks lazy bajo carga. En CI se sirve la build estática; si reaparece, la traza de `on-first-retry` dirá dónde espera |
 | Cabeceras de nginx perdidas en `location` | Conocimiento de nginx + test de API | Include en cada `location` |
 

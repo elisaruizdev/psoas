@@ -4,6 +4,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } 
 import { FormConfig, FormFieldConfig, FormFieldValue, FormValue } from '../../models/form.model';
 import { ButtonUI } from '../button/button';
 import { Icon } from '../icon/icon';
+import { spanishIdErrorMessage } from '../../validators/spanish-id.validators';
 
 
 @Component({
@@ -81,6 +82,10 @@ export class Form {
     if (control && control.touched && control.errors) {
       if (control.errors['required']) {
         return 'Este campo es obligatorio';
+      }
+      const spanishIdMessage = spanishIdErrorMessage(control.errors);
+      if (spanishIdMessage) {
+        return spanishIdMessage;
       }
       if (control.errors['email']) {
         return 'Correo no válido';

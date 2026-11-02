@@ -1,10 +1,21 @@
 import { Component, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { RegisterForm } from '../../models/register.model';
 import { AuthService } from '../../services/auth.service';
 import { Icon } from '../../../../shared/ui/icon/icon';
+import {
+  normalizePhone,
+  spanishPhoneValidator,
+} from '../../../../shared/validators/spanish-id.validators';
 
 @Component({
   selector: 'app-register',
@@ -21,38 +32,57 @@ export class Register {
     private register: AuthService,
     private destroyRef: DestroyRef,
   ) {
-    this.registerForm = this.fb.group({
-      name: ['', Validators.required],
-      surname: ['', Validators.required],
-      second_surname: [''],
-      phone: ['', Validators.required],
-      email: ['', Validators.required],
-      password: ['', Validators.required],
-    });
+    this.registerForm = this.fb.group(
+      {
+        name: ['', Validators.required],
+        surname: ['', Validators.required],
+        second_surname: [''],
+        phone: ['', [Validators.required, spanishPhoneValidator()]],
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required, Validators.minLength(8)]],
+        confirmPassword: ['', Validators.required],
+      },
+      { validators: Register.passwordMatchValidator },
+    );
+  }
+
+  /** Validador de grupo: compara dos controles hermanos. */
+  static passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
+    const password = group.get('password')?.value;
+    const confirmPassword = group.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { passwordMismatch: true };
+  }
+
+  /** Muestra el error de un campo solo cuando el usuario ya ha pasado por él. */
+  showError(field: string): boolean {
+    const control = this.registerForm.get(field);
+    return !!control && control.invalid && control.touched;
   }
 
   sendFormRegister() {
-    if (this.registerForm.valid) {
-      const dataRegister: RegisterForm = {
-        name: this.registerForm.get('name')?.value,
-        surname: this.registerForm.get('surname')?.value,
-        second_surname: this.registerForm.get('second_surname')?.value,
-        phone: this.registerForm.get('phone')?.value,
-        email: this.registerForm.get('email')?.value,
-        password: this.registerForm.get('password')?.value,
-      };
-      this.errorMessage.set('');
-      this.okMessage.set('');
-      this.register.registerForm(dataRegister).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: (res) => {
-          console.log('Registro exitoso', res);
-          this.okMessage.set('Registro exitoso. Espera a que un administrador valide tu cuenta.');
-        },
-        error: (error: HttpErrorResponse) => {
-          console.error('Error en el registro', error);
-          this.errorMessage.set('Error al registrar el usuario. Inténtalo de nuevo.');
-        },
-      });
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
     }
+    const value = this.registerForm.getRawValue();
+    const dataRegister: RegisterForm = {
+      name: value.name,
+      surname: value.surname,
+      second_surname: value.second_surname,
+      phone: normalizePhone(value.phone),
+      email: value.email.trim().toLowerCase(),
+      password: value.password,
+    };
+    this.errorMessage.set('');
+    this.okMessage.set('');
+    this.register.registerForm(dataRegister).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.okMessage.set('Registro exitoso. Espera a que un administrador valide tu cuenta.');
+      },
+      error: (error: HttpErrorResponse) => {
+        console.error('Error en el registro', error);
+        this.errorMessage.set('Error al registrar el usuario. Inténtalo de nuevo.');
+      },
+    });
   }
 }

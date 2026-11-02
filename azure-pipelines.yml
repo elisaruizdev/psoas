@@ -1,0 +1,193 @@
+# Pipeline de Azure DevOps para Psoas (frontend).
+#
+# Hace lo mismo que .github/workflows/ci.yml, pero con la sintaxis de Azure Pipelines,
+# para poder usar cualquiera de las dos plataformas:
+#
+#   Calidad ──► E2E (2 shards) ──► Docker ──► Despliegue (solo main, con aprobación)
+#
+# Equivalencias con GitHub Actions, por si lo preguntan:
+#   workflow → pipeline · job → job · step → step · `uses:` → `task:`
+#   matrix → strategy.matrix · artifacts → PublishPipelineArtifact
+#   environments con aprobación → `deployment` job + Environment con "Approvals and checks"
+#
+# Para darlo de alta: Pipelines → New pipeline → GitHub → este repo → "Existing YAML file".
+
+trigger:
+  branches:
+    include: [main]
+
+pr:
+  branches:
+    include: ['*']
+
+variables:
+  NODE_VERSION: '22.x'
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+  CI: 'true'
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  # ---------------------------------------------------------------------------
+  - stage: Calidad
+    displayName: Lint, tests unitarios y build
+    jobs:
+      - job: calidad
+        displayName: Lint + Karma + build
+        steps:
+          - template: .azure/pasos-node.yml
+            parameters:
+              nodeVersion: $(NODE_VERSION)
+
+          - script: npm run lint
+            displayName: ESLint
+
+          # Karma deja el JUnit en test-results/unit y la cobertura (Cobertura XML) en coverage/.
+          # Si la cobertura baja del umbral de karma.conf.js, este paso falla.
+          - script: npm run test:ci
+            displayName: Tests unitarios con cobertura
+
+          - task: PublishTestResults@2
+            displayName: Publicar resultados de Karma
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: test-results/unit/junit.xml
+              testRunTitle: Unitarios (Karma)
+
+          - task: PublishCodeCoverageResults@2
+            displayName: Publicar cobertura
+            condition: succeededOrFailed()
+            inputs:
+              summaryFileLocation: coverage/psoas/cobertura.xml
+
+          - script: npm run build
+            displayName: Build de producción
+
+          - task: PublishPipelineArtifact@1
+            displayName: Guardar el build
+            inputs:
+              targetPath: dist/psoas
+              artifact: dist
+
+      # El microfrontend es otro paquete: se prueba y se construye por separado y en paralelo.
+      - job: microfrontend
+        displayName: Microfrontend (Lit)
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(NODE_VERSION)
+          - script: npm ci && npm test && npm run build
+            displayName: Tests y build del Web Component
+            workingDirectory: microfrontends/resumen-citas
+          - task: PublishPipelineArtifact@1
+            displayName: Guardar el bundle
+            inputs:
+              targetPath: microfrontends/resumen-citas/dist
+              artifact: microfrontend-resumen-citas
+
+  # ---------------------------------------------------------------------------
+  - stage: E2E
+    displayName: Tests E2E (Playwright)
+    dependsOn: Calidad
+    jobs:
+      - job: e2e
+        displayName: Playwright
+        strategy:
+          # Sharding: la suite se reparte entre 2 agentes que corren a la vez.
+          matrix:
+            shard_1: { SHARD: '1/2' }
+            shard_2: { SHARD: '2/2' }
+        steps:
+          - template: .azure/pasos-node.yml
+            parameters:
+              nodeVersion: $(NODE_VERSION)
+
+          - script: npx playwright install --with-deps chromium firefox webkit
+            displayName: Navegadores de Playwright
+
+          # Build de desarrollo: apunta a localhost:3000, que es lo que intercepta la API falsa.
+          - script: npx ng build --configuration development
+            displayName: Build para E2E
+
+          - script: npm ci && npm run build
+            displayName: Build del microfrontend (lo usa e2e/microfrontend.spec.ts)
+            workingDirectory: microfrontends/resumen-citas
+
+          - script: npx playwright test --grep-invert @visual --shard=$(SHARD)
+            displayName: Playwright (shard $(SHARD))
+
+          - task: PublishTestResults@2
+            displayName: Publicar resultados E2E
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: junit-e2e/results.xml
+              testRunTitle: E2E shard $(SHARD)
+
+          - task: PublishPipelineArtifact@1
+            displayName: Guardar trazas si algo falla
+            condition: failed()
+            inputs:
+              targetPath: test-results
+              artifact: trazas-e2e-$(System.JobPositionInPhase)
+
+  # ---------------------------------------------------------------------------
+  - stage: Docker
+    displayName: Imagen Docker
+    dependsOn: Calidad
+    jobs:
+      - job: docker
+        displayName: Construir y probar la imagen
+        steps:
+          - template: .azure/pasos-node.yml
+            parameters:
+              nodeVersion: $(NODE_VERSION)
+
+          - script: npx playwright install --with-deps chromium
+            displayName: Chromium para los tests de la imagen
+
+          - script: docker build --build-arg API_URL=http://localhost:3000 -t psoas-web .
+            displayName: docker build
+
+          - script: |
+              docker run -d --name psoas-web -p 8080:80 psoas-web
+              for i in $(seq 1 30); do curl -sf http://localhost:8080 >/dev/null && break; sleep 1; done
+            displayName: Arrancar el contenedor
+
+          - script: npx playwright test --project=docker
+            displayName: Tests de la imagen (cabeceras de seguridad y CSP)
+            env:
+              WEB_URL: http://localhost:8080
+
+          - script: docker logs psoas-web
+            displayName: Logs de nginx
+            condition: failed()
+
+  # ---------------------------------------------------------------------------
+  # Despliegue: solo desde main y con aprobación manual. El Environment "produccion" se crea
+  # en Azure DevOps (Pipelines → Environments) y ahí se configura quién aprueba.
+  # Hoy la app se publica en Vercel desde GitHub; este stage muestra cómo sería en Azure
+  # (p. ej. Azure Static Web Apps, que tiene plan gratuito).
+  - stage: Despliegue
+    displayName: Despliegue
+    dependsOn: [E2E, Docker]
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - deployment: produccion
+        displayName: Publicar en producción
+        environment: produccion
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: dist
+                - script: ls -R $(Pipeline.Workspace)/dist/browser | head -20
+                  displayName: Build listo para publicar
+                # - task: AzureStaticWebApp@0
+                #   inputs:
+                #     app_location: $(Pipeline.Workspace)/dist/browser
+                #     skip_app_build: true
+                #     azure_static_web_apps_api_token: $(SWA_TOKEN)  # variable secreta

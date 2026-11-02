@@ -4,6 +4,7 @@
 #   e2e (2 shards) ──> informe-e2e
 #   visual            (dentro de la imagen oficial de Playwright)
 #   docker            (construye la imagen y la prueba)
+#   microfrontend     (tests y build del Web Component de Lit, independiente de Angular)
 #
 # Los jobs sin `needs` corren en paralelo.
 name: CI
@@ -50,6 +51,28 @@ jobs:
           path: coverage/
           retention-days: 14
 
+  microfrontend:
+    name: Microfrontend (Lit)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: microfrontends/resumen-citas
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: microfrontends/resumen-citas/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: microfrontend-resumen-citas
+          path: microfrontends/resumen-citas/dist/
+          retention-days: 14
+
   e2e:
     name: E2E (shard ${{ matrix.shard }}/2)
     runs-on: ubuntu-latest
@@ -69,6 +92,10 @@ jobs:
         run: npx playwright install --with-deps chromium firefox webkit
       # Build de desarrollo: apunta a localhost:3000, que es lo que intercepta la API falsa.
       - run: npx ng build --configuration development
+      # Bundle del microfrontend para e2e/microfrontend.spec.ts (si falta, ese test se salta).
+      - name: Build del microfrontend
+        working-directory: microfrontends/resumen-citas
+        run: npm ci && npm run build
       - name: Playwright (sin @visual, que va en su propio job)
         run: npx playwright test --grep-invert @visual --shard=${{ matrix.shard }}/2
       - uses: actions/upload-artifact@v4

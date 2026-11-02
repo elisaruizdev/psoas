@@ -3,6 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { NotificationService } from '../app/shared/notifications/notification.service';
 
 type TestProviders = (Provider | EnvironmentProviders)[];
 
@@ -38,4 +39,19 @@ export function provideTestDialog<T>(data?: T): {
       { provide: MAT_DIALOG_DATA, useValue: data ?? {} },
     ],
   };
+}
+
+/**
+ * Avisos espiados: el test comprueba qué se avisó al usuario sin pintar el snackbar.
+ * Uso: `const { notifications, providers } = provideTestNotifications();`
+ */
+export function provideTestNotifications(): {
+  providers: TestProviders;
+  notifications: jasmine.SpyObj<NotificationService>;
+} {
+  const notifications = jasmine.createSpyObj<NotificationService>('NotificationService', [
+    'success',
+    'error',
+  ]);
+  return { notifications, providers: [{ provide: NotificationService, useValue: notifications }] };
 }
