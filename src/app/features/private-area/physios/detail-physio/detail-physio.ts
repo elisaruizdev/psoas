@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, Inject, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -9,6 +9,13 @@ import { ButtonUI } from '../../../../shared/ui/button/button';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { FormConfig, FormValue, formText } from '../../../../shared/models/form.model';
 import { Physio } from '../models/physios.model';
+import { NotificationService } from '../../../../shared/notifications/notification.service';
+import {
+  dniNieValidator,
+  normalizeDniNie,
+  optionalPhone,
+  spanishPhoneValidator,
+} from '../../../../shared/validators/spanish-id.validators';
 
 @Component({
   selector: 'app-detail-physio',
@@ -20,6 +27,8 @@ import { Physio } from '../models/physios.model';
 export class DetailPhysio implements OnInit {
   physio: Physio;
   physioFormConfig!: FormConfig;
+
+  private readonly notifications = inject(NotificationService);
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Physio,
@@ -45,9 +54,10 @@ export class DetailPhysio implements OnInit {
               icon: 'user',
               label: 'DNI/NIE',
               type: 'text',
-              placeholder: '12345678A',
+              placeholder: '12345678Z',
               required: false,
               value: this.physio.identifier || '',
+              validators: [dniNieValidator()],
             },
             {
               name: 'birthdate',
@@ -83,7 +93,7 @@ export class DetailPhysio implements OnInit {
               placeholder: '612 345 678',
               required: true,
               value: this.physio.phone || '',
-              validators: [Validators.pattern(/^(\+34|0034|34)?[6789]\d{8}$/)],
+              validators: [spanishPhoneValidator()],
             },
           ],
         },
@@ -208,10 +218,10 @@ export class DetailPhysio implements OnInit {
     const city = formText(data, 'city');
     const country = formText(data, 'country');
     return {
-      identifier: formText(data, 'identifier')?.toUpperCase().trim() || undefined,
+      identifier: normalizeDniNie(formText(data, 'identifier') ?? '') || undefined,
       birthdate: formText(data, 'birthdate') || undefined,
       gender: formText(data, 'gender') || undefined,
-      phone: formText(data, 'phone')?.replace(/\s/g, ''),
+      phone: optionalPhone(formText(data, 'phone')),
       license_number: formText(data, 'license_number')?.trim() || undefined,
       specialty: formText(data, 'specialty')?.trim() || undefined,
       schedule: formText(data, 'schedule')?.trim() || undefined,
@@ -258,11 +268,10 @@ export class DetailPhysio implements OnInit {
   }
 
   private showSuccessNotification(message: string): void {
-    alert(message);
+    this.notifications.success(message);
   }
 
   private showErrorNotification(message: string): void {
-    console.error('ERROR:', message);
-    alert(message);
+    this.notifications.error(message);
   }
 }

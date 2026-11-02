@@ -1,0 +1,36 @@
+// ============================================
+// NOTIFICATION — avisos flotantes (MatSnackBar)
+// Sustituyen a alert(). Los abre NotificationService con
+// panelClass: ['notification', 'notification--success' | 'notification--error'].
+// Reutiliza los tokens de feedback de .alert para que se vean igual.
+// ============================================
+
+.mat-mdc-snack-bar-container.notification {
+  --mdc-snackbar-container-shape: var(--radius-md);
+  --mat-snack-bar-button-color: currentColor;
+
+  .mat-mdc-snackbar-surface {
+    border: 1px solid;
+    box-shadow: 0 4px 16px rgb(0 0 0 / 12%);
+  }
+
+  &.notification--success {
+    --mdc-snackbar-container-color: var(--feedback-success-bg);
+    --mdc-snackbar-supporting-text-color: var(--feedback-success-fg);
+    --mat-snack-bar-button-color: var(--feedback-success-fg);
+
+    .mat-mdc-snackbar-surface {
+      border-color: var(--feedback-success-border);
+    }
+  }
+
+  &.notification--error {
+    --mdc-snackbar-container-color: var(--feedback-error-bg);
+    --mdc-snackbar-supporting-text-color: var(--feedback-error-fg);
+    --mat-snack-bar-button-color: var(--feedback-error-fg);
+
+    .mat-mdc-snackbar-surface {
+      border-color: var(--feedback-error-border);
+    }
+  }
+}

@@ -5,7 +5,8 @@ const angular = require('angular-eslint');
 
 module.exports = tseslint.config(
   {
-    ignores: ['dist/**', '.angular/**', 'node_modules/**', 'coverage/**'],
+    // microfrontends/ son paquetes independientes, con su propio tsconfig y sus tests.
+    ignores: ['dist/**', '.angular/**', 'node_modules/**', 'coverage/**', 'microfrontends/**'],
   },
   {
     files: ['**/*.ts'],

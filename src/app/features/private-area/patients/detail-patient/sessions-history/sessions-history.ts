@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Input, OnInit, signal, computed } from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, signal, computed, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -16,6 +16,7 @@ import { forkJoin } from 'rxjs';
 import { Session, Treatment, TreatmentWithSessions } from '../../models/patients.model';
 import { PhysiosService } from '../../../physios/services/physios.service';
 import { Physio } from '../../../physios/models/physios.model';
+import { NotificationService } from '../../../../../shared/notifications/notification.service';
 
 
 @Component({
@@ -145,6 +146,8 @@ export class SessionsHistory implements OnInit {
       ],
     };
   });
+
+  private readonly notifications = inject(NotificationService);
 
   constructor(
     private sessionsService: SessionsService,
@@ -319,10 +322,10 @@ export class SessionsHistory implements OnInit {
   }
 
   private showSuccessNotification(message: string): void {
-    alert(message);
+    this.notifications.success(message);
   }
 
   private showErrorNotification(message: string): void {
-    alert(message);
+    this.notifications.error(message);
   }
 }

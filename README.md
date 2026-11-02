@@ -61,10 +61,18 @@ src/app/
 │       └── physios/
 └── shared/
     ├── models/
+    ├── microfrontends/    # runtime loader for Web Component microfrontends
+    ├── notifications/     # NotificationService (MatSnackBar) instead of alert()
+    ├── validators/        # Spanish DNI/NIE (control letter) and phone validators
     └── ui/                # button, card, form, icon, modal, table, delete card
+
+microfrontends/
+└── resumen-citas/         # Lit Web Component, its own package, tests and build
 ```
 
 Each feature keeps its own `models/` and `services/` folders. Services wrap the API calls and return typed `Observable`s.
+
+The dashboard loads the `<psoas-resumen-citas>` microfrontend at runtime from the URL in `environment.microfrontends.resumenCitas`. If it is not available, the dashboard works without it. See [`microfrontends/README.md`](microfrontends/README.md).
 
 ## How authentication works
 
@@ -162,6 +170,9 @@ Before the first end-to-end run, install the Playwright browsers with `npx playw
 | Cross-browser and mobile | Chromium, Firefox, WebKit, Pixel 7, iPhone 14 | projects in `playwright.config.ts` |
 | Contract | Pact (consumer side) | `e2e/contrato/` |
 | Container | Playwright `request` + browser against nginx | `e2e/docker/` |
+| Microfrontend | Vitest + happy-dom (component), Playwright (integration with Angular) | `microfrontends/resumen-citas/src/*.test.ts`, `e2e/microfrontend.spec.ts` |
+
+Unit test coverage is above 90 % of lines and the build fails if it drops (thresholds in `karma.conf.js`). CI runs on GitHub Actions (`.github/workflows/ci.yml`) and the same pipeline is available for Azure DevOps (`azure-pipelines.yml`), which publishes JUnit results and Cobertura coverage.
 
 The E2E tests never hit a real backend: `e2e/support/api-mock.ts` intercepts every call to `localhost:3000` and freezes the browser clock, so results and screenshots are the same on every run. A study guide with every concept, in Spanish, is in `docs/guia-testing.md`.
 

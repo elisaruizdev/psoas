@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -7,6 +7,13 @@ import { Form } from '../../../../shared/ui/form/form';
 import { FormConfig, FormValue, formText } from '../../../../shared/models/form.model';
 import { CreatePatient } from '../models/patients.model';
 import { PatientsService } from '../services/patients.service';
+import { NotificationService } from '../../../../shared/notifications/notification.service';
+import {
+  dniNieValidator,
+  normalizeDniNie,
+  normalizePhone,
+  spanishPhoneValidator,
+} from '../../../../shared/validators/spanish-id.validators';
 
 @Component({
   selector: 'app-new-patient',
@@ -17,6 +24,8 @@ import { PatientsService } from '../services/patients.service';
 })
 export class NewPatient implements OnInit {
   patientFormConfig = signal<FormConfig | null>(null);
+
+  private readonly notifications = inject(NotificationService);
 
   constructor(
     private dialogRef: MatDialogRef<NewPatient>,
@@ -66,9 +75,9 @@ export class NewPatient implements OnInit {
               icon: 'user',
               label: 'DNI/NIE',
               type: 'text',
-              placeholder: '12345678A',
+              placeholder: '12345678Z',
               required: true,
-              validators: [Validators.pattern(/^[0-9]{8}[A-Z]$|^[XYZ][0-9]{7}[A-Z]$/)],
+              validators: [dniNieValidator()],
             },
             {
               name: 'birthdate',
@@ -109,7 +118,7 @@ export class NewPatient implements OnInit {
               type: 'tel',
               placeholder: '612 345 678',
               required: true,
-              validators: [Validators.pattern(/^(\+34|0034|34)?[6789]\d{8}$/)],
+              validators: [spanishPhoneValidator()],
             },
             {
               name: 'email',
@@ -220,10 +229,10 @@ export class NewPatient implements OnInit {
       name: this.capitalizeText(formText(data, 'name') ?? ''),
       surname: this.capitalizeText(formText(data, 'surname') ?? ''),
       second_surname: secondSurname ? this.capitalizeText(secondSurname) : undefined,
-      identifier: (formText(data, 'identifier') ?? '').toUpperCase().trim(),
+      identifier: normalizeDniNie(formText(data, 'identifier') ?? ''),
       birthdate: formText(data, 'birthdate') ?? '',
       gender: formText(data, 'gender') || 'otro',
-      phone: (formText(data, 'phone') ?? '').replace(/\s/g, ''),
+      phone: normalizePhone(formText(data, 'phone') ?? ''),
       email: (formText(data, 'email') ?? '').toLowerCase().trim(),
       address: formText(data, 'address')?.trim() || undefined,
       city: city ? this.capitalizeText(city) : undefined,
@@ -245,11 +254,10 @@ export class NewPatient implements OnInit {
   }
 
   private showSuccessNotification(message: string): void {
-    alert(message);
+    this.notifications.success(message);
   }
 
   private showErrorNotification(message: string): void {
-    console.error('ERROR:', message);
-    alert(message);
+    this.notifications.error(message);
   }
 }

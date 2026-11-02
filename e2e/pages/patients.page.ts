@@ -20,12 +20,15 @@ export class PatientsPage {
   readonly botonNuevo: Locator;
   readonly modalAlta: Locator;
   readonly botonCrear: Locator;
+  /** Aviso flotante (MatSnackBar) que sustituye a los alert() nativos. */
+  readonly aviso: Locator;
 
   constructor(private readonly page: Page) {
     this.tabla = page.getByRole('table');
     this.botonNuevo = page.getByRole('button', { name: 'Nuevo paciente' });
     this.modalAlta = page.getByRole('dialog');
     this.botonCrear = this.modalAlta.getByRole('button', { name: 'Crear Paciente' });
+    this.aviso = page.locator('mat-snack-bar-container');
   }
 
   async abrir(): Promise<void> {

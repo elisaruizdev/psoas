@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
@@ -11,6 +11,7 @@ import { PhysiosService } from '../../physios/services/physios.service';
 import { CreateAppointment } from '../models/appointment.model';
 import { Patient } from '../../patients/models/patients.model';
 import { Physio } from '../../physios/models/physios.model';
+import { NotificationService } from '../../../../shared/notifications/notification.service';
 
 @Component({
   selector: 'app-new-session',
@@ -23,6 +24,8 @@ export class NewSession implements OnInit {
   appointmentFormConfig = signal<FormConfig | null>(null);
   patients: Patient[] = [];
   physios: Physio[] = [];
+
+  private readonly notifications = inject(NotificationService);
 
   constructor(
     private dialogRef: MatDialogRef<NewSession>,
@@ -189,11 +192,10 @@ export class NewSession implements OnInit {
   }
 
   private showSuccessNotification(message: string): void {
-    alert(message);
+    this.notifications.success(message);
   }
 
   private showErrorNotification(message: string): void {
-    console.error('ERROR:', message);
-    alert(message);
+    this.notifications.error(message);
   }
 }
