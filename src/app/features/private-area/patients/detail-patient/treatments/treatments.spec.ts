@@ -41,7 +41,6 @@ describe('Treatments', () => {
   });
 
   it('si la carga falla, deja de cargar y avisa', () => {
-    spyOn(console, 'error');
     treatments.getAllByPatient.and.returnValue(throwError(() => new Error('500')));
     component.loadTreatments();
     expect(component.loading()).toBeFalse();
@@ -93,7 +92,6 @@ describe('Treatments', () => {
   });
 
   it('crear con error: avisa', () => {
-    spyOn(console, 'error');
     treatments.create.and.returnValue(throwError(() => new Error('400')));
     component.onSubmitTreatment({});
     expect(notifications.error).toHaveBeenCalledWith('Error al crear el tratamiento');
@@ -113,7 +111,6 @@ describe('Treatments', () => {
   });
 
   it('guardar edición con error: avisa', () => {
-    spyOn(console, 'error');
     treatments.update.and.returnValue(throwError(() => new Error('500')));
     component.onSaveEdit(aTreatment());
     expect(notifications.error).toHaveBeenCalledWith('Error al actualizar el tratamiento');
@@ -131,7 +128,6 @@ describe('Treatments', () => {
     component.onDelete(aTreatment());
     expect(notifications.success).toHaveBeenCalledWith('Tratamiento eliminado correctamente');
 
-    spyOn(console, 'error');
     treatments.delete.and.returnValue(throwError(() => new Error('500')));
     component.onDelete(aTreatment());
     expect(notifications.error).toHaveBeenCalledWith('Error al eliminar el tratamiento');

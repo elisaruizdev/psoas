@@ -67,8 +67,7 @@ export class DetailPatient implements OnInit {
         this.initializeFormConfig();
         this.loading.set(false);
       },
-      error: (error) => {
-        console.error('Error al cargar paciente:', error);
+      error: () => {
         this.loading.set(false);
         this.loadError.set('No se ha podido abrir la ficha del paciente.');
       },
@@ -181,8 +180,7 @@ export class DetailPatient implements OnInit {
         this.showSuccessNotification('Paciente actualizado correctamente');
         this.dialogRef.close({ action: 'updated' });
       },
-      error: (error) => {
-        console.error('Error al actualizar:', error);
+      error: () => {
         this.showErrorNotification('Error al actualizar el paciente');
       },
     });
@@ -198,8 +196,7 @@ export class DetailPatient implements OnInit {
           this.showSuccessNotification('Paciente eliminado correctamente');   
           this.dialogRef.close({ action: 'delete', id: patient.id });
         },
-        error: (error) => {
-          console.error('Error al eliminar:', error);
+        error: () => {
           this.showErrorNotification('Error al eliminar el paciente');
         },
       });

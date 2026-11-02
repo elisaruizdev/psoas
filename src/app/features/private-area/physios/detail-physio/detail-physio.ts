@@ -195,8 +195,7 @@ export class DetailPhysio implements OnInit {
         this.showSuccessNotification('Cambios guardados correctamente');
         this.dialogRef.close({ action: 'save' });
       },
-      error: (error) => {
-        console.error('Error al guardar:', error);
+      error: () => {
         this.showErrorNotification('Error al guardar los cambios');
       },
     });
@@ -209,8 +208,7 @@ export class DetailPhysio implements OnInit {
           this.showSuccessNotification('Fisioterapeuta eliminado correctamente');
           this.dialogRef.close({ action: 'delete' });
         },
-        error: (error) => {
-          console.error('Error al eliminar:', error);
+        error: () => {
           this.showErrorNotification('Error al eliminar el fisioterapeuta');
         },
       });

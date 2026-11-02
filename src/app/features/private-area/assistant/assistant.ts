@@ -57,7 +57,7 @@ export class Assistant {
     private assistant: AssistantService,
     private destroyRef: DestroyRef,
   ) {
-    // Solo en el navegador: al prerenderizar (SSR) no tiene sentido llamar al asistente.
+    // Tras el primer pintado: la comprobación no retrasa que se vea la pantalla.
     afterNextRender(() => this.checkHealth());
   }
 

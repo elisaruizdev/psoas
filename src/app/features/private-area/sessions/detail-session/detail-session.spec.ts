@@ -73,7 +73,6 @@ describe('DetailSession', () => {
   });
 
   it('guardar con conflicto de horario (409): mensaje específico y no cierra', () => {
-    spyOn(console, 'error');
     service.updateAppointment.and.returnValue(
       throwError(() => new HttpErrorResponse({ status: 409 })),
     );
@@ -101,7 +100,6 @@ describe('DetailSession', () => {
     component.onCancel();
     expect(dialogRef.close).toHaveBeenCalledWith({ action: 'cancelled' });
 
-    spyOn(console, 'error');
     service.cancelAppointment.and.returnValue(throwError(() => new Error('500')));
     component.onCancel();
     expect(notifications.error).toHaveBeenCalledWith('Error al cancelar la cita');
@@ -114,7 +112,6 @@ describe('DetailSession', () => {
     expect(notifications.success).toHaveBeenCalledWith('Cita eliminada correctamente');
     expect(dialogRef.close).toHaveBeenCalledWith({ action: 'deleted' });
 
-    spyOn(console, 'error');
     service.deleteAppointment.and.returnValue(throwError(() => new Error('500')));
     component.onDelete();
     expect(notifications.error).toHaveBeenCalledWith('Error al eliminar la cita');

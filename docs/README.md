@@ -18,7 +18,7 @@ desarrollo. Cada guía explica qué es cada cosa, dónde está en el código y p
 
 | Requisito | Dónde está |
 | --- | --- |
-| Angular moderno (standalone, signals, zoneless, SSR) | `src/app/` |
+| Angular moderno (standalone, signals, zoneless) | `src/app/` |
 | Formularios y validación (DNI/NIE con letra de control, teléfono) | `src/app/shared/validators/`, `src/app/shared/ui/form/` |
 | Avisos accesibles en lugar de `alert()` | `src/app/shared/notifications/` |
 | Tests con cobertura mínima garantizada (>90 %) | `karma.conf.js`, `src/**/*.spec.ts` |

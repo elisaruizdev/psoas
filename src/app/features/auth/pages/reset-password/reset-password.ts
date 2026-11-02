@@ -89,7 +89,6 @@ export class ResetPassword implements OnInit {
         this.passwordReset.set(true);
       },
       error: (error) => {
-        console.error('Error al resetear contraseña:', error);
         this.isLoading.set(false);
         this.errorMessage.set(
           error.error?.message ||

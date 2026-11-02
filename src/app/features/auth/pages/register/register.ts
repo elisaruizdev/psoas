@@ -1,6 +1,5 @@
 import { Component, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   AbstractControl,
   FormBuilder,
@@ -81,8 +80,7 @@ export class Register {
       next: () => {
         this.okMessage.set('Registro exitoso. Espera a que un administrador valide tu cuenta.');
       },
-      error: (error: HttpErrorResponse) => {
-        console.error('Error en el registro', error);
+      error: () => {
         this.errorMessage.set('Error al registrar el usuario. Inténtalo de nuevo.');
       },
     });

@@ -83,8 +83,7 @@ export class Physios {
       next: (physios) => {
         this.physios.set(physios);
       },
-      error: (error) => {
-        console.error('Error al cargar fisioterapeutas:', error);
+      error: () => {
         this.loadError.set('No se han podido cargar los fisioterapeutas.');
       },
     });
@@ -137,8 +136,7 @@ export class Physios {
       next: (physio) => {
         this.openPhysioDetail(physio);
       },
-      error: (error) => {
-        console.error('Error al cargar fisioterapeuta:', error);
+      error: () => {
         this.openError.set('No se ha podido abrir la ficha del fisioterapeuta.');
       },
     });
@@ -166,8 +164,7 @@ export class Physios {
           this.notifications.success('Fisioterapeuta aprobado. Se ha enviado el email de verificación.');
           this.getAllPhysios();
         },
-        error: (error) => {
-          console.error('Error al aprobar:', error);
+        error: () => {
           this.openError.set('No se ha podido aprobar la solicitud.');
         },
       });
@@ -182,8 +179,7 @@ export class Physios {
           this.notifications.success('Solicitud rechazada correctamente');
           this.getAllPhysios();
         },
-        error: (error) => {
-          console.error('Error al rechazar:', error);
+        error: () => {
           this.openError.set('No se ha podido rechazar la solicitud.');
         },
       });

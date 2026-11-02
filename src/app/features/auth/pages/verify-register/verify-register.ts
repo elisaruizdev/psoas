@@ -32,8 +32,7 @@ export class VerifyRegister {
           next: () => {
             this.router.navigate(['/login'], { queryParams: { verified: 'true' } });
           },
-          error: (err) => {
-            console.error('Verification failed', err);
+          error: () => {
             this.router.navigate(['/login'], { queryParams: { verified: 'false' } });
           },
         });

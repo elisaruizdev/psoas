@@ -97,7 +97,6 @@ describe('Dashboard', () => {
   });
 
   it('si la API falla, muestra el error en un role="alert"', () => {
-    spyOn(console, 'error');
     service.getDashboardStats.and.returnValue(throwError(() => new Error('500')));
     fixture.detectChanges();
 

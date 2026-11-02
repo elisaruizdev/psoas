@@ -83,7 +83,6 @@ describe('NewPatient', () => {
   });
 
   it('409: muestra el mensaje del back (o uno por defecto) y no cierra', () => {
-    spyOn(console, 'error');
     service.createPatient.and.returnValue(
       throwError(() => new HttpErrorResponse({ status: 409, error: { message: 'DNI repetido' } })),
     );
@@ -97,7 +96,6 @@ describe('NewPatient', () => {
   });
 
   it('400 y otros errores: mensajes genéricos', () => {
-    spyOn(console, 'error');
     service.createPatient.and.returnValue(throwError(() => new HttpErrorResponse({ status: 400 })));
     component.onSubmitPatient(formulario);
     expect(notifications.error).toHaveBeenCalledWith('Datos inválidos. Revisa el formulario');
@@ -119,7 +117,6 @@ describe('NewPatient', () => {
     expect(component.saving()).toBeTrue();
     expect(botonCrear().disabled).toBeTrue();
 
-    spyOn(console, 'error');
     respuesta.error(new HttpErrorResponse({ status: 500 }));
     fixture.detectChanges();
     await fixture.whenStable();

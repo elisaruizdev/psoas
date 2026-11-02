@@ -55,14 +55,12 @@ describe('NewSession', () => {
   });
 
   it('si no cargan los pacientes o los fisios, avisa del error', () => {
-    spyOn(console, 'error');
     patients.getAllPatients.and.returnValue(throwError(() => new Error('500')));
     fixture.detectChanges();
     expect(notifications.error).toHaveBeenCalledWith('Error al cargar los pacientes');
   });
 
   it('si fallan los fisios, avisa del error', () => {
-    spyOn(console, 'error');
     physios.getAllPhysios.and.returnValue(throwError(() => new Error('500')));
     fixture.detectChanges();
     expect(notifications.error).toHaveBeenCalledWith('Error al cargar los fisioterapeutas');
@@ -92,7 +90,6 @@ describe('NewSession', () => {
   });
 
   it('crear con conflicto (409) u otro error: mensajes distintos', () => {
-    spyOn(console, 'error');
     fixture.detectChanges();
     const datos = { appointment_date: '2026-11-04', appointment_time: '10:00' };
 

@@ -74,14 +74,12 @@ describe('Physios', () => {
   });
 
   it('si la API falla, muestra el error de carga', () => {
-    spyOn(console, 'error');
     service.getAllPhysios.and.returnValue(throwError(() => new Error('500')));
     component.getAllPhysios();
     expect(component.loadError()).toBe('No se han podido cargar los fisioterapeutas.');
   });
 
   it('al pulsar una fila abre el detalle; si falla, muestra el error', () => {
-    spyOn(console, 'error');
     service.getPhysioById.and.returnValue(of(aPhysio()));
     component.onPhysioClick({ row: { id: 7 } });
     expect(dialog.open).toHaveBeenCalledWith(DetailPhysio, jasmine.objectContaining({ data: aPhysio() }));
@@ -109,7 +107,6 @@ describe('Physios', () => {
 
   it('aprobar con error: lo muestra en la página', () => {
     spyOn(window, 'confirm').and.returnValue(true);
-    spyOn(console, 'error');
     service.approvePhysio.and.returnValue(throwError(() => new Error('500')));
     component.approvePhysio(9);
     expect(component.openError()).toBe('No se ha podido aprobar la solicitud.');
@@ -125,7 +122,6 @@ describe('Physios', () => {
     component.rejectPhysio(9);
     expect(notifications.success).toHaveBeenCalledWith('Solicitud rechazada correctamente');
 
-    spyOn(console, 'error');
     service.rejectPhysio.and.returnValue(throwError(() => new Error('500')));
     component.rejectPhysio(9);
     expect(component.openError()).toBe('No se ha podido rechazar la solicitud.');

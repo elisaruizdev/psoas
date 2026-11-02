@@ -61,7 +61,6 @@ describe('DetailPatient', () => {
   });
 
   it('si la ficha no carga, muestra el error', async () => {
-    spyOn(console, 'error');
     service.getPatientById.and.returnValue(throwError(() => new Error('404')));
     await crear();
     expect(component.loadError()).toBe('No se ha podido abrir la ficha del paciente.');
@@ -96,7 +95,6 @@ describe('DetailPatient', () => {
   });
 
   it('guardar con error: avisa y no cierra', async () => {
-    spyOn(console, 'error');
     await crear();
     service.updatePatient.and.returnValue(throwError(() => new Error('500')));
     component.onSubmitPatient({});
@@ -115,7 +113,6 @@ describe('DetailPatient', () => {
     component.onDelete();
     expect(dialogRef.close).toHaveBeenCalledWith({ action: 'delete', id: 'p-1' });
 
-    spyOn(console, 'error');
     service.deletePatient.and.returnValue(throwError(() => new Error('500')));
     component.onDelete();
     expect(notifications.error).toHaveBeenCalledWith('Error al eliminar el paciente');

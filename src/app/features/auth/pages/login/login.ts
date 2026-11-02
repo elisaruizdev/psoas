@@ -63,7 +63,6 @@ export class Login {
         this.router.navigate(['/dashboard']);
       },
       error: (error: HttpErrorResponse) => {
-        console.error('Error en el login', error);
         this.isLoading.set(false);
 
         if (error.status === 401) {

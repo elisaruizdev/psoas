@@ -119,7 +119,6 @@ describe('Login', () => {
     });
 
     it('con un 401 avisa de credenciales incorrectas y no guarda nada', () => {
-      spyOn(console, 'error'); // el componente registra el error; se silencia en el test
       auth.login.and.returnValue(throwError(() => new HttpErrorResponse({ status: 401 })));
 
       enviar();
@@ -131,7 +130,6 @@ describe('Login', () => {
     });
 
     it('con otro error (500) muestra un mensaje genérico', () => {
-      spyOn(console, 'error');
       auth.login.and.returnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
 
       enviar();

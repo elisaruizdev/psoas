@@ -220,8 +220,8 @@ Navegador (Angular, /assistant) ──JWT──► ai (FastAPI :8000) ──JWT�
 - **Pantalla** (`src/app/features/private-area/assistant/`): chat con la ruta elegida, si está
   revisada y la traza de los agentes. `role="log"` con `aria-live` para lectores de pantalla y foco
   de vuelta al campo al responder. axe encontró 4 textos con poco contraste, ya corregidos.
-- **Solo en el navegador**: la salud del asistente se pide con `afterNextRender`, no al
-  prerenderizar en el servidor (SSR).
+- **Tras el primer pintado**: la salud del asistente se pide con `afterNextRender`, así la
+  comprobación no retrasa que se vea la pantalla.
 - **La pestaña es opcional**: aparece solo si el entorno tiene `aiUrl` (en Docker sí; en Vercel no).
 - **CORS** (`ai/src/psoas_ai/api.py`) y **CSP** (`docker/nginx/security-headers.inc.template`,
   `connect-src` con `AI_ORIGIN`): el navegador solo puede llamar a los orígenes permitidos.
