@@ -41,6 +41,8 @@ export class Register {
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(8)]],
         confirmPassword: ['', Validators.required],
+        // requiredTrue: una casilla sin marcar vale false, y `required` lo daría por válido.
+        acceptTerms: [false, Validators.requiredTrue],
       },
       { validators: Register.passwordMatchValidator },
     );

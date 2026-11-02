@@ -1,15 +1,30 @@
 """API HTTP del asistente (FastAPI). Documentación interactiva en /docs.
 
 uv run uvicorn psoas_ai.api:app --reload --port 8000
+
+Con PSOAS_API_URL definida, cada petición debe llevar `Authorization: Bearer <token>` (el
+mismo JWT de la app Angular): con él se leen los datos del backend. Sin ella, usa el JSON
+de ejemplo y no pide token.
 """
 
 from __future__ import annotations
 
-from fastapi import FastAPI, Query
+import logging
+from collections.abc import Callable
+from typing import TypeVar
+
+import httpx
+from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from .servicio import Servicio
+from .config import Settings
+from .fuente_api import SinPermiso
+from .rag import responder
+from .servicio import Servicio, Servicios
+
+log = logging.getLogger("psoas_ai")
+T = TypeVar("T")
 
 
 class Pregunta(BaseModel):
@@ -46,41 +61,82 @@ class RespuestaAsistente(BaseModel):
     tokens: int
 
 
-def create_app(servicio: Servicio | None = None) -> FastAPI:
-    """Fábrica: los tests inyectan un Servicio con un proveedor falso."""
-    app = FastAPI(title="Psoas · asistente clínico", version="0.1.0")
+class Salud(BaseModel):
+    estado: str
+    proveedor: str
+    origen_datos: str
+
+
+def create_app(
+    servicio: Servicio | None = None,
+    servicios: Servicios | None = None,
+    settings: Settings | None = None,
+) -> FastAPI:
+    """Fábrica. Los tests inyectan un `Servicio` fijo (ignora el token) o un `Servicios`."""
+    s = settings or Settings()
+    app = FastAPI(title="Psoas · asistente clínico", version="0.2.0")
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:4200"],
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_origins=s.cors_origins,
+        allow_methods=["GET", "POST"],
+        allow_headers=["Authorization", "Content-Type"],
     )
-    estado: dict[str, Servicio] = {}
+    estado: dict[str, Servicios] = {}
 
-    def svc() -> Servicio:
-        # Perezoso: el índice se construye en la primera petición, no al importar el módulo.
-        if "s" not in estado:
-            estado["s"] = servicio or Servicio.crear()
-        return estado["s"]
+    def gestor() -> Servicios:
+        # Perezoso: el proveedor se crea en la primera petición, no al importar el módulo.
+        if "g" not in estado:
+            estado["g"] = servicios or Servicios(s)
+        return estado["g"]
 
-    @app.get("/salud")
-    def salud() -> dict:
-        s = svc()
-        return {"estado": "ok", "proveedor": s.llm.nombre, "fragmentos_indexados": s.indice.total}
+    def svc(authorization: str | None) -> Servicio:
+        if servicio is not None:
+            return servicio
+        token = (authorization or "").removeprefix("Bearer ").strip() or None
+        try:
+            return gestor().obtener(token)
+        except SinPermiso as e:
+            raise HTTPException(401, "Sesión no válida: vuelve a iniciar sesión") from e
+        except httpx.HTTPError as e:
+            log.warning("No se pudo leer el backend: %s", e)
+            raise HTTPException(502, "No se han podido leer los datos de la clínica") from e
+
+    def con_llm(funcion: Callable[[], T]) -> T:
+        """Los fallos del proveedor (cuota agotada, caída) se devuelven como 503 legible."""
+        try:
+            return funcion()
+        except HTTPException:
+            raise
+        except Exception as e:
+            log.exception("Fallo del proveedor de LLM")
+            raise HTTPException(503, "El modelo de IA no está disponible ahora mismo") from e
+
+    @app.get("/salud", response_model=Salud)
+    def salud():
+        if servicio is not None:
+            return Salud(estado="ok", proveedor=servicio.llm.nombre, origen_datos="fijo")
+        g = gestor()
+        return Salud(estado="ok", proveedor=g.llm.nombre, origen_datos=g.origen)
 
     @app.get("/buscar", response_model=list[Fuente])
     def buscar(
-        q: str = Query(min_length=2), paciente_id: str | None = None, k: int = Query(4, le=10)
+        q: str = Query(min_length=2),
+        paciente_id: str | None = None,
+        k: int = Query(4, le=10),
+        authorization: str | None = Header(default=None),
     ):
-        return [_fuente(r) for r in svc().indice.buscar(q, k=k, paciente_id=paciente_id)]
+        s_ = svc(authorization)
+        return con_llm(
+            lambda: [_fuente(r) for r in s_.indice.buscar(q, k=k, paciente_id=paciente_id)]
+        )
 
     @app.post("/preguntar", response_model=RespuestaPregunta)
-    def preguntar(body: Pregunta):
-        from .rag import responder
-
-        s = svc()
-        r = responder(
-            s.llm, s.indice, body.pregunta, body.paciente_id, pacientes=s.clinica.pacientes
+    def preguntar(body: Pregunta, authorization: str | None = Header(default=None)):
+        s_ = svc(authorization)
+        r = con_llm(
+            lambda: responder(
+                s_.llm, s_.indice, body.pregunta, body.paciente_id, pacientes=s_.clinica.pacientes
+            )
         )
         return RespuestaPregunta(
             respuesta=r.texto,
@@ -90,8 +146,9 @@ def create_app(servicio: Servicio | None = None) -> FastAPI:
         )
 
     @app.post("/asistente", response_model=RespuestaAsistente)
-    def asistente(body: Peticion):
-        r = svc().orquestador.atender(body.mensaje)
+    def asistente(body: Peticion, authorization: str | None = Header(default=None)):
+        s_ = svc(authorization)
+        r = con_llm(lambda: s_.orquestador.atender(body.mensaje))
         return RespuestaAsistente(
             respuesta=r.texto,
             ruta=r.ruta,

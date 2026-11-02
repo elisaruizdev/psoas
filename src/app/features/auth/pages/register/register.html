@@ -83,11 +83,15 @@
 
         <div class="login-form__options">
             <label class="login-form__checkbox">
-                <input type="checkbox" class="login-form__checkbox-input" required />
+                <input type="checkbox" class="login-form__checkbox-input" formControlName="acceptTerms"
+                    aria-describedby="terms-error" />
                 <span class="login-form__checkbox-label">
                     Acepto los <a href="/terminos" class="login-form__link">términos y condiciones</a>
                 </span>
             </label>
+            @if (showError('acceptTerms')) {
+            <span class="login-form__error" id="terms-error">Tienes que aceptar los términos y condiciones</span>
+            }
         </div>
 
         <button type="submit" class="login-form__button">

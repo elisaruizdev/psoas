@@ -125,3 +125,68 @@ def test_gemini_reenvia_el_turno_original_del_modelo():
     )
     contents = GeminiProvider._contents([Message("assistant", raw=original)])
     assert contents[0] is original
+
+
+def test_gemini_pasa_al_modelo_de_respaldo_si_el_principal_esta_saturado(monkeypatch):
+    monkeypatch.setattr("psoas_ai.llm.reintentos.time.sleep", lambda _: None)
+    usados = []
+
+    class Modelos:
+        def generate_content(self, model, **_):
+            usados.append(model)
+            if model == "principal":
+                raise ErrorHttp(503)
+            return types.GenerateContentResponse(
+                candidates=[
+                    types.Candidate(
+                        content=types.Content(role="model", parts=[types.Part(text="ok")])
+                    )
+                ]
+            )
+
+    proveedor = GeminiProvider("clave", "principal,respaldo", "emb")
+    proveedor._client = type("Cliente", (), {"models": Modelos()})()
+
+    assert proveedor.chat("s", [Message("user", "hola")]).text == "ok"
+    assert usados == ["principal"] * 2 + ["respaldo"]  # 2 intentos y luego el respaldo
+    proveedor.chat("s", [Message("user", "otra")])
+    assert usados[-1] == "respaldo" and proveedor.modelo == "respaldo"  # se queda en él
+
+
+def test_gemini_no_cambia_de_modelo_por_un_error_del_cliente():
+    class Modelos:
+        def generate_content(self, model, **_):
+            raise ErrorHttp(400)
+
+    proveedor = GeminiProvider("clave", "principal,respaldo", "emb")
+    proveedor._client = type("Cliente", (), {"models": Modelos()})()
+    with pytest.raises(ErrorHttp):
+        proveedor.chat("s", [Message("user", "hola")])
+    assert proveedor.modelo == "principal"
+
+
+def test_un_tiempo_agotado_cuenta_como_transitorio_y_salta_al_respaldo(monkeypatch):
+    import httpx
+
+    from psoas_ai.llm.reintentos import codigo_http
+
+    assert codigo_http(httpx.ReadTimeout("lento")) == 408
+    assert codigo_http(TimeoutError()) == 408
+    monkeypatch.setattr("psoas_ai.llm.reintentos.time.sleep", lambda _: None)
+
+    class Modelos:
+        def generate_content(self, model, **_):
+            if model == "lento":
+                raise httpx.ReadTimeout("el modelo no responde")
+            return types.GenerateContentResponse(
+                candidates=[
+                    types.Candidate(
+                        content=types.Content(role="model", parts=[types.Part(text="ok")])
+                    )
+                ]
+            )
+
+    proveedor = GeminiProvider("clave", "lento,rapido", "emb")
+    proveedor._client = type("Cliente", (), {"models": Modelos()})()
+    assert proveedor.chat("s", [Message("user", "hola")]).text == "ok"
+    assert proveedor.modelo == "rapido"

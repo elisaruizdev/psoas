@@ -34,7 +34,9 @@ class RespuestaRAG:
 
     @property
     def citas(self) -> list[int]:
-        return sorted({int(n) for n in re.findall(r"\[(\d+)\]", self.texto)})
+        # Admite [2] y también [1, 3], que es como agrupan las citas algunos modelos.
+        grupos = re.findall(r"\[(\d+(?:\s*,\s*\d+)*)\]", self.texto)
+        return sorted({int(n) for g in grupos for n in g.split(",")})
 
 
 def construir_contexto(resultados: list[Resultado]) -> str:

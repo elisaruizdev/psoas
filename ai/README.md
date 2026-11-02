@@ -49,7 +49,7 @@ uv run psoas-ai asistente "¿Qué le pasa en la rodilla a Mario Sanz Gil?"
 uv run psoas-ai evals
 
 # Con Gemini (gratis: clave en https://aistudio.google.com/apikey)
-export LLM_PROVIDER=gemini GEMINI_API_KEY=...        # PowerShell: $env:LLM_PROVIDER="gemini"
+cp .env.example .env      # y pon LLM_PROVIDER=gemini y tu GEMINI_API_KEY (.env no se sube a git)
 uv run psoas-ai preguntar "¿Cómo ha evolucionado la lumbalgia de Lucía García López?"
 uv run psoas-ai asistente "¿Cuándo es la próxima cita de Carmen?"
 uv run psoas-ai evals
@@ -58,14 +58,30 @@ uv run psoas-ai evals
 uv run uvicorn psoas_ai.api:app --reload --port 8000
 
 # Calidad
-uv run pytest        # 51 tests, sin red
+uv run pytest        # 76 tests, sin red
 uv run ruff check . && uv run ruff format --check .
 ```
 
-Variables: ver [`.env.example`](.env.example). Los modelos son configurables. Por defecto se usa
-`gemini-flash-latest`, un alias que apunta siempre al Flash vigente y evita que el código caduque.
+Variables: ver [`.env.example`](.env.example). Nunca pongas la clave en `.env.example`: es la
+plantilla y sí se sube a git. Los modelos son configurables. Por defecto se usa
+`gemini-flash-latest,gemini-flash-lite-latest`: el primero es el preferido y el segundo, el
+respaldo si el primero está saturado (pasa con frecuencia en el plan gratuito).
 
-## Decisiones (y cómo defenderlas)
+## Dentro de la app (Docker)
+
+`docker compose up -d --build` en la raíz levanta también este servicio, y la app muestra la
+pestaña **Asistente** (http://localhost:8080). En ese modo:
+
+- **Datos reales**: con `PSOAS_API_URL` el asistente no usa el JSON de ejemplo, sino que pide
+  pacientes, diagnósticos, tratamientos, sesiones y citas a la API de Psoas **con el JWT del
+  usuario** que pregunta. Los datos se guardan 60 s por usuario y los embeddings, en una caché,
+  para no recalcular los textos que no cambian.
+- **Verificación del token**: con `JWT_SECRET` el asistente comprueba la firma (HS256 fijo) y
+  la caducidad antes de pedir nada. No se fía de que el backend lo haga.
+- **Clave del LLM**: la lee de `ai/.env` al arrancar el contenedor; no se copia en la imagen.
+  Sin ese archivo, funciona en modo demo (sin LLM).
+
+## Decisiones y por qué
 
 **¿Por qué una capa propia sobre los SDK y no LangChain?** Para la demo, escribir el bucle del
 agente y el RAG a mano enseña qué hacen los frameworks por dentro, y el adaptador ocupa unas
@@ -126,5 +142,5 @@ ai/
 │   ├── evals/                 casos y métricas
 │   ├── privacidad.py          seudonimización
 │   ├── datos.py · servicio.py · api.py · cli.py · config.py
-└── tests/                     51 tests sin red (FakeProvider con guion)
+└── tests/                     77 tests sin red (FakeProvider con guion)
 ```

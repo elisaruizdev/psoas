@@ -30,15 +30,29 @@ export class XService {
 ```
 
 - Un método por operación CRUD, tipado con el modelo de dominio (no `any`).
-- La suscripción vive en el componente (`.subscribe({ next, error })`), no dentro del servicio.
+- La suscripción vive en el componente con `.pipe(takeUntilDestroyed(this.destroyRef))`, no dentro del servicio.
 
-## Manejo de errores (pendiente de mejorar, no lo repliques sin más)
+## Manejo de errores
 
-Hoy el patrón es solo `console.error('mensaje', error)` en el `error:` del `subscribe`.
-Es un hueco conocido: no hay feedback visual al usuario ni manejo centralizado.
-Si tocas un flujo con errores, aprovecha para mostrar el error al usuario (snackbar/toast de Material)
-en vez de limitarte a copiar el `console.error` existente.
+Todo error llega al usuario, nunca solo a la consola, y nunca con `alert()`:
+
+- **Error al cargar una pantalla** → `<p class="alert alert--error" role="alert">` en la página
+  (patrón de `patients.html`, `dashboard.html`).
+- **Resultado de una acción** (guardar, borrar, crear) → `NotificationService`
+  (`shared/notifications/`): `success()` o `error()`. Se ve y se anuncia aunque haya un diálogo abierto.
+- Mensajes distintos por código cuando aporta (409 conflicto, 400 datos inválidos, 0 sin conexión).
 
 ## Inyección de dependencias
 
-- Constructor injection (`constructor(private foo: Foo)`), no `inject()`. Mantener consistencia con el resto del proyecto salvo que se decida migrar todo el proyecto a la vez.
+- Mezcla actual: constructor injection en la mayoría de componentes y `inject()` para servicios
+  transversales (`private readonly notifications = inject(NotificationService)`). Para código
+  nuevo vale cualquiera de los dos; no migres lo existente salvo que se pida.
+
+## Formularios
+
+- Reactivos. El formulario genérico `shared/ui/form` con `FormConfig` para altas y fichas.
+- Validadores de `shared/validators/` (DNI/NIE con letra de control, teléfono español).
+- Un `<form>` sin `[formGroup]` no tiene `(ngSubmit)` (eso es de `FormsModule`): usa
+  `(submit)` con `event.preventDefault()`, o el navegador recargará la página.
+- Ojo con el atributo HTML `required` en un input con `formControlName`: añade el validador
+  aunque el control no lo tenga.

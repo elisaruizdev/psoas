@@ -67,7 +67,7 @@ LLM (motor de texto puro)
            (contexto estructurado de forma que no se degrada con el tiempo)
 ```
 
-## Ejemplos reales vividos (para citar en entrevista)
+## Ejemplos reales vividos
 
 - **MCP con capacidad nativa vs. wrapper simple**: Figma construyó herramientas (`get_design_context`,
   `get_motion_context`) que no son un simple wrapper de su API — son lógica nueva diseñada para que

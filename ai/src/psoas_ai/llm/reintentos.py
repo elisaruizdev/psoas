@@ -16,7 +16,13 @@ REINTENTABLES = {408, 429, 500, 502, 503, 504}
 
 
 def codigo_http(error: Exception) -> int | None:
-    """Saca el código HTTP de las excepciones de google-genai y openai sin importarlas."""
+    """Saca el código HTTP de las excepciones de google-genai y openai sin importarlas.
+
+    Un tiempo de espera agotado (httpx.ReadTimeout, TimeoutError…) cuenta como 408: es
+    transitorio y debe reintentarse o pasar al modelo de respaldo, no colgar la petición.
+    """
+    if isinstance(error, TimeoutError) or "Timeout" in type(error).__name__:
+        return 408
     for atributo in ("code", "status_code", "status"):
         valor = getattr(error, atributo, None)
         if isinstance(valor, int):

@@ -14,6 +14,7 @@ import { SessionsService } from './private-area/patients/services/sessions.servi
 import { TreatmentsService } from './private-area/patients/services/treatments.service';
 import { PhysiosService } from './private-area/physios/services/physios.service';
 import { AppointmentsService } from './private-area/sessions/services/appointments.service';
+import { AssistantService } from './private-area/assistant/services/assistant.service';
 
 const api = environment.baseUrl;
 
@@ -42,6 +43,8 @@ describe('servicios de la API (contrato HTTP)', () => {
   const treatments = () => TestBed.inject(TreatmentsService);
   const physios = () => TestBed.inject(PhysiosService);
   const appointments = () => TestBed.inject(AppointmentsService);
+  const assistant = () => TestBed.inject(AssistantService);
+  const ia = environment.aiUrl;
 
   const registro = {
     name: 'Ana',
@@ -73,6 +76,9 @@ describe('servicios de la API (contrato HTTP)', () => {
     { nombre: 'appointments.updateAppointment', ejecutar: () => appointments().updateAppointment('a-1', { notes: 'ok' }), metodo: 'PATCH', url: `${api}/appointments/a-1`, cuerpo: { notes: 'ok' } },
     { nombre: 'appointments.cancelAppointment', ejecutar: () => appointments().cancelAppointment('a-1'), metodo: 'PATCH', url: `${api}/appointments/a-1/cancel`, cuerpo: {} },
     { nombre: 'appointments.deleteAppointment', ejecutar: () => appointments().deleteAppointment('a-1'), metodo: 'DELETE', url: `${api}/appointments/a-1` },
+    // --- Asistente de IA (otro servicio, otra URL base)
+    { nombre: 'assistant.health', ejecutar: () => assistant().health(), metodo: 'GET', url: `${ia}/salud` },
+    { nombre: 'assistant.ask', ejecutar: () => assistant().ask('¿Cómo va Ana?'), metodo: 'POST', url: `${ia}/asistente`, cuerpo: { mensaje: '¿Cómo va Ana?' } },
   ];
 
   // Diagnósticos, sesiones y tratamientos comparten la misma forma de API REST.

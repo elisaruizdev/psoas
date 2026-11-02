@@ -1,8 +1,8 @@
 # Guía de testing de Psoas
 
-Todo lo que se aplica en el repo, explicado para poder contarlo en una entrevista. Cada apartado dice **qué es**, **dónde está en Psoas** y **cómo explicarlo**. Las frases en cursiva son respuestas cortas para practicar en voz alta (también en inglés).
+Todo lo que se aplica en el repo, explicado para estudiarlo sobre código real. Cada apartado dice **qué es**, **dónde está en Psoas** y **por qué se hizo así**. Las frases en cursiva resumen la idea en una línea (también en inglés).
 
-Estado a 31 de octubre de 2026: 76 tests unitarios y de componente, 66 E2E en cinco navegadores o dispositivos, 2 contratos Pact y 5 tests de la imagen Docker.
+Estado a 2 de noviembre de 2026: 233 tests unitarios y de componente (93 % de líneas), 75 E2E en cinco navegadores o dispositivos, 2 contratos Pact y 5 tests de la imagen Docker.
 
 ---
 
@@ -46,7 +46,7 @@ Angular está pasando de Karma a **Vitest** (o Jest) con el nuevo builder. Saber
 - `angular.json` → `test.options.main: "src/test.ts"`, `karmaConfig: "karma.conf.js"`.
 - `test.ts` inicializa TestBed **en modo zoneless** con `provideZonelessChangeDetection()`.
 
-**Hallazgo real:** antes de esto, los tests **no se ejecutaban nunca**. `angular.json` apuntaba a `tsconfig.spec.ts` (no existe; es `.json`), y al arreglarlo fallaban 31 de 32 con `NG0908: In this configuration Angular requires Zone.js`. La app es zoneless y TestBed no. Es una buena historia de entrevista: *"I found the unit test setup was broken, so the suite had never run. Fixing it surfaced 24 tests with missing providers."*
+**Hallazgo real:** antes de esto, los tests **no se ejecutaban nunca**. `angular.json` apuntaba a `tsconfig.spec.ts` (no existe; es `.json`), y al arreglarlo fallaban 31 de 32 con `NG0908: In this configuration Angular requires Zone.js`. La app es zoneless y TestBed no. En una frase: *"I found the unit test setup was broken, so the suite had never run. Fixing it surfaced 24 tests with missing providers."*
 
 ### 1.3 TestBed, paso a paso (`src/app/features/private-area/patients/patients.spec.ts`)
 
@@ -406,7 +406,7 @@ WebKit es el motor de Safari: si funciona en WebKit, es muy probable que funcion
 
 Detalles: `concurrency` cancela ejecuciones viejas de la misma rama, `cache: npm` acelera `npm ci`, los artefactos (cobertura, informe, capturas, contrato) se suben aunque falle algo (`if: always()`).
 
-**Azure DevOps** (la oferta lo pide): el mismo pipeline está en [`azure-pipelines.yml`](../azure-pipelines.yml):
+**Azure DevOps**: el mismo pipeline está en [`azure-pipelines.yml`](../azure-pipelines.yml):
 
 ```
 Calidad (lint + Karma + build  ‖  microfrontend) ─┬─► E2E (2 shards) ─┬─► Despliegue (solo main,
@@ -432,7 +432,7 @@ GitHub Actions → Azure: `jobs` ≈ `jobs`, `needs` ≈ `dependsOn`, `matrix` �
 
 ---
 
-## 6. Hallazgos que encontraron los tests (historias para la entrevista)
+## 6. Hallazgos que encontraron los tests
 
 | Hallazgo | Cómo se detectó | Arreglo |
 | --- | --- | --- |
@@ -450,7 +450,7 @@ GitHub Actions → Azure: `jobs` ≈ `jobs`, `needs` ≈ `dependsOn`, `matrix` �
 
 ---
 
-## 7. Preguntas de entrevista con respuesta corta
+## 7. Preguntas para repasar
 
 1. **¿Qué testearías primero en una app nueva?** Lo que más duele si se rompe: login, guards, interceptor y el flujo principal (alta de paciente). Unitarios para la lógica, un E2E por flujo crítico.
 2. **¿Mock, stub o spy?** Stub devuelve datos fijos, spy registra llamadas, mock además verifica cómo se usó. Ejemplos en el apartado 1.4.

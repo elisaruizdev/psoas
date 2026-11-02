@@ -19,6 +19,7 @@ describe('Register', () => {
     email: 'Ana@Psoas.es',
     password: 'segura123',
     confirmPassword: 'segura123',
+    acceptTerms: true,
   };
 
   beforeEach(async () => {
@@ -96,6 +97,22 @@ describe('Register', () => {
     });
     req.flush({});
     expect(component.okMessage()).toContain('Registro exitoso');
+  });
+
+  it('sin aceptar los términos no deja registrarse y lo explica', async () => {
+    component.registerForm.setValue({ ...validos, acceptTerms: false });
+    component.sendFormRegister();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    http.expectNone((r) => r.method === 'POST');
+    expect(element.querySelector('#terms-error')?.textContent).toContain('aceptar los términos');
+  });
+
+  it('marcar la casilla la enlaza con el formulario', () => {
+    const casilla = element.querySelector<HTMLInputElement>('input[type="checkbox"]')!;
+    casilla.click();
+    expect(component.registerForm.get('acceptTerms')?.value).toBeTrue();
   });
 
   it('si la API falla, muestra el error', () => {

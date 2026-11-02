@@ -1,9 +1,14 @@
-import pytest
+import os
 
-from psoas_ai.config import Settings
-from psoas_ai.datos import Clinica
-from psoas_ai.llm import FakeProvider
-from psoas_ai.rag import IndiceVectorial
+# Antes de importar psoas_ai: los tests no leen el ai/.env de quien los ejecuta (su clave).
+os.environ["PSOAS_AI_SIN_ENV"] = "1"
+
+import pytest  # noqa: E402
+
+from psoas_ai.config import Settings  # noqa: E402
+from psoas_ai.datos import Clinica  # noqa: E402
+from psoas_ai.llm import FakeProvider  # noqa: E402
+from psoas_ai.rag import IndiceVectorial  # noqa: E402
 
 
 @pytest.fixture

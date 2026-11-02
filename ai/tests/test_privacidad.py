@@ -31,3 +31,16 @@ def test_no_confunde_cifras_clinicas_con_telefonos():
     texto, s = anonimizar("EVA 7/10, 5 series de 45 segundos, 30 minutos sentada")
     assert s.mapa == {}
     assert texto == "EVA 7/10, 5 series de 45 segundos, 30 minutos sentada"
+
+
+def test_tambien_anonimiza_nombre_mas_primer_apellido(clinica):
+    texto, s = anonimizar("¿Cómo va Lucía García? Y lucía garcía lópez también", clinica.pacientes)
+    assert texto == "¿Cómo va [PACIENTE_p-1]? Y [PACIENTE_p-1] también"
+    assert restaurar(texto, s) == "¿Cómo va Lucía García López? Y Lucía García López también"
+
+
+def test_no_sustituye_dentro_de_otras_palabras(clinica):
+    from psoas_ai.datos import Paciente
+
+    texto, _ = anonimizar("Analógico", [Paciente("x", "Ana Lógico Pérez", "", "", "")])
+    assert texto == "Analógico"

@@ -4,7 +4,11 @@
 
 Psoas is a web app for running a physiotherapy clinic. Physiotherapists use it to keep patient records, follow each patient's clinical history and treatments, log therapy sessions and schedule appointments, all from one private area.
 
-This repository holds the frontend, built with Angular 20. It talks to a separate REST API ([psoas-backend](https://psoas-backend.onrender.com) in production). The interface is in Spanish.
+This repository holds the frontend, built with Angular 20. It talks to a separate REST API, [psoas-backend](https://github.com/elisaruizdev/psoas-backend). The interface is in Spanish.
+
+There is no hosted backend: the way to run Psoas is locally with Docker (see below), at no cost.
+
+It also works as a study project: [`docs/README.md`](docs/README.md) (in Spanish) maps each topic (testing, CI/CD, microfrontends, Python, LLMs, RAG, agents, AI tooling for teams) to the code that applies it, with guides, exercises and review questions.
 
 ## Features
 
@@ -82,7 +86,9 @@ The dashboard loads the `<psoas-resumen-citas>` microfrontend at runtime from th
 
 ## Run the whole app with Docker
 
-The quickest way to try Psoas. `docker-compose.yml` starts the full stack: PostgreSQL, the [backend API](https://github.com/elisaruizdev/psoas-backend) (pulled straight from GitHub) and this frontend served by nginx. The only requirement is [Docker](https://www.docker.com/products/docker-desktop/).
+The way to run Psoas. `docker-compose.yml` starts the full stack: PostgreSQL, the [backend API](https://github.com/elisaruizdev/psoas-backend), the AI assistant and this frontend served by nginx. The only requirement is [Docker](https://www.docker.com/products/docker-desktop/).
+
+By default the backend is pulled straight from GitHub (`main`). To use a local clone instead (to change the backend or try a branch), create a `.env` file next to `docker-compose.yml` (ignored by git) with `BACKEND_PATH=../../back/psoas-backend` or wherever your clone is.
 
 ```bash
 git clone https://github.com/elisaruizdev/psoas.git
@@ -102,9 +108,12 @@ On first start the API fills the database with sample patients, treatments, sess
 | ------- | -------------------------------------------- | ------ |
 | `web`   | Angular build served by nginx (multi-stage)  | `8080` |
 | `api`   | NestJS API                                   | `3000` |
+| `ai`    | AI assistant (Python, FastAPI)               | `8000` |
 | `db`    | PostgreSQL 16, data kept in a Docker volume  | —      |
 
-If those ports are taken, pick others: `WEB_PORT=8081 API_PORT=3001 docker compose up -d --build`.
+The **Asistente** tab answers questions about patients' clinical history and appointments, reading the real data through the API with the logged-in user's token. Without configuration it runs in demo mode (no LLM). To use Gemini (free tier), create `ai/.env` from `ai/.env.example` with `LLM_PROVIDER=gemini` and your `GEMINI_API_KEY`. See [`ai/README.md`](ai/README.md).
+
+If those ports are taken, pick others: `WEB_PORT=8081 API_PORT=3001 AI_PORT=8001 docker compose up -d --build`.
 
 Stop it with `docker compose down`, or `docker compose down -v` to also wipe the database.
 
@@ -131,7 +140,7 @@ The API URL is set in `src/environments/`:
 | File                        | `baseUrl`                           |
 | --------------------------- | ----------------------------------- |
 | `environment.ts`            | `http://localhost:3000`             |
-| `environment.production.ts` | `https://psoas-backend.onrender.com` |
+| `environment.production.ts` | `https://psoas-backend.onrender.com` (no longer running: Docker overrides it with `http://localhost:3000`) |
 
 ## Scripts
 
@@ -178,7 +187,9 @@ The E2E tests never hit a real backend: `e2e/support/api-mock.ts` intercepts eve
 
 ## Deployment
 
-The frontend is set up for Vercel. `vercel.json` sends every route to `index.html`, so deep links such as `/patients` work when the page is reloaded.
+There is no hosted deployment of the full app: the backend is not deployed anywhere, so use Docker locally.
+
+The frontend is still set up for Vercel (`vercel.json` sends every route to `index.html`, so deep links such as `/patients` work when the page is reloaded), but without a backend the hosted version can show the screens and cannot log in.
 
 It can also run on any server as a Docker image. The `Dockerfile` builds the app with Node and copies only the static files into an nginx image. `docker/nginx/` does the same SPA fallback as `vercel.json`, caches the hashed JS and CSS files and sends security headers (Content-Security-Policy, `nosniff`, `X-Frame-Options`, Referrer-Policy, Permissions-Policy, HSTS) with `server_tokens off`. The API URL is baked into the bundle at build time; the CSP `connect-src` reads it from `API_ORIGIN` when the container starts:
 

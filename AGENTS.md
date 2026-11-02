@@ -8,8 +8,11 @@ de `.cursor/rules/` la complementan. Si cambia una convención, se cambia aquí.
 
 Frontend Angular 20 de una clínica de fisioterapia (pacientes, fisios, citas, dashboard). El
 backend (NestJS) es otro repo. Además, en este repo:
-- `ai/`: asistente clínico en Python (RAG, agentes). Ver `ai/README.md`.
-- `microfrontends/`: Web Components con Lit, si están (ver su README).
+- `ai/`: asistente clínico en Python (RAG, agentes). Ver `ai/README.md`. La app lo usa en la
+  pestaña **Asistente** (`src/app/features/private-area/assistant/`), solo si el entorno tiene `aiUrl`.
+- `microfrontends/`: Web Components con Lit (ver su README).
+- `docs/`: guías de estudio de todo lo anterior; índice en `docs/README.md`. Si cambias algo que
+  una guía explica, actualiza la guía en el mismo PR.
 
 ## Comandos
 
@@ -21,6 +24,7 @@ backend (NestJS) es otro repo. Además, en este repo:
 | E2E | `npx playwright test --project=chromium` (`--grep @smoke` para los rápidos) |
 | Build | `npm run build` |
 | IA (Python) | `cd ai && uv run pytest && uv run ruff check .` |
+| App completa (BD + API + IA + web) | `docker compose up -d --build` → http://localhost:8080 (`demo@psoas.dev` / `Demo1234!`) |
 
 Antes de dar una tarea por terminada: lint + tests unitarios en verde. Si tocas plantillas o
 flujos de usuario, también los E2E de Chromium.
@@ -59,4 +63,10 @@ flujos de usuario, también los E2E de Chromium.
 
 - Son datos de salud (categoría especial del RGPD). No pegues datos reales en prompts, tests ni
   fixtures: usa los ficticios de `src/testing/fixtures.ts` y `ai/data/clinica.json`.
-- Nunca subas claves: van en variables de entorno (`ai/.env`, ignorado por git).
+- Nunca subas claves: van en `ai/.env` (ignorado por git). **Nunca en `ai/.env.example`**: es la
+  plantilla y sí se sube. Antes de un commit, comprueba que no entra ninguna clave.
+- Lo que se envía a un LLM va anonimizado (`ai/src/psoas_ai/privacidad.py`); no añadas llamadas
+  al modelo que se salten ese paso.
+- Toda llamada al backend fuera de `/auth` necesita el JWT (guard global en `psoas-backend`, PR #9);
+  el interceptor de `features/auth/interceptors/` lo añade. El asistente lo verifica también por
+  su cuenta (defensa en profundidad).

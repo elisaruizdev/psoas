@@ -68,3 +68,9 @@ def test_reindexar_sustituye_la_coleccion(clinica):
     indice = IndiceVectorial(FakeProvider())
     assert indice.indexar(clinica) == indice.indexar(clinica) == 9
     assert len(indice.buscar("dolor", k=50)) == 9
+
+
+def test_entiende_citas_agrupadas(indice):
+    llm = FakeProvider([LLMResponse(text="Mejora [1, 2] y sigue igual [4,9].")])
+    r = responder(llm, indice, "dolor al saltar", k=2)
+    assert r.citas == [1, 2, 4, 9] and r.citas_invalidas == [4, 9]

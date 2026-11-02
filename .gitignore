@@ -47,3 +47,5 @@ Thumbs.db
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+# Variables locales de docker compose (p. ej. BACKEND_PATH)
+/.env
