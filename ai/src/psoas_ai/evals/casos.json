@@ -1,0 +1,32 @@
+{
+  "recuperacion": [
+    { "pregunta": "dolor al saltar en la rodilla", "esperada": "n-4" },
+    { "pregunta": "ejercicios isométricos de cuádriceps para el dolor", "esperada": "n-5" },
+    { "pregunta": "dolores de cabeza por trabajar con el portátil", "esperada": "n-7" },
+    { "pregunta": "pautas de ergonomía con la pantalla", "esperada": "n-8" },
+    { "pregunta": "dolor lumbar al estar sentada", "esperada": "n-1" },
+    { "pregunta": "aguanta una hora sentada en el trabajo", "esperada": "n-3" },
+    { "pregunta": "vuelve a entrenar con el equipo", "esperada": "n-6", "paciente_id": "p-2" },
+    { "pregunta": "fortalecimiento de flexores profundos del cuello", "esperada": "n-9", "paciente_id": "p-3" }
+  ],
+  "respuestas": [
+    {
+      "pregunta": "¿Cómo ha evolucionado el dolor de Lucía García López?",
+      "paciente_id": "p-1",
+      "debe_contener": ["3/10"],
+      "no_debe_contener": ["rodilla"]
+    },
+    {
+      "pregunta": "¿Qué ejercicios hace Mario Sanz Gil para la rodilla?",
+      "paciente_id": "p-2",
+      "debe_contener": ["isométric"],
+      "no_debe_contener": []
+    },
+    {
+      "pregunta": "¿Qué medicación toma Carmen Ortega Ruiz?",
+      "paciente_id": "p-3",
+      "debe_contener": ["No consta"],
+      "no_debe_contener": []
+    }
+  ]
+}

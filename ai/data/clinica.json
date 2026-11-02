@@ -1,0 +1,97 @@
+{
+  "_aviso": "Datos ficticios para la demo. Ningún paciente es real.",
+  "pacientes": [
+    {
+      "id": "p-1",
+      "nombre": "Lucía García López",
+      "dni": "12345678Z",
+      "telefono": "612 345 678",
+      "email": "lucia.garcia@example.com"
+    },
+    {
+      "id": "p-2",
+      "nombre": "Mario Sanz Gil",
+      "dni": "11223344B",
+      "telefono": "+34 699 111 222",
+      "email": "mario.sanz@example.com"
+    },
+    {
+      "id": "p-3",
+      "nombre": "Carmen Ortega Ruiz",
+      "dni": "X1234567L",
+      "telefono": "655 432 100",
+      "email": "carmen.ortega@example.com"
+    }
+  ],
+  "notas": [
+    {
+      "id": "n-1",
+      "paciente_id": "p-1",
+      "tipo": "diagnostico",
+      "fecha": "2026-09-02",
+      "texto": "Lumbalgia mecánica de tres semanas de evolución tras mudanza. Dolor en zona lumbar baja que empeora al estar sentada más de 30 minutos y mejora al caminar. Sin irradiación a piernas. Contacto: 612 345 678."
+    },
+    {
+      "id": "n-2",
+      "paciente_id": "p-1",
+      "tipo": "sesion",
+      "fecha": "2026-09-09",
+      "texto": "Primera sesión. Terapia manual en zona lumbar, movilización de cadera y ejercicios de control motor (puente de glúteo, gato-camello). EVA de dolor 7/10 al inicio y 5/10 al terminar."
+    },
+    {
+      "id": "n-3",
+      "paciente_id": "p-1",
+      "tipo": "sesion",
+      "fecha": "2026-09-23",
+      "texto": "Tercera sesión. Buena adherencia a los ejercicios en casa. EVA 3/10. Ya aguanta una hora sentada en el trabajo. Se progresa a plancha frontal y peso muerto rumano con banda elástica."
+    },
+    {
+      "id": "n-4",
+      "paciente_id": "p-2",
+      "tipo": "diagnostico",
+      "fecha": "2026-08-18",
+      "texto": "Tendinopatía rotuliana en rodilla derecha. Jugador de baloncesto amateur. Dolor al saltar y al bajar escaleras. Sin derrame ni inestabilidad."
+    },
+    {
+      "id": "n-5",
+      "paciente_id": "p-2",
+      "tipo": "sesion",
+      "fecha": "2026-08-25",
+      "texto": "Inicio de ejercicios isométricos de cuádriceps (sentadilla isométrica en pared, 5 series de 45 segundos) para analgesia. Se recomienda reducir saltos dos semanas. Dolor al saltar 6/10."
+    },
+    {
+      "id": "n-6",
+      "paciente_id": "p-2",
+      "tipo": "sesion",
+      "fecha": "2026-09-15",
+      "texto": "Progresión a ejercicios excéntricos en plano inclinado (decline squat). Dolor al saltar 3/10. Vuelve a entrenar con el equipo sin partidos."
+    },
+    {
+      "id": "n-7",
+      "paciente_id": "p-3",
+      "tipo": "diagnostico",
+      "fecha": "2026-10-01",
+      "texto": "Cervicalgia con cefalea tensional asociada. Trabaja muchas horas con ordenador portátil. Rigidez al girar el cuello a la izquierda. Email de contacto carmen.ortega@example.com."
+    },
+    {
+      "id": "n-8",
+      "paciente_id": "p-3",
+      "tipo": "sesion",
+      "fecha": "2026-10-08",
+      "texto": "Terapia manual en musculatura suboccipital y trapecio superior. Pautas de ergonomía: elevar la pantalla a la altura de los ojos y usar teclado externo. Ejercicios de retracción cervical cada hora."
+    },
+    {
+      "id": "n-9",
+      "paciente_id": "p-3",
+      "tipo": "sesion",
+      "fecha": "2026-10-22",
+      "texto": "Menos cefaleas: de cuatro por semana a una. Gira el cuello sin dolor. Se añade fortalecimiento de flexores profundos del cuello."
+    }
+  ],
+  "citas": [
+    { "id": "c-1", "paciente_id": "p-1", "fecha": "2026-11-04T10:00", "fisio": "Ana Ruiz", "estado": "programada" },
+    { "id": "c-2", "paciente_id": "p-2", "fecha": "2026-11-04T17:30", "fisio": "Luis Gil", "estado": "confirmada" },
+    { "id": "c-3", "paciente_id": "p-3", "fecha": "2026-11-05T09:00", "fisio": "Ana Ruiz", "estado": "programada" },
+    { "id": "c-4", "paciente_id": "p-1", "fecha": "2026-11-18T10:00", "fisio": "Ana Ruiz", "estado": "programada" }
+  ]
+}

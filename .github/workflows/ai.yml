@@ -1,0 +1,36 @@
+# CI del asistente de IA (Python). Solo se ejecuta si cambia algo en ai/.
+# Los tests no llaman a ningún LLM (FakeProvider): no hacen falta secretos ni cuesta dinero.
+name: IA
+
+on:
+  push:
+    branches: [main]
+    paths: ['ai/**', '.github/workflows/ai.yml']
+  pull_request:
+    paths: ['ai/**', '.github/workflows/ai.yml']
+
+concurrency:
+  group: ia-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  calidad:
+    name: Ruff, pytest y evals
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ai
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: ai/uv.lock
+      - run: uv sync --locked
+      - name: Lint y formato
+        run: uv run ruff check . && uv run ruff format --check .
+      - name: Tests
+        run: uv run pytest
+      # Evals deterministas (recuperación y privacidad) con el proveedor falso.
+      - name: Evals
+        run: uv run psoas-ai evals
