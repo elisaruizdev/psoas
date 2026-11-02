@@ -185,10 +185,11 @@ ENRUTADOR ─┬─► CLÍNICO (RAG + Qdrant) ──┐
   sale del servidor. Un test y una eval auditan todos los prompts enviados.
 - **Datos con el token del usuario** (`fuente_api.py`): el asistente no tiene acceso propio a la
   base de datos; pide los datos a la API de Psoas con el JWT de quien pregunta.
-- **Defensa en profundidad** (`servicio.py`, `_verificar`): el backend de Psoas **no exige token**
-  en sus endpoints (fallo pendiente en `psoas-backend`). Por eso el asistente comprueba él mismo la
-  firma (HS256 fijo, nunca el algoritmo que diga el token) y la caducidad, y solo guarda el hash
-  del token en su caché.
+- **Defensa en profundidad** (`servicio.py`, `_verificar`): el asistente comprueba él mismo la
+  firma del JWT (HS256 fijo, nunca el algoritmo que diga el token) y la caducidad, y solo guarda el
+  hash del token en su caché. Así no depende de que otra pieza haga bien su parte: el backend
+  pasó un tiempo sin exigir token (corregido en `psoas-backend`, PR #9, con un guard global que
+  además rechaza cuentas que ya no están activas).
 - ***Prompt injection***: una nota puede contener «ignora tus instrucciones». Se mitiga tratando
   el contenido como datos en el prompt, con herramientas de solo lectura, validación y límite de
   pasos. Una acción con efectos (cancelar una cita) pediría confirmación humana.
@@ -259,7 +260,7 @@ repo versionado con PR y revisión, como cualquier código.
 | Las peticiones al asistente se colgaban más de 5 minutos | Prueba con Docker; volcado de pila con `faulthandler` dentro del contenedor | Tiempo máximo de 20 s, tiempo agotado = transitorio, modelo de respaldo |
 | `gemini-flash-latest` devolvía 503 («alta demanda») | Primera prueba con la clave real | Modelo de respaldo `gemini-flash-lite-latest` |
 | Los tokens reales del backend se rechazaban | Test del JWT: el backend pone `"sub": 1` (número) y PyJWT exige texto | `verify_sub=False`; la firma y la caducidad sí se validan |
-| El backend da pacientes sin token | Al probar el asistente con un token inventado | Verificación del JWT en el asistente; el arreglo de fondo va en `psoas-backend` |
+| El backend daba pacientes sin token | Al probar el asistente con un token inventado | Verificación del JWT en el asistente y guard JWT global en `psoas-backend` (PR #9) |
 | «Ana López» llegaba al modelo sin anonimizar | Traza del agente con Gemini real | Anonimizar también «nombre + primer apellido» |
 | Las citas `[1, 3]` no se contaban | Respuesta real de Gemini | Expresión regular que admite grupos |
 | La crítica del revisor empeoraba la búsqueda | Test del reintento | La crítica va al prompt, no a la consulta |

@@ -67,5 +67,6 @@ flujos de usuario, también los E2E de Chromium.
   plantilla y sí se sube. Antes de un commit, comprueba que no entra ninguna clave.
 - Lo que se envía a un LLM va anonimizado (`ai/src/psoas_ai/privacidad.py`); no añadas llamadas
   al modelo que se salten ese paso.
-- El backend hoy no exige token en sus endpoints (pendiente en `psoas-backend`); no confíes en
-  él para la autorización.
+- Toda llamada al backend fuera de `/auth` necesita el JWT (guard global en `psoas-backend`, PR #9);
+  el interceptor de `features/auth/interceptors/` lo añade. El asistente lo verifica también por
+  su cuenta (defensa en profundidad).
