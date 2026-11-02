@@ -17,9 +17,9 @@ export default defineConfig({
   // Reintentos solo en CI. Un test que pasa al reintentar sale como "flaky" en el informe.
   retries: CI ? 2 : 0,
   // En CI cada shard (trozo de la suite) deja un informe "blob"; un job final los une
-  // en un único informe HTML con `playwright merge-reports`.
+  // en un único informe HTML con `playwright merge-reports`. JUnit es para Azure DevOps.
   reporter: CI
-    ? [['blob'], ['github'], ['list']]
+    ? [['blob'], ['github'], ['list'], ['junit', { outputFile: 'junit-e2e/results.xml' }]]
     : [['list'], ['html', { open: 'never' }]],
 
   // Dónde se guardan las capturas de referencia de toHaveScreenshot.

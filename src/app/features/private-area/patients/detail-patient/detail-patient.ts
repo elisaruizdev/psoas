@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, Inject, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -13,6 +13,11 @@ import { MenuDetailPatientComponent } from './menu-detail-patient/menu-detail-pa
 import { ClinicalHistory } from './clinical-history/clinical-history';
 import { Treatments } from './treatments/treatments';
 import { SessionsHistory } from './sessions-history/sessions-history';
+import {
+  optionalPhone,
+  spanishPhoneValidator,
+} from '../../../../shared/validators/spanish-id.validators';
+import { NotificationService } from '../../../../shared/notifications/notification.service';
 
 @Component({
   selector: 'app-detail-patient',
@@ -37,6 +42,8 @@ export class DetailPatient implements OnInit {
   activeTab: 'clinical' | 'treatments' | 'sessions' = 'clinical';
   loading = signal<boolean>(true);
   loadError = signal('');
+
+  private readonly notifications = inject(NotificationService);
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { id: string },
@@ -81,7 +88,7 @@ export class DetailPatient implements OnInit {
               placeholder: '612 345 678',
               required: true,
               value: patient.phone || '',
-              validators: [Validators.pattern(/^(\+34|0034|34)?[6789]\d{8}$/)],
+              validators: [spanishPhoneValidator()],
             },
             {
               name: 'email',
@@ -203,7 +210,7 @@ export class DetailPatient implements OnInit {
   private formatPatientData(data: FormValue) {
     const city = formText(data, 'city');
     return {
-      phone: formText(data, 'phone')?.replace(/\s/g, ''),
+      phone: optionalPhone(formText(data, 'phone')),
       email: formText(data, 'email')?.toLowerCase().trim(),
       address: formText(data, 'address')?.trim() || undefined,
       city: city ? this.capitalizeText(city) : undefined,
@@ -240,11 +247,10 @@ export class DetailPatient implements OnInit {
   }
 
   private showSuccessNotification(message: string): void {
-    alert(message);
+    this.notifications.success(message);
   }
 
   private showErrorNotification(message: string): void {
-    console.error('ERROR:', message);
-    alert(message);
+    this.notifications.error(message);
   }
 }

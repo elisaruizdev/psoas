@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Input, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,6 +12,7 @@ import { Form } from '../../../../../shared/ui/form/form';
 import { FormConfig, FormValue, formChoice, formText } from '../../../../../shared/models/form.model';
 import { Diagnosis } from '../../models/patients.model';
 import { ButtonUI } from '../../../../../shared/ui/button/button';
+import { NotificationService } from '../../../../../shared/notifications/notification.service';
 
 @Component({
   selector: 'app-clinical-history',
@@ -39,6 +40,8 @@ export class ClinicalHistory implements OnInit {
   selectedDiagnosis = signal<Diagnosis | undefined>(undefined);
   editingId = signal<string | null>(null);
   diagnosisFormConfig = signal<FormConfig | null>(null);
+
+  private readonly notifications = inject(NotificationService);
 
   constructor(
     private diagnosesService: DiagnosesService,
@@ -226,11 +229,10 @@ export class ClinicalHistory implements OnInit {
   }
 
   private showSuccessNotification(message: string): void {
-    alert(message);
+    this.notifications.success(message);
   }
 
   private showErrorNotification(message: string): void {
-    console.error('ERROR:', message);
-    alert(message);
+    this.notifications.error(message);
   }
 }

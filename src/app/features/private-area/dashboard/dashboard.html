@@ -34,6 +34,12 @@
         </div>
     </section>
 
+    @if (resumenCitasDisponible()) {
+    <!-- Microfrontend (Web Component con Lit): entra `citas` por propiedad, sale un evento. -->
+    <psoas-resumen-citas class="dashboard__mfe" titulo="Próximas citas de hoy" [citas]="citasParaResumen()"
+        (cita-seleccionada)="onCitaSeleccionada($event)"></psoas-resumen-citas>
+    }
+
     <section class="dashboard__table">
         <h2 class="dashboard__title">Sesiones hoy</h2>
         <f-table [config]="sesionesHoyConfig()"></f-table>

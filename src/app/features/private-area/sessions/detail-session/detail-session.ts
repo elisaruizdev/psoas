@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, Inject, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -8,6 +8,7 @@ import { ButtonUI } from '../../../../shared/ui/button/button';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { FormConfig, FormValue, formText } from '../../../../shared/models/form.model';
 import { Appointment, UpdateAppointment } from '../models/appointment.model';
+import { NotificationService } from '../../../../shared/notifications/notification.service';
 
 @Component({
   selector: 'app-detail-session',
@@ -19,6 +20,8 @@ import { Appointment, UpdateAppointment } from '../models/appointment.model';
 export class DetailSession implements OnInit {
   appointment: Appointment;
   appointmentFormConfig = signal<FormConfig | null>(null);
+
+  private readonly notifications = inject(NotificationService);
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Appointment,
@@ -224,11 +227,10 @@ export class DetailSession implements OnInit {
   }
 
   private showSuccessNotification(message: string): void {
-    alert(message);
+    this.notifications.success(message);
   }
 
   private showErrorNotification(message: string): void {
-    console.error('ERROR:', message);
-    alert(message);
+    this.notifications.error(message);
   }
 }

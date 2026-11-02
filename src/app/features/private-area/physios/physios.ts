@@ -1,4 +1,4 @@
-import { Component, DestroyRef, signal, computed } from '@angular/core';
+import { Component, DestroyRef, signal, computed, inject } from '@angular/core';
 import { TableConfig, TableRowClick } from '../../../shared/models/table.model';
 import { Table } from '../../../shared/ui/table/table';
 import { MatDialog } from '@angular/material/dialog';
@@ -8,6 +8,7 @@ import { DetailPhysio } from './detail-physio/detail-physio';
 import { ButtonUI } from '../../../shared/ui/button/button';
 import { Icon } from '../../../shared/ui/icon/icon';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NotificationService } from '../../../shared/notifications/notification.service';
 
 
 @Component({
@@ -63,6 +64,8 @@ export class Physios {
     clickableRows: true,
     clickableParams: 'view-physio',
   }));
+
+  private readonly notifications = inject(NotificationService);
 
   constructor(
     private dialog: MatDialog,
@@ -160,7 +163,7 @@ export class Physios {
       this.openError.set('');
       this.physiosService.approvePhysio(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
-          alert('Fisioterapeuta aprobado. Se ha enviado el email de verificación.');
+          this.notifications.success('Fisioterapeuta aprobado. Se ha enviado el email de verificación.');
           this.getAllPhysios();
         },
         error: (error) => {
@@ -176,7 +179,7 @@ export class Physios {
       this.openError.set('');
       this.physiosService.rejectPhysio(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
-          alert('Solicitud rechazada correctamente');
+          this.notifications.success('Solicitud rechazada correctamente');
           this.getAllPhysios();
         },
         error: (error) => {
