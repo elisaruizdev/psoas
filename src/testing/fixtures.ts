@@ -56,14 +56,9 @@ export function aPhysio(overrides: Partial<Physio> = {}): Physio {
     hire_date: null,
     schedule: null,
     status: 'active',
-    password: '',
     is_verified: true,
-    verification_token: null,
-    verification_token_expires: null,
     created_at: '2026-01-01T00:00:00.000Z',
     updated_at: '2026-01-01T00:00:00.000Z',
-    reset_password_token: null,
-    reset_password_token_expires: null,
     ...overrides,
   };
 }
