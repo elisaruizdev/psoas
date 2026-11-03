@@ -8,7 +8,7 @@ description: Crea un componente Angular nuevo en Psoas siguiendo las convencione
 ## 1. Antes de escribir
 
 - Busca si ya existe algo reutilizable en `src/app/shared/ui/` (button, table, modal, form,
-  card-info, delete-card). Si existe, úsalo en vez de duplicarlo.
+  icon) y en `src/app/shared/pipes/` (displayDate, fullName). Si existe, úsalo en vez de duplicarlo.
 - Decide dónde va: `features/<dominio>/<vista>/` si es de negocio, `shared/ui/<nombre>/` si
   es genérico y no conoce el dominio.
 - Si necesita datos: el modelo va en `features/<dominio>/models/` y el servicio en `services/`.

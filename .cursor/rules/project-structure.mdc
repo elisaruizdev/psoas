@@ -12,7 +12,7 @@ Backend independiente (Node/Express, otro repo) en `environment.baseUrl` (`http:
 
 - `src/app/features/<dominio>/` — una carpeta por dominio de negocio (`auth`, `private-area/patients`, `private-area/sessions`, `private-area/physios`, `private-area/dashboard`).
 - Dentro de cada dominio: `models/`, `services/`, subcarpetas por vista (`detail-patient/`, `new-patient/`, etc.).
-- `src/app/shared/ui/` — componentes reutilizables sin lógica de negocio (`button`, `table`, `modal`, `form`, `card-info`).
+- `src/app/shared/ui/` — componentes reutilizables sin lógica de negocio (`button`, `table`, `modal`, `form`, `icon`). Pipes de presentación en `src/app/shared/pipes/`.
 - `src/app/shared/models/` — tipos compartidos entre dominios (p. ej. `table.model.ts`, `modal.model.ts`).
 - Antes de crear un componente/servicio nuevo, comprobar si ya existe algo reutilizable en `shared/ui`.
 
