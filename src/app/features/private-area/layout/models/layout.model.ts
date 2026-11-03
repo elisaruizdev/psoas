@@ -20,11 +20,3 @@ export interface MenuUser {
   email: string;
   avatar?: string;
 }
-
-export interface UserMenuItem {
-  label: string;
-  icon: string;
-  path?: string;
-  dividerAfter?: boolean;
-  action?: () => void;
-}
