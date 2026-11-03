@@ -37,3 +37,14 @@ export interface UpdateAppointment {
   status?: string;
   notes?: string;
 }
+const APPOINTMENT_STATUS_LABELS: Record<string, string> = {
+  scheduled: 'Programada',
+  confirmed: 'Confirmada',
+  completed: 'Completada',
+  cancelled: 'Cancelada',
+};
+
+/** Estado de la cita para mostrar ("confirmed" → "Confirmada"); si no se conoce, tal cual. */
+export function appointmentStatusLabel(status: string): string {
+  return APPOINTMENT_STATUS_LABELS[status] ?? status;
+}

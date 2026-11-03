@@ -8,6 +8,7 @@ import { Patient } from './models/patients.model';
 import { NewPatient } from './new-patient/new-patient';
 import { DetailPatient } from './detail-patient/detail-patient';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fullName } from '../../../shared/utils/text';
 
 @Component({
   selector: 'app-patients',
@@ -75,7 +76,7 @@ export class Patients implements OnInit {
   private mapPatientsToTableData(patients: Patient[]) {
     return patients.map((patient) => ({
       id: patient.id,
-      fullName: this.getFullName(patient),
+      fullName: fullName(patient),
       identifier: patient.identifier,
       email: patient.email,
       phone: patient.phone,
@@ -83,13 +84,6 @@ export class Patients implements OnInit {
     }));
   }
 
-  private getFullName(patient: Patient): string {
-    const parts = [patient.name, patient.surname];
-    if (patient.second_surname) {
-      parts.push(patient.second_surname);
-    }
-    return parts.join(' ');
-  }
 
   private translateStatus(status: string): string {
     const statusMap: { [key: string]: string } = {

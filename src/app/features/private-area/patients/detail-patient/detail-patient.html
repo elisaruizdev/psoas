@@ -12,7 +12,7 @@
     } @else if (patient()) {
     <header class="dialog__header">
         <div class="dialog__heading">
-            <h2 class="dialog__title">{{ getFullName() }}</h2>
+            <h2 class="dialog__title">{{ patient() | fullName }}</h2>
         </div>
         <button type="button" class="dialog__close" aria-label="Cerrar" (click)="onClose()">
             <ui-icon name="close-lg" [size]="24" />
@@ -25,7 +25,7 @@
             <div class="dialog__data-grid">
                 <div class="dialog__data-item">
                     <span class="dialog__data-label">Fecha de Nacimiento</span>
-                    <span class="dialog__data-value">{{ formatDate(patient()!.birthdate) }}</span>
+                    <span class="dialog__data-value">{{ patient()!.birthdate | displayDate: 'No especificado' }}</span>
                 </div>
                 <div class="dialog__data-item">
                     <span class="dialog__data-label">Teléfono</span>

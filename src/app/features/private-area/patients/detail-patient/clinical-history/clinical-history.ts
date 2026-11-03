@@ -14,6 +14,7 @@ import { FormConfig, FormValue, formChoice, formText } from '../../../../../shar
 import { Diagnosis } from '../../models/patients.model';
 import { ButtonUI } from '../../../../../shared/ui/button/button';
 import { NotificationService } from '../../../../../shared/notifications/notification.service';
+import { DisplayDatePipe } from '../../../../../shared/pipes/display-date.pipe';
 import { localIsoDate } from '../../../../../shared/utils/dates';
 
 @Component({
@@ -27,7 +28,8 @@ import { localIsoDate } from '../../../../../shared/utils/dates';
     MatChipsModule,
     MatTooltipModule,
     Form,
-    ButtonUI
+    ButtonUI,
+    DisplayDatePipe
   ],
   templateUrl: './clinical-history.html',
   styleUrl: './clinical-history.scss',
@@ -86,7 +88,7 @@ export class ClinicalHistory implements OnInit {
   onSaveEdit(diagnosis: Diagnosis): void {
     this.diagnosesService
       .update(diagnosis.id, {
-        diagnosis_date: this.formatDateForApi(diagnosis.diagnosis_date),
+        diagnosis_date: localIsoDate(diagnosis.diagnosis_date),
         diagnosis_type: diagnosis.diagnosis_type,
         description: diagnosis.description,
         observations: diagnosis.observations,
@@ -205,19 +207,7 @@ export class ClinicalHistory implements OnInit {
     });
   }
 
-  formatDate(date: Date | string): string {
-    if (!date) return 'No especificada';
-    const d = new Date(date);
-    return d.toLocaleDateString('es-ES');
-  }
 
-  formatDateForApi(date: Date | string): string {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
 
   getStatusLabel(status: string): string {
     return status === 'active' ? 'Activo' : 'Resuelto';

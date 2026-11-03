@@ -8,34 +8,30 @@ import { Form } from '../../../../shared/ui/form/form';
 import { ButtonUI } from '../../../../shared/ui/button/button';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { FormConfig, FormValue, formText } from '../../../../shared/models/form.model';
-import { Appointment, UpdateAppointment } from '../models/appointment.model';
+import { Appointment, UpdateAppointment, appointmentStatusLabel } from '../models/appointment.model';
 import { NotificationService } from '../../../../shared/notifications/notification.service';
+import { FullNamePipe } from '../../../../shared/pipes/full-name.pipe';
+import { localIsoDate } from '../../../../shared/utils/dates';
 
 @Component({
   selector: 'app-detail-session',
-  imports: [CommonModule, MatDialogModule, Form, ButtonUI, Icon],
+  imports: [CommonModule, MatDialogModule, Form, ButtonUI, Icon, FullNamePipe],
   templateUrl: './detail-session.html',
   styleUrl: './detail-session.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailSession implements OnInit {
-  data = inject<Appointment>(MAT_DIALOG_DATA);
+  readonly appointment = inject<Appointment>(MAT_DIALOG_DATA);
   private dialogRef = inject<MatDialogRef<DetailSession>>(MatDialogRef);
   private appointmentsService = inject(AppointmentsService);
   private destroyRef = inject(DestroyRef);
 
-  appointment: Appointment;
   readonly appointmentFormConfig = signal<FormConfig | null>(null);
+  readonly statusLabel = appointmentStatusLabel;
 
   private readonly notifications = inject(NotificationService);
   /** true mientras se guarda: el formulario desactiva el botón de enviar. */
   readonly saving = signal(false);
-
-  constructor() {
-    const data = this.data;
-
-    this.appointment = data;
-  }
 
   ngOnInit(): void {
     this.initializeFormConfig();
@@ -43,7 +39,7 @@ export class DetailSession implements OnInit {
 
   private initializeFormConfig(): void {
     const appointmentDate = new Date(this.appointment.appointment_date);
-    const dateStr = this.formatDateForInput(appointmentDate);
+    const dateStr = localIsoDate(appointmentDate);
     const timeStr = this.formatTimeForInput(appointmentDate);
 
     this.appointmentFormConfig.set({
@@ -180,56 +176,10 @@ export class DetailSession implements OnInit {
     this.dialogRef.close();
   }
 
-  private formatDateForInput(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
   private formatTimeForInput(date: Date): string {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${hours}:${minutes}`;
-  }
-
-  getPatientName(): string {
-    if (!this.appointment.patient) return 'Paciente no disponible';
-    const parts = [this.appointment.patient.name, this.appointment.patient.surname];
-    if (this.appointment.patient.second_surname) {
-      parts.push(this.appointment.patient.second_surname);
-    }
-    return parts.join(' ');
-  }
-
-  getPhysioName(): string {
-    if (!this.appointment.physio) return 'Fisioterapeuta no disponible';
-    const parts = [this.appointment.physio.name, this.appointment.physio.surname];
-    if (this.appointment.physio.second_surname) {
-      parts.push(this.appointment.physio.second_surname);
-    }
-    return parts.join(' ');
-  }
-
-  getStatusLabel(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      scheduled: 'Programada',
-      confirmed: 'Confirmada',
-      completed: 'Completada',
-      cancelled: 'Cancelada',
-    };
-    return statusMap[status] || status;
-  }
-
-  formatDateTime(date: Date | string): string {
-    const d = new Date(date);
-    return d.toLocaleString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   }
 
   private showSuccessNotification(message: string): void {

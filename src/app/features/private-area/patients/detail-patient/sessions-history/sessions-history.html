@@ -34,9 +34,9 @@
                         <div class="treatment-group__info">
                             <h3>{{ item.treatment.treatment_name }}</h3>
                             <p>
-                                {{ formatDate(item.treatment.start_date) }}
+                                {{ item.treatment.start_date | displayDate: 'No especificada' }}
                                 @if (item.treatment.end_date) {
-                                - {{ formatDate(item.treatment.end_date) }}
+                                - {{ item.treatment.end_date | displayDate: 'No especificada' }}
                                 } @else {
                                 - Actualidad
                                 }
@@ -60,10 +60,10 @@
                             <div class="session-card__date">
                                 <mat-icon class="session-card__date-icon">event_note</mat-icon>
                                 <div class="session-card__date-info">
-                                    <h4>Sesión del {{ formatDate(session.session_date) }}</h4>
+                                    <h4>Sesión del {{ session.session_date | displayDate: 'No especificada' }}</h4>
                                     <p>
                                         <mat-icon>person</mat-icon>
-                                        {{ getPhysioName(session) }} • {{ session.duration }} min
+                                        {{ session.physio | fullName: 'Fisioterapeuta no especificado' }} • {{ session.duration }} min
                                     </p>
                                 </div>
                             </div>
@@ -114,7 +114,7 @@
                             @if (session.next_appointment) {
                             <div class="session-card__next-appointment">
                                 <mat-icon>event</mat-icon>
-                                <span>Próxima cita: {{ formatDate(session.next_appointment) }}</span>
+                                <span>Próxima cita: {{ session.next_appointment | displayDate: 'No especificada' }}</span>
                             </div>
                             }
                         </mat-card-content>

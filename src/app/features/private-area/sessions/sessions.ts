@@ -3,7 +3,9 @@ import { TableConfig, TableRowClick } from '../../../shared/models/table.model';
 import { Table } from '../../../shared/ui/table/table';
 import { MatDialog } from '@angular/material/dialog';
 import { AppointmentsService } from './services/appointments.service';
-import { Appointment } from './models/appointment.model';
+import { Appointment, appointmentStatusLabel } from './models/appointment.model';
+import { formatDateTime } from '../../../shared/utils/dates';
+import { fullName } from '../../../shared/utils/text';
 import { ButtonUI } from '../../../shared/ui/button/button';
 import { NewSession } from './new-session/new-session';
 import { DetailSession } from './detail-session/detail-session';
@@ -76,51 +78,12 @@ export class Sessions implements OnInit {
   private mapAppointmentsToTableData(appointments: Appointment[]) {
     return appointments.map((appointment) => ({
       id: appointment.id,
-      appointmentDate: this.formatDateTime(appointment.appointment_date),
-      patientName: this.getPatientName(appointment),
-      physioName: this.getPhysioName(appointment),
+      appointmentDate: formatDateTime(appointment.appointment_date),
+      patientName: fullName(appointment.patient, 'Paciente no disponible'),
+      physioName: fullName(appointment.physio, 'Fisioterapeuta no disponible'),
       sessionType: `${appointment.session_number}ª sesión`,
-      status: this.translateStatus(appointment.status),
+      status: appointmentStatusLabel(appointment.status),
     }));
-  }
-
-  private formatDateTime(date: Date | string): string {
-    const d = new Date(date);
-    return d.toLocaleString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  }
-
-  private getPatientName(appointment: Appointment): string {
-    if (!appointment.patient) return 'Paciente no disponible';
-    const parts = [appointment.patient.name, appointment.patient.surname];
-    if (appointment.patient.second_surname) {
-      parts.push(appointment.patient.second_surname);
-    }
-    return parts.join(' ');
-  }
-
-  private getPhysioName(appointment: Appointment): string {
-    if (!appointment.physio) return 'Fisioterapeuta no disponible';
-    const parts = [appointment.physio.name, appointment.physio.surname];
-    if (appointment.physio.second_surname) {
-      parts.push(appointment.physio.second_surname);
-    }
-    return parts.join(' ');
-  }
-
-  private translateStatus(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      scheduled: 'Programada',
-      confirmed: 'Confirmada',
-      completed: 'Completada',
-      cancelled: 'Cancelada',
-    };
-    return statusMap[status] || status;
   }
 
   onAppointmentClick(event: TableRowClick): void {

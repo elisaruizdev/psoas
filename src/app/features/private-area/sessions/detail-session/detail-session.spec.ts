@@ -122,14 +122,33 @@ describe('DetailSession', () => {
     expect(dialogRef.close).toHaveBeenCalledWith();
   });
 
-  it('nombres y estado para la cabecera', () => {
-    expect(component.getPatientName()).toBe('Lucía García López');
-    expect(component.getPhysioName()).toBe('Ana Ruiz');
-    expect(component.getStatusLabel('confirmed')).toBe('Confirmada');
-    expect(component.getStatusLabel('raro')).toBe('raro');
+  it('pinta nombres y estado de la cita en la cabecera', () => {
+    const valores = [...fixture.nativeElement.querySelectorAll('.dialog__data-value')].map(
+      (el: Element) => el.textContent?.trim(),
+    );
+    expect(valores).toContain('Lucía García López');
+    expect(valores).toContain('Ana Ruiz');
+    expect(valores).toContain(component.statusLabel(cita.status));
+  });
+});
 
-    component.appointment = anAppointment({ patient: undefined, physio: undefined });
-    expect(component.getPatientName()).toBe('Paciente no disponible');
-    expect(component.getPhysioName()).toBe('Fisioterapeuta no disponible');
+describe('DetailSession sin paciente ni fisio en la cita', () => {
+  it('lo indica en lugar de dejar el hueco vacío', async () => {
+    const dialog = provideTestDialog(anAppointment({ patient: undefined, physio: undefined }));
+    await TestBed.configureTestingModule({
+      imports: [DetailSession],
+      providers: [
+        ...dialog.providers,
+        ...provideTestNotifications().providers,
+        { provide: AppointmentsService, useValue: jasmine.createSpyObj('AppointmentsService', ['updateAppointment']) },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(DetailSession);
+    fixture.detectChanges();
+
+    const texto = fixture.nativeElement.textContent as string;
+    expect(texto).toContain('Paciente no disponible');
+    expect(texto).toContain('Fisioterapeuta no disponible');
   });
 });

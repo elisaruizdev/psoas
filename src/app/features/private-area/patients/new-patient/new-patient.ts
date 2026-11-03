@@ -15,6 +15,7 @@ import {
   normalizePhone,
   spanishPhoneValidator,
 } from '../../../../shared/validators/spanish-id.validators';
+import { capitalizeWords } from '../../../../shared/utils/text';
 
 @Component({
   selector: 'app-new-patient',
@@ -230,16 +231,16 @@ export class NewPatient implements OnInit {
     const secondSurname = formText(data, 'second_surname');
     const city = formText(data, 'city');
     return {
-      name: this.capitalizeText(formText(data, 'name') ?? ''),
-      surname: this.capitalizeText(formText(data, 'surname') ?? ''),
-      second_surname: secondSurname ? this.capitalizeText(secondSurname) : undefined,
+      name: capitalizeWords(formText(data, 'name') ?? ''),
+      surname: capitalizeWords(formText(data, 'surname') ?? ''),
+      second_surname: secondSurname ? capitalizeWords(secondSurname) : undefined,
       identifier: normalizeDniNie(formText(data, 'identifier') ?? ''),
       birthdate: formText(data, 'birthdate') ?? '',
       gender: formText(data, 'gender') || 'otro',
       phone: normalizePhone(formText(data, 'phone') ?? ''),
       email: (formText(data, 'email') ?? '').toLowerCase().trim(),
       address: formText(data, 'address')?.trim() || undefined,
-      city: city ? this.capitalizeText(city) : undefined,
+      city: city ? capitalizeWords(city) : undefined,
       zip: formText(data, 'zip')?.trim() || undefined,
       emergency_contact: formText(data, 'emergency_contact')?.trim() || undefined,
       health_insurance: formText(data, 'health_insurance')?.trim() || undefined,
@@ -248,14 +249,6 @@ export class NewPatient implements OnInit {
     };
   }
 
-  private capitalizeText(text: string): string {
-    if (!text) return '';
-    return text
-      .toLowerCase()
-      .split(' ')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  }
 
   private showSuccessNotification(message: string): void {
     this.notifications.success(message);

@@ -140,6 +140,5 @@ describe('Treatments', () => {
     expect(component.getStatusLabel('otro')).toBe('otro');
     expect(component.getStatusColor('paused')).toBe('warn');
     expect(component.getStatusColor('otro')).toBe('primary');
-    expect(component.formatDate('')).toBe('No especificada');
   });
 });

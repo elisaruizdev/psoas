@@ -14,6 +14,7 @@ import { FormConfig, FormValue, formChoice, formText } from '../../../../../shar
 import { ButtonUI } from '../../../../../shared/ui/button/button';
 import { Treatment } from '../../models/patients.model';
 import { NotificationService } from '../../../../../shared/notifications/notification.service';
+import { DisplayDatePipe } from '../../../../../shared/pipes/display-date.pipe';
 import { localIsoDate } from '../../../../../shared/utils/dates';
 
 @Component({
@@ -28,6 +29,7 @@ import { localIsoDate } from '../../../../../shared/utils/dates';
     MatTooltipModule,
     Form,
     ButtonUI,
+    DisplayDatePipe,
   ],
   templateUrl: './treatments.html',
   styleUrl: './treatments.scss',
@@ -87,8 +89,8 @@ export class Treatments implements OnInit {
     this.treatmentsService
       .update(treatment.id, {
         treatment_name: treatment.treatment_name,
-        start_date: this.formatDateForApi(treatment.start_date),
-        end_date: treatment.end_date ? this.formatDateForApi(treatment.end_date) : undefined,
+        start_date: localIsoDate(treatment.start_date),
+        end_date: treatment.end_date ? localIsoDate(treatment.end_date) : undefined,
         description: treatment.description,
         objectives: treatment.objectives,
         sessions_planned: treatment.sessions_planned,
@@ -227,19 +229,7 @@ export class Treatments implements OnInit {
     });
   }
 
-  formatDate(date: Date | string): string {
-    if (!date) return 'No especificada';
-    const d = new Date(date);
-    return d.toLocaleDateString('es-ES');
-  }
 
-  formatDateForApi(date: Date | string): string {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
 
   getStatusLabel(status: string): string {
     const statusMap: { [key: string]: string } = {

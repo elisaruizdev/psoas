@@ -17,6 +17,9 @@ import { Session, Treatment, TreatmentWithSessions } from '../../models/patients
 import { PhysiosService } from '../../../physios/services/physios.service';
 import { Physio } from '../../../physios/models/physios.model';
 import { NotificationService } from '../../../../../shared/notifications/notification.service';
+import { DisplayDatePipe } from '../../../../../shared/pipes/display-date.pipe';
+import { FullNamePipe } from '../../../../../shared/pipes/full-name.pipe';
+import { groupSessionsByTreatment } from './group-sessions';
 import { localIsoDate } from '../../../../../shared/utils/dates';
 
 
@@ -32,6 +35,8 @@ import { localIsoDate } from '../../../../../shared/utils/dates';
     MatTooltipModule,
     Form,
     ButtonUI,
+    DisplayDatePipe,
+    FullNamePipe,
   ],
   templateUrl: './sessions-history.html',
   styleUrl: './sessions-history.scss',
@@ -174,29 +179,7 @@ export class SessionsHistory implements OnInit {
         this.allTreatments.set(treatments);
         this.allPhysios.set(physios);
 
-        let selectedTreatments: Treatment[] = [];
-
-        const activeTreatments = treatments.filter((t) => t.status === 'active');
-
-        if (activeTreatments.length > 0) {
-          selectedTreatments = activeTreatments;
-        } else if (treatments.length > 0) {
-          const sortedTreatments = [...treatments].sort(
-            (a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
-          );
-          selectedTreatments = [sortedTreatments[0]];
-        }
-
-        const grouped = selectedTreatments.map((treatment) => ({
-          treatment,
-          sessions: sessions
-            .filter((s) => s.treatment_id === treatment.id)
-            .sort(
-              (a, b) => new Date(b.session_date).getTime() - new Date(a.session_date).getTime()
-            ),
-        }));
-
-        this.treatmentsWithSessions.set(grouped);
+        this.treatmentsWithSessions.set(groupSessionsByTreatment(treatments, sessions));
         this.loading.set(false);
       },
       error: () => {
@@ -225,13 +208,13 @@ export class SessionsHistory implements OnInit {
       .update(session.id, {
         treatment_id: session.treatment_id,
         physio_id: session.physio_id,
-        session_date: this.formatDateForApi(session.session_date),
+        session_date: localIsoDate(session.session_date),
         duration: session.duration,
         techniques_applied: session.techniques_applied,
         patient_evolution: session.patient_evolution,
         observations: session.observations,
         next_appointment: session.next_appointment
-          ? this.formatDateForApi(session.next_appointment)
+          ? localIsoDate(session.next_appointment)
           : undefined,
       })
       .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -294,26 +277,8 @@ export class SessionsHistory implements OnInit {
     this.selectedSession.set(undefined);
   }
 
-  formatDate(date: Date | string): string {
-    if (!date) return 'No especificada';
-    const d = new Date(date);
-    return d.toLocaleDateString('es-ES');
-  }
 
-  formatDateForApi(date: Date | string): string {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
 
-  getPhysioName(session: Session): string {
-    if (session.physio) {
-      return `${session.physio.name} ${session.physio.surname}`;
-    }
-    return 'Fisioterapeuta no especificado';
-  }
 
   getSessionsCount(treatment: Treatment): string {
     const sessions =

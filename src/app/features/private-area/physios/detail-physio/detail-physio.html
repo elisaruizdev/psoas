@@ -12,7 +12,7 @@
             <div class="dialog__data-grid">
                 <div class="dialog__data-item">
                     <span class="dialog__data-label">Nombre Completo</span>
-                    <span class="dialog__data-value">{{ physio.name }} {{ physio.surname }} {{ physio.second_surname || '' }}</span>
+                    <span class="dialog__data-value">{{ physio | fullName }}</span>
                 </div>
                 <div class="dialog__data-item">
                     <span class="dialog__data-label">Correo</span>
@@ -20,11 +20,11 @@
                 </div>
                 <div class="dialog__data-item">
                     <span class="dialog__data-label">Estado</span>
-                    <span class="dialog__data-value">{{ getStatusLabel(physio.status) }}</span>
+                    <span class="dialog__data-value">{{ statusLabel(physio.status) }}</span>
                 </div>
                 <div class="dialog__data-item">
                     <span class="dialog__data-label">Fecha de Alta</span>
-                    <span class="dialog__data-value">{{ formatDate(physio.created_at) }}</span>
+                    <span class="dialog__data-value">{{ physio.created_at | displayDate: 'No especificado' }}</span>
                 </div>
             </div>
         </section>

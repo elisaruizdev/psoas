@@ -42,9 +42,9 @@
                             }
                             <p class="treatment-card__date">
                                 <mat-icon>event</mat-icon>
-                                {{ formatDate(treatment.start_date) }}
+                                {{ treatment.start_date | displayDate: 'No especificada' }}
                                 @if (treatment.end_date) {
-                                - {{ formatDate(treatment.end_date) }}
+                                - {{ treatment.end_date | displayDate: 'No especificada' }}
                                 }
                             </p>
                         </div>
@@ -89,7 +89,7 @@
                     <div class="treatment-card__meta">
                         <span class="meta-item">
                             <mat-icon>update</mat-icon>
-                            Actualizado: {{ formatDate(treatment.updatedAt) }}
+                            Actualizado: {{ treatment.updatedAt | displayDate: 'No especificada' }}
                         </span>
                     </div>
                 </mat-card-content>
