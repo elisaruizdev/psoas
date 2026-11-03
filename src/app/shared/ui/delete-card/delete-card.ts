@@ -1,55 +1,50 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 
 @Component({
   selector: 'app-delete-card',
   imports: [CommonModule],
   templateUrl: './delete-card.html',
   styleUrl: './delete-card.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeleteCard {
-  showDeleteModal = false;
+  readonly showDeleteModal = signal(false);
 
   openDeleteModal(): void {
-    this.showDeleteModal = true;
+    this.showDeleteModal.set(true);
   }
-  @Input() title: string = '¿Estás seguro?';
 
-  @Input() messagePrefix: string = 'Esta acción eliminará';
-  @Input() highlightText: string = 'permanentemente';
-  @Input() messageSuffix: string = 'al paciente y toda su información:';
-
-  @Input() items: string[] = [
+  readonly title = input<string>('¿Estás seguro?');
+  readonly messagePrefix = input<string>('Esta acción eliminará');
+  readonly highlightText = input<string>('permanentemente');
+  readonly messageSuffix = input<string>('al paciente y toda su información:');
+  readonly items = input<string[]>([
     'Todos los datos personales',
     'Historial clínico completo',
     'Todos los tratamientos',
     'Todas las sesiones registradas',
-  ];
+  ]);
+  readonly warningMessage = input<string>('Esta acción NO se puede deshacer.');
+  readonly cancelText = input<string>('Cancelar');
+  readonly confirmText = input<string>('Sí, Eliminar Definitivamente');
 
-
-  @Input() warningMessage: string = 'Esta acción NO se puede deshacer.';
-
-
-  @Input() cancelText: string = 'Cancelar';
-  @Input() confirmText: string = 'Sí, Eliminar Definitivamente';
-
-
-  @Output() cancel = new EventEmitter<void>();
-  @Output() confirm = new EventEmitter<void>();
+  readonly cancelled = output<void>();
+  readonly confirmed = output<void>();
 
   onCancel(): void {
-    this.cancel.emit();
+    this.cancelled.emit();
   }
 
   onConfirm(): void {
-    this.confirm.emit();
+    this.confirmed.emit();
   }
 
   closeDeleteModal(): void {
-    this.showDeleteModal = false;
+    this.showDeleteModal.set(false);
   }
 
   confirmDelete(): void {
-    this.showDeleteModal = false;
+    this.showDeleteModal.set(false);
   }
 }

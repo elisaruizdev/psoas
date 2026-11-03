@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
@@ -9,9 +9,9 @@ import { Appointment, CreateAppointment, UpdateAppointment } from '../models/app
   providedIn: 'root',
 })
 export class AppointmentsService {
-  private apiUrl = `${environment.baseUrl}/appointments`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = `${environment.baseUrl}/appointments`;
 
   getAllAppointments(): Observable<Appointment[]> {
     return this.http.get<Appointment[]>(this.apiUrl);

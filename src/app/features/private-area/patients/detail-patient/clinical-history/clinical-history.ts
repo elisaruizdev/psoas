@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Input, OnInit, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, signal, inject, input } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -18,7 +18,6 @@ import { localIsoDate } from '../../../../../shared/utils/dates';
 
 @Component({
   selector: 'app-clinical-history',
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -32,25 +31,24 @@ import { localIsoDate } from '../../../../../shared/utils/dates';
   ],
   templateUrl: './clinical-history.html',
   styleUrl: './clinical-history.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClinicalHistory implements OnInit {
-  @Input() patientId!: string;
+  private diagnosesService = inject(DiagnosesService);
+  private destroyRef = inject(DestroyRef);
 
-  diagnoses = signal<Diagnosis[]>([]);
-  loading = signal<boolean>(false);
-  showForm = signal<boolean>(false);
-  selectedDiagnosis = signal<Diagnosis | undefined>(undefined);
-  editingId = signal<string | null>(null);
-  diagnosisFormConfig = signal<FormConfig | null>(null);
+  readonly patientId = input.required<string>();
+
+  readonly diagnoses = signal<Diagnosis[]>([]);
+  readonly loading = signal<boolean>(false);
+  readonly showForm = signal<boolean>(false);
+  readonly selectedDiagnosis = signal<Diagnosis | undefined>(undefined);
+  readonly editingId = signal<string | null>(null);
+  readonly diagnosisFormConfig = signal<FormConfig | null>(null);
 
   private readonly notifications = inject(NotificationService);
   /** true mientras se guarda: el formulario desactiva el botón de enviar. */
   readonly saving = signal(false);
-
-  constructor(
-    private diagnosesService: DiagnosesService,
-    private destroyRef: DestroyRef,
-  ) {}
 
   ngOnInit(): void {
     this.loadDiagnoses();
@@ -58,7 +56,7 @@ export class ClinicalHistory implements OnInit {
 
   loadDiagnoses(): void {
     this.loading.set(true);
-    this.diagnosesService.getAllByPatient(this.patientId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.diagnosesService.getAllByPatient(this.patientId()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (diagnoses) => {
         this.diagnoses.set(diagnoses);
         this.loading.set(false);
@@ -122,7 +120,7 @@ export class ClinicalHistory implements OnInit {
 
   onSubmitDiagnosis(diagnosisData: FormValue): void {
     const formattedData = {
-      patient_id: this.patientId,
+      patient_id: this.patientId(),
       diagnosis_date: formText(diagnosisData, 'diagnosis_date') ?? '',
       diagnosis_type: formText(diagnosisData, 'diagnosis_type') ?? '',
       description: formText(diagnosisData, 'description') ?? '',

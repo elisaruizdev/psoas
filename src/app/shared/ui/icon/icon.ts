@@ -18,8 +18,8 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
   },
 })
 export class Icon {
-  name = input.required<string>();
-  size = input<number>(20);
+  readonly name = input.required<string>();
+  readonly size = input<number>(20);
 
-  protected source = computed(() => `url(/icons/ui/${this.name()}.svg)`);
+  protected readonly source = computed(() => `url(/icons/ui/${this.name()}.svg)`);
 }

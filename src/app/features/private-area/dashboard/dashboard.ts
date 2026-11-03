@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   CUSTOM_ELEMENTS_SCHEMA,
   Component,
   DestroyRef,
@@ -26,29 +27,43 @@ export interface CitaResumenMfe {
   estado: string;
 }
 
+/** "Hoy Lunes, 2 de noviembre de 2026" */
+function todayLabel(): string {
+  const date = new Date().toLocaleDateString('es-ES', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  return 'Hoy ' + date.charAt(0).toUpperCase() + date.slice(1);
+}
+
 @Component({
   selector: 'app-dashboard',
-  standalone: true,
   imports: [CommonModule, Table, Icon],
   // Permite usar <psoas-resumen-citas>, que no es un componente de Angular sino un
   // Custom Element del navegador. Sin esto Angular daría "unknown element".
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Dashboard implements OnInit {
-  currentDate: string = '';
-  dashboardStats = signal<DashboardStats | null>(null);
-  loading = signal<boolean>(true);
-  loadError = signal('');
+  private dashboardService = inject(DashboardService);
+  private destroyRef = inject(DestroyRef);
+
+  readonly currentDate = todayLabel();
+  readonly dashboardStats = signal<DashboardStats | null>(null);
+  readonly loading = signal<boolean>(true);
+  readonly loadError = signal('');
   /** true cuando el microfrontend se ha cargado y registrado. */
-  resumenCitasDisponible = signal(false);
+  readonly resumenCitasDisponible = signal(false);
 
   private readonly mfeLoader = inject(MicrofrontendLoader);
   private readonly router = inject(Router);
 
   /** Datos para el microfrontend: solo lo que necesita, con un contrato propio. */
-  citasParaResumen = computed<CitaResumenMfe[]>(() =>
+  readonly citasParaResumen = computed<CitaResumenMfe[]>(() =>
     (this.dashboardStats()?.todayAppointments ?? []).map((appointment) => ({
       id: appointment.id,
       hora: this.formatTime(appointment.appointment_date),
@@ -57,7 +72,7 @@ export class Dashboard implements OnInit {
     })),
   );
 
-  sesionesHoyConfig = computed<TableConfig>(() => {
+  readonly sesionesHoyConfig = computed<TableConfig>(() => {
     const stats = this.dashboardStats();
     return {
       columns: [
@@ -91,15 +106,12 @@ export class Dashboard implements OnInit {
     };
   });
 
-  pacientesActivos = computed(() => this.dashboardStats()?.activePatients || 0);
-  sesionesHoy = computed(() => this.dashboardStats()?.sessionsToday.total || 0);
-  sesionesCompletadas = computed(() => this.dashboardStats()?.sessionsToday.completed || 0);
-  sesionesSemana = computed(() => this.dashboardStats()?.sessionsNextWeek || 0);
-
-  constructor(private dashboardService: DashboardService, private destroyRef: DestroyRef) {}
+  readonly pacientesActivos = computed(() => this.dashboardStats()?.activePatients || 0);
+  readonly sesionesHoy = computed(() => this.dashboardStats()?.sessionsToday.total || 0);
+  readonly sesionesCompletadas = computed(() => this.dashboardStats()?.sessionsToday.completed || 0);
+  readonly sesionesSemana = computed(() => this.dashboardStats()?.sessionsNextWeek || 0);
 
   ngOnInit() {
-    this.setCurrentDate();
     this.loadDashboardStats();
     this.loadResumenCitas();
   }
@@ -118,18 +130,6 @@ export class Dashboard implements OnInit {
     }
   }
 
-  private setCurrentDate() {
-    const today = new Date();
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    };
-    this.currentDate = today.toLocaleDateString('es-ES', options);
-    this.currentDate =
-      'Hoy ' + this.currentDate.charAt(0).toUpperCase() + this.currentDate.slice(1);
-  }
 
   private loadDashboardStats() {
     this.loading.set(true);

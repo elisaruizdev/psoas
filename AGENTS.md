@@ -32,6 +32,8 @@ flujos de usuario, también los E2E de Chromium.
 ## Convenciones de código (Angular)
 
 - Componentes standalone, app **zoneless**: el estado que pinta la plantilla va en `signal`/`computed`.
+  Todos con `OnPush`, dependencias con `inject()`, entradas y salidas con `input()`/`output()`
+  (`model()` si el componente también cambia el valor). El lint lo exige.
 - Nombres sin sufijo: `patients.ts` exporta `Patients`; `patients.service.ts` exporta `PatientsService`.
 - Servicios: solo HTTP, tipados con el modelo (nunca `any`), devuelven `Observable`. La suscripción
   vive en el componente con `takeUntilDestroyed(this.destroyRef)`.

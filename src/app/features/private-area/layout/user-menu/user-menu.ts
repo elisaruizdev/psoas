@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterModule } from '@angular/router';
@@ -10,11 +10,11 @@ import { MenuUser, UserMenuItem } from '../models/layout.model';
   selector: 'app-user-menu',
   imports: [CommonModule,RouterModule, MatButtonModule, MatIconModule, MatMenuModule],
   templateUrl: './user-menu.html',
-  styleUrl: './user-menu.scss'
+  styleUrl: './user-menu.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class UserMenu {
-  @Input() userInfo?: MenuUser;
+  readonly userInfo = input<MenuUser>();
 
   private router = inject(Router);
 

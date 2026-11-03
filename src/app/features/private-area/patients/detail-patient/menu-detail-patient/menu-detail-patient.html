@@ -1,7 +1,7 @@
 <nav class="tab-menu" role="tablist">
     @for (tab of tabs; track tab.id) {
-    <button type="button" role="tab" [attr.aria-selected]="activeTab === tab.id" (click)="selectTab(tab.id)"
-        [class.tab-menu__item--active]="activeTab === tab.id" class="tab-menu__item">
+    <button type="button" role="tab" [attr.aria-selected]="activeTab() === tab.id" (click)="selectTab(tab.id)"
+        [class.tab-menu__item--active]="activeTab() === tab.id" class="tab-menu__item">
         {{ tab.label }}
     </button>
     }

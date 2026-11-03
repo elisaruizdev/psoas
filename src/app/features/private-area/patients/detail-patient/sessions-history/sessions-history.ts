@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Input, OnInit, signal, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, signal, computed, inject, input } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -22,7 +22,6 @@ import { localIsoDate } from '../../../../../shared/utils/dates';
 
 @Component({
   selector: 'app-sessions-history',
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -36,19 +35,25 @@ import { localIsoDate } from '../../../../../shared/utils/dates';
   ],
   templateUrl: './sessions-history.html',
   styleUrl: './sessions-history.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SessionsHistory implements OnInit {
-  @Input() patientId!: string;
+  private sessionsService = inject(SessionsService);
+  private treatmentsService = inject(TreatmentsService);
+  private physiosService = inject(PhysiosService);
+  private destroyRef = inject(DestroyRef);
 
-  treatmentsWithSessions = signal<TreatmentWithSessions[]>([]);
-  allTreatments = signal<Treatment[]>([]);
-  allPhysios = signal<Physio[]>([]);
-  loading = signal<boolean>(false);
-  showForm = signal<boolean>(false);
-  selectedSession = signal<Session | undefined>(undefined);
-  editingId = signal<string | null>(null);
+  readonly patientId = input.required<string>();
 
-  sessionFormConfig = computed<FormConfig | null>(() => {
+  readonly treatmentsWithSessions = signal<TreatmentWithSessions[]>([]);
+  readonly allTreatments = signal<Treatment[]>([]);
+  readonly allPhysios = signal<Physio[]>([]);
+  readonly loading = signal<boolean>(false);
+  readonly showForm = signal<boolean>(false);
+  readonly selectedSession = signal<Session | undefined>(undefined);
+  readonly editingId = signal<string | null>(null);
+
+  readonly sessionFormConfig = computed<FormConfig | null>(() => {
     if (!this.showForm()) return null;
 
     const treatments = this.allTreatments();
@@ -152,13 +157,6 @@ export class SessionsHistory implements OnInit {
   /** true mientras se guarda: el formulario desactiva el botón de enviar. */
   readonly saving = signal(false);
 
-  constructor(
-    private sessionsService: SessionsService,
-    private treatmentsService: TreatmentsService,
-    private physiosService: PhysiosService,
-    private destroyRef: DestroyRef,
-  ) {}
-
   ngOnInit(): void {
     this.loadAllData();
   }
@@ -167,8 +165,8 @@ export class SessionsHistory implements OnInit {
     this.loading.set(true);
 
     forkJoin({
-      treatments: this.treatmentsService.getAllByPatient(this.patientId),
-      sessions: this.sessionsService.getAllByPatient(this.patientId),
+      treatments: this.treatmentsService.getAllByPatient(this.patientId()),
+      sessions: this.sessionsService.getAllByPatient(this.patientId()),
       physios: this.physiosService.getAllPhysios(),
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: ({ treatments, sessions, physios }) => {
@@ -264,7 +262,7 @@ export class SessionsHistory implements OnInit {
 
   onSubmitSession(sessionData: FormValue): void {
     const formattedData = {
-      patient_id: this.patientId,
+      patient_id: this.patientId(),
       treatment_id: formText(sessionData, 'treatment_id') || undefined,
       physio_id: Number(sessionData['physio_id']),
       session_date: formText(sessionData, 'session_date') ?? '',

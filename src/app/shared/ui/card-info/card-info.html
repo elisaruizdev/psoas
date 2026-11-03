@@ -1,23 +1,23 @@
 <div class="card-info">
     <div class="card-info__header">
-        <label class="card-info__label">{{ label }}</label>
+        <label class="card-info__label">{{ label() }}</label>
 
-        @if (editable && !isEditing) {
+        @if (editable() && !isEditing()) {
         <button mat-icon-button class="card-info__edit-button" (click)="startEdit()">
             <mat-icon>edit</mat-icon>
         </button>
         }
     </div>
 
-    @if (!isEditing) {
+    @if (!isEditing()) {
     <div class="card-info__value">
-        {{ value || '-' }}
+        {{ value() || '-' }}
     </div>
     }
 
-    @if (isEditing) {
+    @if (isEditing()) {
     <div class="card-info__edit">
-        <input [(ngModel)]="editValue" [type]="type" [placeholder]="placeholder" class="card-info__input"
+        <input [(ngModel)]="editValue" [type]="type()" [placeholder]="placeholder()" class="card-info__input"
             (keyup.enter)="save()" (keyup.escape)="cancel()" />
 
         <div class="card-info__actions">

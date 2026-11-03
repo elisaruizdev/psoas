@@ -1,4 +1,4 @@
-import { Component, DestroyRef, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
@@ -20,17 +20,18 @@ import {
   selector: 'app-register',
   imports: [ReactiveFormsModule, Icon],
   templateUrl: './register.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Register {
-  registerForm!: FormGroup;
-  errorMessage = signal('');
-  okMessage = signal('');
+  private fb = inject(FormBuilder);
+  private register = inject(AuthService);
+  private destroyRef = inject(DestroyRef);
 
-  constructor(
-    private fb: FormBuilder,
-    private register: AuthService,
-    private destroyRef: DestroyRef,
-  ) {
+  registerForm!: FormGroup;
+  readonly errorMessage = signal('');
+  readonly okMessage = signal('');
+
+  constructor() {
     this.registerForm = this.fb.group(
       {
         name: ['', Validators.required],

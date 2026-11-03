@@ -4,7 +4,7 @@
     <button mat-icon-button class="notifications__trigger" [matMenuTriggerFor]="notificationsMenuRef"
         aria-label="Notificaciones">
 
-        <mat-icon [matBadge]="notificationCount" [matBadgeHidden]="notificationCount === 0" matBadgeColor="warn"
+        <mat-icon [matBadge]="notificationCount()" [matBadgeHidden]="notificationCount() === 0" matBadgeColor="warn"
             matBadgeSize="small" aria-hidden="false" class="notifications__icon">
             notifications
         </mat-icon>
@@ -17,7 +17,7 @@
         <!-- Header -->
         <div class="notifications__header" mat-menu-item disabled>
             <span class="notifications__title">Notificaciones</span>
-            @if(notifications.length > 0) {
+            @if (notifications().length > 0) {
             <button mat-button class="notifications__clear-all" (click)="onClearAll()">
                 Limpiar todo
             </button>
@@ -29,9 +29,9 @@
         <!-- Lista de notificaciones -->
         <div class="notifications__list">
 
-            @if(notifications.length > 0) {
+            @if (notifications().length > 0) {
             <!-- Cuando hay notificaciones -->
-            @for(notification of notifications; track trackByNotification($index, notification)) {
+            @for (notification of notifications(); track trackByNotification($index, notification)) {
             <button mat-menu-item class="notifications__item"
                 [class.notifications__item--warning]="notification.type === 'warning'"
                 [class.notifications__item--error]="notification.type === 'error'"
@@ -73,7 +73,7 @@
         </div>
 
         <!-- Footer -->
-        @if(notifications.length > 3) {
+        @if (notifications().length > 3) {
         <mat-divider class="notifications__divider"></mat-divider>
 
         <button mat-menu-item class="notifications__view-all" (click)="onViewAll()">

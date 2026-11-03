@@ -62,7 +62,8 @@ fixture.detectChanges();                     // ngOnInit + pintar la plantilla
 ```
 
 - **`fixture.detectChanges()`**: en tests la detección de cambios no es automática. Se llama cuando quieres que la plantilla refleje el estado.
-- **`fixture.componentRef.setInput('config', …)`**: pone un input como lo haría el padre. Funciona con `@Input` y con `input()` (`table.spec.ts`).
+- **`fixture.componentRef.setInput('config', …)`**: pone un input como lo haría el padre (`table.spec.ts`, `form.spec.ts`). Con `input()` es la única forma: el input es un signal de solo lectura y `component.config = …` no compila.
+- **OnPush en los tests**: todos los componentes son `OnPush`. `fixture.detectChanges()` solo repinta si algo los marcó: un `setInput`, un evento del DOM o un signal que lee la plantilla. Si cambias estado de otra forma y el DOM no se actualiza, provoca el cambio como lo haría el usuario (un `click`, un `input`).
 - **`TestBed.inject(X)`**: obtiene un servicio del inyector del test.
 
 ### 1.4 Dobles de prueba (test doubles)

@@ -51,15 +51,15 @@
         <section class="dialog__section">
             <menu-detail-patient (tabChange)="onTabChange($event)"></menu-detail-patient>
 
-            @if(activeTab === 'clinical') {
+            @if (activeTab() === 'clinical') {
             <app-clinical-history [patientId]="patient()!.id"></app-clinical-history>
             }
 
-            @if(activeTab === 'treatments') {
+            @if (activeTab() === 'treatments') {
             <app-treatments [patientId]="patient()!.id"></app-treatments>
             }
 
-            @if(activeTab === 'sessions') {
+            @if (activeTab() === 'sessions') {
             <app-sessions-history [patientId]="patient()!.id"></app-sessions-history>
             }
         </section>

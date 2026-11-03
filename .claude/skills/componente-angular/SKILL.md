@@ -24,13 +24,18 @@ Trío `nombre.ts` + `nombre.html` + `nombre.scss` y su `nombre.spec.ts`. Clase s
   imports: [/* solo lo que use la plantilla */],
   templateUrl: './nombre.html',
   styleUrl: './nombre.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Nombre implements OnInit {
-  datos = signal<Modelo[]>([]);
-  loadError = signal('');
+  private readonly servicio = inject(XService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly notifications = inject(NotificationService);
 
-  constructor(private servicio: XService, private destroyRef: DestroyRef) {}
+  readonly pacienteId = input.required<string>();
+  readonly guardado = output<Modelo>();
+
+  readonly datos = signal<Modelo[]>([]);
+  readonly loadError = signal('');
 
   ngOnInit(): void {
     this.servicio.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -41,7 +46,8 @@ export class Nombre implements OnInit {
 }
 ```
 
-Reglas: estado de plantilla en `signal`/`computed` (la app es zoneless); nada de `any`; nada de
+Reglas: `OnPush`, `inject()`, `input()`/`output()` y estado de plantilla en `signal`/`computed`
+(la app es zoneless; el lint lo exige); nada de `any`; nada de
 `alert()`; errores de carga en `<p class="alert alert--error" role="alert">`; avisos de acciones
 con `NotificationService`.
 

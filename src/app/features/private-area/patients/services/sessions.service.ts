@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
@@ -8,9 +8,9 @@ import { CreateSession, Session, UpdateSession } from '../models/patients.model'
   providedIn: 'root',
 })
 export class SessionsService {
-  private apiUrl = `${environment.baseUrl}/sessions`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = `${environment.baseUrl}/sessions`;
 
   create(session: CreateSession): Observable<Session> {
     return this.http.post<Session>(this.apiUrl, session);

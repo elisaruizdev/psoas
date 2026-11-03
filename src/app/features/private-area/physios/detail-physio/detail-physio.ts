@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Inject, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -20,12 +20,17 @@ import {
 
 @Component({
   selector: 'app-detail-physio',
-  standalone: true,
   imports: [CommonModule, MatDialogModule, Form, ButtonUI, Icon],
   templateUrl: './detail-physio.html',
   styleUrl: './detail-physio.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailPhysio implements OnInit {
+  data = inject<Physio>(MAT_DIALOG_DATA);
+  private dialogRef = inject<MatDialogRef<DetailPhysio>>(MatDialogRef);
+  private physiosService = inject(PhysiosService);
+  private destroyRef = inject(DestroyRef);
+
   physio: Physio;
   physioFormConfig!: FormConfig;
 
@@ -33,12 +38,9 @@ export class DetailPhysio implements OnInit {
   /** true mientras se guarda: el formulario desactiva el botón de enviar. */
   readonly saving = signal(false);
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: Physio,
-    private dialogRef: MatDialogRef<DetailPhysio>,
-    private physiosService: PhysiosService,
-    private destroyRef: DestroyRef,
-  ) {
+  constructor() {
+    const data = this.data;
+
     this.physio = data;
   }
 

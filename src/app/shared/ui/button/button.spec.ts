@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ButtonUI, ButtonVariant } from './button';
@@ -15,11 +15,12 @@ import { ButtonUI, ButtonVariant } from './button';
       (clicked)="clicks = clicks + 1"
     />
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 class HostComponent {
-  title = signal('Guardar');
-  variant = signal<ButtonVariant>('primary');
-  disabled = signal(false);
+  readonly title = signal('Guardar');
+  readonly variant = signal<ButtonVariant>('primary');
+  readonly disabled = signal(false);
   clicks = 0;
 }
 

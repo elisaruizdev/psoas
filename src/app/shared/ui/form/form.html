@@ -1,5 +1,5 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" class="f-form">
-    @for (section of config.sections; track $index) {
+    @for (section of config().sections; track $index) {
     <div class="f-form__section" [ngClass]="section.cssClass">
         @if (section.title) {
         <div class="f-form__section-header">
@@ -70,11 +70,11 @@
     </div>
     }
     <div class="f-form__actions">
-        @if (showCancelButton) {
-        <button-ui class="f-form__cancel" variant="outline" [title]="cancelButtonText" (click)="onCancel()">
+        @if (showCancelButton()) {
+        <button-ui class="f-form__cancel" variant="outline" [title]="cancelButtonText()" (click)="onCancel()">
         </button-ui>
         }
-        <button-ui type="submit" [title]="submitButtonText" [disabled]="submitting()">
+        <button-ui type="submit" [title]="submitButtonText()" [disabled]="submitting()">
         </button-ui>
     </div>
 </form>

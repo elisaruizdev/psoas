@@ -12,10 +12,17 @@ nunca por mutación directa esperando que Angular "se entere" solo.
 
 ## Componentes
 
-- Siempre `standalone` (implícito en Angular 20, no hace falta `standalone: true` explícito si no está ya en el archivo).
-- Estado local: `signal<T>(inicial)`. Derivados: `computed(() => ...)`. Evitar variables sueltas para estado que afecta a la plantilla.
-- Salidas de eventos: usar `output<T>()`, no `@Output() EventEmitter`.
-- Entradas: el proyecto tiene una mezcla histórica de `@Input()` y `output()` (p. ej. `button.ts`). Para código nuevo, preferir `input<T>()` (signal input) en vez de `@Input()`. No hace falta migrar lo existente salvo que se pida explícitamente.
+- Standalone implícito (Angular 20): no se escribe `standalone: true`.
+- `changeDetection: ChangeDetectionStrategy.OnPush` en todos. Con OnPush, un campo normal que
+  cambia dentro de un `subscribe` no se pinta: por eso el estado va en signals.
+- Estado local: `readonly x = signal<T>(inicial)`. Derivados: `computed(() => ...)`. Nada de
+  variables sueltas para estado que afecta a la plantilla.
+- Entradas: `input<T>()` / `input.required<T>()`; `model<T>()` si el componente también las cambia.
+  Salidas: `output<T>()`. Nada de `@Input()`, `@Output()` ni `EventEmitter`.
+- En los tests, los inputs se ponen con `fixture.componentRef.setInput('nombre', valor)`.
+
+El lint (`eslint.config.js`) lo exige: `prefer-signals`, `prefer-output-emitter-ref`,
+`prefer-on-push-component-change-detection` y `prefer-inject`.
 
 ## Servicios / HTTP
 
@@ -23,8 +30,8 @@ nunca por mutación directa esperando que Angular "se entere" solo.
 // ✅ Patrón usado en PatientsService, DashboardService, etc.
 @Injectable({ providedIn: 'root' })
 export class XService {
-  private apiUrl = `${environment.baseUrl}/xxx`;
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = `${environment.baseUrl}/xxx`;
   getAll(): Observable<X[]> { return this.http.get<X[]>(this.apiUrl); }
 }
 ```
@@ -44,9 +51,8 @@ Todo error llega al usuario, nunca solo a la consola, y nunca con `alert()`:
 
 ## Inyección de dependencias
 
-- Mezcla actual: constructor injection en la mayoría de componentes y `inject()` para servicios
-  transversales (`private readonly notifications = inject(NotificationService)`). Para código
-  nuevo vale cualquiera de los dos; no migres lo existente salvo que se pida.
+- Siempre `inject()` en un campo (`private readonly x = inject(X)`), nunca en el constructor.
+  Los datos de un diálogo: `readonly data = inject<Tipo>(MAT_DIALOG_DATA)`.
 
 ## Formularios
 

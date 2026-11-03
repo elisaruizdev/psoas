@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import {
@@ -15,24 +15,24 @@ import { Icon } from '../../../../shared/ui/icon/icon';
 
 @Component({
   selector: 'app-reset-password',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, Icon],
   templateUrl: './reset-password.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPassword implements OnInit {
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
+
   resetPasswordForm: FormGroup;
-  isLoading = signal(false);
-  passwordReset = signal(false);
-  errorMessage = signal('');
+  readonly isLoading = signal(false);
+  readonly passwordReset = signal(false);
+  readonly errorMessage = signal('');
   token: string = '';
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private destroyRef: DestroyRef,
-  ) {
+  constructor() {
     this.resetPasswordForm = this.fb.group(
       {
         password: [

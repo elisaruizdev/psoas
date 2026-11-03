@@ -1,4 +1,4 @@
-import { Component, DestroyRef, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -8,21 +8,21 @@ import { Icon } from '../../../../shared/ui/icon/icon';
 
 @Component({
   selector: 'app-forgot-password',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, Icon],
   templateUrl: './forgot-password.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ForgotPassword {
-  forgotPasswordForm: FormGroup;
-  isLoading = signal(false);
-  emailSent = signal(false);
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
-    private destroyRef: DestroyRef,
-  ) {
+  forgotPasswordForm: FormGroup;
+  readonly isLoading = signal(false);
+  readonly emailSent = signal(false);
+
+  constructor() {
     this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
     });

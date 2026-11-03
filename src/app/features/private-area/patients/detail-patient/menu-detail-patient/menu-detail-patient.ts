@@ -1,20 +1,20 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientTab, TabId } from '../../models/patients.model';
 
 @Component({
   selector: 'menu-detail-patient',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './menu-detail-patient.html',
   styleUrls: ['./menu-detail-patient.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuDetailPatientComponent {
-  @Output() tabChange = new EventEmitter<TabId>();
+  readonly tabChange = output<TabId>();
 
-  activeTab: TabId = 'clinical';
+  readonly activeTab = signal<TabId>('clinical');
 
-  tabs: PatientTab[] = [
+  readonly tabs: PatientTab[] = [
     {
       label: 'Historial Clínico',
       id: 'clinical',
@@ -30,7 +30,7 @@ export class MenuDetailPatientComponent {
   ];
 
   selectTab(tabId: TabId): void {
-    this.activeTab = tabId;
+    this.activeTab.set(tabId);
     this.tabChange.emit(tabId);
   }
 }

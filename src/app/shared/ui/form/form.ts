@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
-  EventEmitter,
-  Input,
-  Output,
+  OnInit,
   booleanAttribute,
   inject,
   input,
+  output,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { FormConfig, FormFieldConfig, FormFieldValue, FormValue } from '../../models/form.model';
@@ -21,17 +21,19 @@ import { spanishIdErrorMessage } from '../../validators/spanish-id.validators';
   imports: [CommonModule, ReactiveFormsModule, ButtonUI, Icon],
   templateUrl: './form.html',
   styleUrl: './form.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Form {
-  @Input() config!: FormConfig;
-  @Input() submitButtonText: string = 'Enviar';
-  @Input() cancelButtonText: string = 'Cancelar';
-  @Input() showCancelButton: boolean = true;
+export class Form implements OnInit {
+  /** Se lee una vez al crear el formulario: cambiarla después no reconstruye los controles. */
+  readonly config = input.required<FormConfig>();
+  readonly submitButtonText = input<string>('Enviar');
+  readonly cancelButtonText = input<string>('Cancelar');
+  readonly showCancelButton = input<boolean>(true);
   /** El padre lo pone a true mientras guarda: desactiva el botón y evita envíos dobles. */
-  submitting = input(false, { transform: booleanAttribute });
+  readonly submitting = input(false, { transform: booleanAttribute });
 
-  @Output() formSubmit = new EventEmitter<FormValue>();
-  @Output() formCancel = new EventEmitter<void>();
+  readonly formSubmit = output<FormValue>();
+  readonly formCancel = output<void>();
 
   form!: FormGroup<Record<string, FormControl<FormFieldValue>>>;
 
@@ -44,7 +46,7 @@ export class Form {
   private buildForm(): void {
     const formControls: Record<string, FormControl<FormFieldValue>> = {};
 
-    this.config.sections.forEach((section) => {
+    this.config().sections.forEach((section) => {
       section.fields.forEach((field) => {
         const validators: ValidatorFn[] = [];
 
