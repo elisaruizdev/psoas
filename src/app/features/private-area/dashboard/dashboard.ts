@@ -18,6 +18,9 @@ import { DashboardStats, TodayAppointment } from './models/dashboard.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MicrofrontendLoader } from '../../../shared/microfrontends/microfrontend-loader.service';
 import { environment } from '../../../../environments/environment';
+import { formatTime } from '../../../shared/utils/dates';
+import { fullName } from '../../../shared/utils/text';
+import { appointmentStatusLabel } from '../sessions/models/appointment.model';
 
 /** Lo que espera el microfrontend <psoas-resumen-citas> en su propiedad `citas`. */
 export interface CitaResumenMfe {
@@ -66,8 +69,8 @@ export class Dashboard implements OnInit {
   readonly citasParaResumen = computed<CitaResumenMfe[]>(() =>
     (this.dashboardStats()?.todayAppointments ?? []).map((appointment) => ({
       id: appointment.id,
-      hora: this.formatTime(appointment.appointment_date),
-      paciente: this.getPatientName(appointment),
+      hora: formatTime(appointment.appointment_date),
+      paciente: fullName(appointment.patient),
       estado: appointment.status,
     })),
   );
@@ -149,42 +152,11 @@ export class Dashboard implements OnInit {
   private mapAppointmentsToTableData(appointments: TodayAppointment[]) {
     return appointments.map((appointment) => ({
       id: appointment.id,
-      hora: this.formatTime(appointment.appointment_date),
-      paciente: this.getPatientName(appointment),
-      fisioterapeuta: this.getPhysioName(appointment),
+      hora: formatTime(appointment.appointment_date),
+      paciente: fullName(appointment.patient),
+      fisioterapeuta: fullName(appointment.physio),
       tipo: `${appointment.session_number}ª sesión`,
-      estado: this.translateStatus(appointment.status),
+      estado: appointmentStatusLabel(appointment.status),
     }));
-  }
-
-  private formatTime(date: Date | string): string {
-    const d = new Date(date);
-    return d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-  }
-
-  private getPatientName(appointment: TodayAppointment): string {
-    const parts = [appointment.patient.name, appointment.patient.surname];
-    if (appointment.patient.second_surname) {
-      parts.push(appointment.patient.second_surname);
-    }
-    return parts.join(' ');
-  }
-
-  private getPhysioName(appointment: TodayAppointment): string {
-    const parts = [appointment.physio.name, appointment.physio.surname];
-    if (appointment.physio.second_surname) {
-      parts.push(appointment.physio.second_surname);
-    }
-    return parts.join(' ');
-  }
-
-  private translateStatus(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      scheduled: 'Programada',
-      confirmed: 'Confirmada',
-      completed: 'Completada',
-      cancelled: 'Cancelada',
-    };
-    return statusMap[status] || status;
   }
 }

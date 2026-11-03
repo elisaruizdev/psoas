@@ -19,6 +19,9 @@ import {
   spanishPhoneValidator,
 } from '../../../../shared/validators/spanish-id.validators';
 import { NotificationService } from '../../../../shared/notifications/notification.service';
+import { capitalizeWords } from '../../../../shared/utils/text';
+import { DisplayDatePipe } from '../../../../shared/pipes/display-date.pipe';
+import { FullNamePipe } from '../../../../shared/pipes/full-name.pipe';
 
 @Component({
   selector: 'app-detail-patient',
@@ -31,7 +34,9 @@ import { NotificationService } from '../../../../shared/notifications/notificati
     MenuDetailPatientComponent,
     ClinicalHistory,
     Treatments,
-    SessionsHistory
+    SessionsHistory,
+    DisplayDatePipe,
+    FullNamePipe,
   ],
   templateUrl: './detail-patient.html',
   styleUrl: './detail-patient.scss',
@@ -215,38 +220,15 @@ export class DetailPatient implements OnInit {
       phone: optionalPhone(formText(data, 'phone')),
       email: formText(data, 'email')?.toLowerCase().trim(),
       address: formText(data, 'address')?.trim() || undefined,
-      city: city ? this.capitalizeText(city) : undefined,
+      city: city ? capitalizeWords(city) : undefined,
       zip: formText(data, 'zip')?.trim() || undefined,
       emergency_contact: formText(data, 'emergency_contact')?.trim() || undefined,
       health_insurance: formText(data, 'health_insurance')?.trim() || undefined,
     };
   }
 
-  private capitalizeText(text: string): string {
-    if (!text) return '';
-    return text
-      .toLowerCase()
-      .split(' ')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  }
 
-  getFullName(): string {
-    const patient = this.patient();
-    if (!patient) return '';
 
-    const parts = [patient.name, patient.surname];
-    if (patient.second_surname) {
-      parts.push(patient.second_surname);
-    }
-    return parts.join(' ');
-  }
-
-  formatDate(date: Date | string | null): string {
-    if (!date) return 'No especificado';
-    const d = new Date(date);
-    return d.toLocaleDateString('es-ES');
-  }
 
   private showSuccessNotification(message: string): void {
     this.notifications.success(message);

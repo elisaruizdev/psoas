@@ -54,7 +54,9 @@ describe('DetailPatient', () => {
     await crear();
     expect(service.getPatientById).toHaveBeenCalledWith('p-1');
     expect(component.loading()).toBeFalse();
-    expect(component.getFullName()).toBe('Lucía García López');
+    expect(fixture.nativeElement.querySelector('.dialog__title')?.textContent).toContain(
+      'Lucía García López',
+    );
 
     const telefono = component.patientFormConfig()!.sections[0].fields[0];
     expect(telefono.value).toBe('600111222');
@@ -64,7 +66,7 @@ describe('DetailPatient', () => {
     service.getPatientById.and.returnValue(throwError(() => new Error('404')));
     await crear();
     expect(component.loadError()).toBe('No se ha podido abrir la ficha del paciente.');
-    expect(component.getFullName()).toBe('');
+    expect(component.patient()).toBeNull();
   });
 
   it('guardar: manda los datos normalizados, avisa y cierra con "updated"', async () => {
@@ -118,13 +120,11 @@ describe('DetailPatient', () => {
     expect(notifications.error).toHaveBeenCalledWith('Error al eliminar el paciente');
   });
 
-  it('pestañas, cierre y fechas', async () => {
+  it('pestañas y cierre', async () => {
     await crear();
     component.onTabChange('sessions');
     expect(component.activeTab()).toBe('sessions');
     component.onClose();
     expect(dialogRef.close).toHaveBeenCalledWith();
-    expect(component.formatDate(null)).toBe('No especificado');
-    expect(component.formatDate(new Date(2026, 0, 5))).toBe('5/1/2026');
   });
 });

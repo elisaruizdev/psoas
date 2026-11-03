@@ -26,3 +26,16 @@ export interface Physio {
   reset_password_token: string | null;
   reset_password_token_expires: Date | string | null;
 }
+
+const PHYSIO_STATUS_LABELS: Record<string, string> = {
+  pending_verification: 'Pendiente de verificación',
+  approved: 'Aprobado',
+  rejected: 'Rechazado',
+  active: 'Activo',
+  inactive: 'Inactivo',
+};
+
+/** Estado del fisio para mostrar ("approved" → "Aprobado"); si no se conoce, tal cual. */
+export function physioStatusLabel(status: string): string {
+  return PHYSIO_STATUS_LABELS[status] ?? status;
+}

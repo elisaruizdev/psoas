@@ -12,15 +12,15 @@
             <div class="dialog__data-grid">
                 <div class="dialog__data-item">
                     <span class="dialog__data-label">Paciente</span>
-                    <span class="dialog__data-value">{{ getPatientName() }}</span>
+                    <span class="dialog__data-value">{{ appointment.patient | fullName: 'Paciente no disponible' }}</span>
                 </div>
                 <div class="dialog__data-item">
                     <span class="dialog__data-label">Fisioterapeuta</span>
-                    <span class="dialog__data-value">{{ getPhysioName() }}</span>
+                    <span class="dialog__data-value">{{ appointment.physio | fullName: 'Fisioterapeuta no disponible' }}</span>
                 </div>
                 <div class="dialog__data-item">
                     <span class="dialog__data-label">Estado</span>
-                    <span class="dialog__data-value">{{ getStatusLabel(appointment.status) }}</span>
+                    <span class="dialog__data-value">{{ statusLabel(appointment.status) }}</span>
                 </div>
                 <div class="dialog__data-item">
                     <span class="dialog__data-label">Número de Sesión</span>

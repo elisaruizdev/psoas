@@ -41,6 +41,10 @@ flujos de usuario, también los E2E de Chromium.
   `shared/notifications` o un `role="alert"` en la página. `confirm()` solo para borrados.
 - Formularios: `shared/ui/form` con `FormConfig`. Validadores reutilizables en `shared/validators`
   (DNI/NIE con letra de control, teléfono español).
+- Fechas y nombres: nunca a mano en el componente. En plantillas, los pipes `displayDate` y
+  `fullName` (`shared/pipes`); en TypeScript, `shared/utils/dates.ts` (`localIsoDate` para la API,
+  nunca `toISOString()`) y `shared/utils/text.ts`. Las etiquetas de estado viven junto a su modelo.
+- Lógica de negocio (agrupar, ordenar, calcular) en funciones puras con su test, fuera del componente.
 - Accesibilidad: cada input con `<label for>`, errores asociados con `aria-describedby`, foco
   visible, nada que solo funcione con ratón. Hay tests con axe y de teclado: no los rompas.
 - Estilos: SCSS con los tokens de `src/scss/base/_tokens.scss`, nunca colores sueltos.

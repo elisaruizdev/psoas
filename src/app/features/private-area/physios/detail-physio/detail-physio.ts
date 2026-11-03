@@ -9,8 +9,12 @@ import { Form } from '../../../../shared/ui/form/form';
 import { ButtonUI } from '../../../../shared/ui/button/button';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { FormConfig, FormValue, formText } from '../../../../shared/models/form.model';
-import { Physio } from '../models/physios.model';
+import { Physio, physioStatusLabel } from '../models/physios.model';
 import { NotificationService } from '../../../../shared/notifications/notification.service';
+import { DisplayDatePipe } from '../../../../shared/pipes/display-date.pipe';
+import { FullNamePipe } from '../../../../shared/pipes/full-name.pipe';
+import { localIsoDate } from '../../../../shared/utils/dates';
+import { capitalizeWords } from '../../../../shared/utils/text';
 import {
   dniNieValidator,
   normalizeDniNie,
@@ -20,29 +24,23 @@ import {
 
 @Component({
   selector: 'app-detail-physio',
-  imports: [CommonModule, MatDialogModule, Form, ButtonUI, Icon],
+  imports: [CommonModule, MatDialogModule, Form, ButtonUI, Icon, DisplayDatePipe, FullNamePipe],
   templateUrl: './detail-physio.html',
   styleUrl: './detail-physio.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailPhysio implements OnInit {
-  data = inject<Physio>(MAT_DIALOG_DATA);
+  readonly physio = inject<Physio>(MAT_DIALOG_DATA);
   private dialogRef = inject<MatDialogRef<DetailPhysio>>(MatDialogRef);
   private physiosService = inject(PhysiosService);
   private destroyRef = inject(DestroyRef);
 
-  physio: Physio;
   physioFormConfig!: FormConfig;
+  readonly statusLabel = physioStatusLabel;
 
   private readonly notifications = inject(NotificationService);
   /** true mientras se guarda: el formulario desactiva el botón de enviar. */
   readonly saving = signal(false);
-
-  constructor() {
-    const data = this.data;
-
-    this.physio = data;
-  }
 
   ngOnInit(): void {
     this.initializeFormConfig();
@@ -70,7 +68,7 @@ export class DetailPhysio implements OnInit {
               type: 'date',
               placeholder: 'dd/mm/aaaa',
               required: false,
-              value: this.formatDateForInput(this.physio.birthdate),
+              value: this.physio.birthdate ? localIsoDate(this.physio.birthdate) : '',
             },
             {
               name: 'gender',
@@ -233,45 +231,10 @@ export class DetailPhysio implements OnInit {
       specialty: formText(data, 'specialty')?.trim() || undefined,
       schedule: formText(data, 'schedule')?.trim() || undefined,
       address: formText(data, 'address')?.trim() || undefined,
-      city: city ? this.capitalizeText(city) : undefined,
+      city: city ? capitalizeWords(city) : undefined,
       zip: formText(data, 'zip')?.trim() || undefined,
-      country: country ? this.capitalizeText(country) : undefined,
+      country: country ? capitalizeWords(country) : undefined,
     };
-  }
-
-  private capitalizeText(text: string): string {
-    if (!text) return '';
-    return text
-      .toLowerCase()
-      .split(' ')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  }
-
-  private formatDateForInput(date: Date | string | null): string {
-    if (!date) return '';
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  getStatusLabel(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      pending_verification: 'Pendiente de verificación',
-      approved: 'Aprobado',
-      rejected: 'Rechazado',
-      active: 'Activo',
-      inactive: 'Inactivo',
-    };
-    return statusMap[status] || status;
-  }
-
-  formatDate(date: Date | string | null): string {
-    if (!date) return 'No especificado';
-    const d = new Date(date);
-    return d.toLocaleDateString('es-ES');
   }
 
   private showSuccessNotification(message: string): void {

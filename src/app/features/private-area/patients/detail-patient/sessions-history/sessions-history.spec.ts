@@ -179,15 +179,10 @@ describe('SessionsHistory', () => {
     expect(notifications.error).toHaveBeenCalledWith('Error al eliminar la sesión');
   });
 
-  it('helpers de presentación', async () => {
+  it('cuenta las sesiones hechas frente a las planificadas', async () => {
     await crear();
-    expect(component.getPhysioName(aSession())).toBe('Ana Ruiz');
-    expect(component.getPhysioName(aSession({ physio: undefined }))).toBe(
-      'Fisioterapeuta no especificado',
-    );
     expect(component.getSessionsCount(aTreatment({ id: 'otro', sessions_planned: undefined }))).toBe(
       '0 de ∞ sesiones',
     );
-    expect(component.formatDate('')).toBe('No especificada');
   });
 });

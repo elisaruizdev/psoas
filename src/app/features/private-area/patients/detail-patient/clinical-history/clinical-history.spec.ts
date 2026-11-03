@@ -140,9 +140,7 @@ describe('ClinicalHistory', () => {
     expect(notifications.error).toHaveBeenCalledWith('Error al eliminar el diagnóstico');
   });
 
-  it('helpers de presentación', () => {
-    expect(component.formatDate('')).toBe('No especificada');
-    expect(component.formatDate(new Date(2026, 0, 5))).toBe('5/1/2026');
+  it('etiquetas y colores de estado', () => {
     expect(component.getStatusLabel('active')).toBe('Activo');
     expect(component.getStatusLabel('resolved')).toBe('Resuelto');
     expect(component.getStatusColor('active')).toBe('primary');

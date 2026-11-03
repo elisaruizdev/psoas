@@ -44,7 +44,7 @@
                             }
                             <p class="diagnosis-card__date">
                                 <mat-icon>event</mat-icon>
-                                {{ formatDate(diagnosis.diagnosis_date) }}
+                                {{ diagnosis.diagnosis_date | displayDate: 'No especificada' }}
                             </p>
                         </div>
                     </div>
@@ -83,7 +83,7 @@
                     <div class="diagnosis-card__meta">
                         <span class="meta-item">
                             <mat-icon>update</mat-icon>
-                            Actualizado: {{ formatDate(diagnosis.updatedAt) }}
+                            Actualizado: {{ diagnosis.updatedAt | displayDate: 'No especificada' }}
                         </span>
                     </div>
                 </mat-card-content>

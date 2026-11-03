@@ -3,7 +3,9 @@ import { TableConfig, TableRowClick } from '../../../shared/models/table.model';
 import { Table } from '../../../shared/ui/table/table';
 import { MatDialog } from '@angular/material/dialog';
 import { PhysiosService } from './services/physios.service';
-import { Physio } from './models/physios.model';
+import { Physio, physioStatusLabel } from './models/physios.model';
+import { formatDate } from '../../../shared/utils/dates';
+import { fullName } from '../../../shared/utils/text';
 import { DetailPhysio } from './detail-physio/detail-physio';
 import { ButtonUI } from '../../../shared/ui/button/button';
 import { Icon } from '../../../shared/ui/icon/icon';
@@ -91,38 +93,13 @@ export class Physios implements OnInit {
   private mapPhysiosToTableData(physios: Physio[]) {
     return physios.map((physio) => ({
       id: physio.id_physio,
-      fullName: this.getFullName(physio),
+      fullName: fullName(physio),
       email: physio.email,
       phone: physio.phone,
       specialty: physio.specialty || 'Sin especificar',
-      status: this.translateStatus(physio.status),
-      registrationDate: this.formatDate(physio.created_at),
+      status: physioStatusLabel(physio.status),
+      registrationDate: formatDate(physio.created_at, '-'),
     }));
-  }
-
-  private getFullName(physio: Physio): string {
-    const parts = [physio.name, physio.surname];
-    if (physio.second_surname) {
-      parts.push(physio.second_surname);
-    }
-    return parts.join(' ');
-  }
-
-  private translateStatus(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      pending_verification: 'Pendiente de verificación',
-      approved: 'Aprobado',
-      rejected: 'Rechazado',
-      active: 'Activo',
-      inactive: 'Inactivo',
-    };
-    return statusMap[status] || status;
-  }
-
-  private formatDate(date: Date | string): string {
-    if (!date) return '-';
-    const d = new Date(date);
-    return d.toLocaleDateString('es-ES');
   }
 
   onPhysioClick(event: TableRowClick): void {
