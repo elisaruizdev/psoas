@@ -40,9 +40,8 @@ export const fisios: Physio[] = [
   {
     ...fisio, phone: '600555666', email: 'ana@psoas.es', address: null, city: null, zip: null,
     country: null, identifier: null, license_number: 'COL-123', birthdate: null, gender: null,
-    specialty: 'Deportiva', hire_date: null, schedule: null, status: 'active', password: '',
-    is_verified: true, verification_token: null, verification_token_expires: null,
-    created_at: creado, updated_at: creado, reset_password_token: null, reset_password_token_expires: null,
+    specialty: 'Deportiva', hire_date: null, schedule: null, status: 'active',
+    is_verified: true, created_at: creado, updated_at: creado,
   },
 ];
 
