@@ -11,7 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { DiagnosesService } from '../../services/diagnoses.service';
 import { Form } from '../../../../../shared/ui/form/form';
 import { FormConfig, FormValue, formChoice, formText } from '../../../../../shared/models/form.model';
-import { Diagnosis } from '../../models/patients.model';
+import { Diagnosis, diagnosisStatusLabel } from '../../models/patients.model';
 import { ButtonUI } from '../../../../../shared/ui/button/button';
 import { NotificationService } from '../../../../../shared/notifications/notification.service';
 import { DisplayDatePipe } from '../../../../../shared/pipes/display-date.pipe';
@@ -38,6 +38,8 @@ import { localIsoDate } from '../../../../../shared/utils/dates';
 export class ClinicalHistory implements OnInit {
   private diagnosesService = inject(DiagnosesService);
   private destroyRef = inject(DestroyRef);
+
+  readonly statusLabel = diagnosisStatusLabel;
 
   readonly patientId = input.required<string>();
 
@@ -208,10 +210,6 @@ export class ClinicalHistory implements OnInit {
   }
 
 
-
-  getStatusLabel(status: string): string {
-    return status === 'active' ? 'Activo' : 'Resuelto';
-  }
 
   getStatusColor(status: string): 'primary' | 'accent' {
     return status === 'active' ? 'primary' : 'accent';

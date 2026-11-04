@@ -13,6 +13,7 @@ import { CreateAppointment } from '../models/appointment.model';
 import { Patient } from '../../patients/models/patients.model';
 import { Physio } from '../../physios/models/physios.model';
 import { NotificationService } from '../../../../shared/notifications/notification.service';
+import { fullName } from '../../../../shared/utils/text';
 
 @Component({
   selector: 'app-new-session',
@@ -79,7 +80,7 @@ export class NewSession implements OnInit {
               required: true,
               options: this.patients.map((patient) => ({
                 value: patient.id,
-                label: `${patient.name} ${patient.surname} ${patient.second_surname || ''}`.trim(),
+                label: fullName(patient),
               })),
             },
             {
@@ -91,7 +92,7 @@ export class NewSession implements OnInit {
               required: true,
               options: this.physios.map((physio) => ({
                 value: physio.id_physio,
-                label: `${physio.name} ${physio.surname} ${physio.second_surname || ''}`.trim(),
+                label: fullName(physio),
               })),
             },
             {
