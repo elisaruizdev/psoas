@@ -1,5 +1,16 @@
 import { aSession, aTreatment } from '../../../../../../testing/fixtures';
-import { groupSessionsByTreatment } from './group-sessions';
+import { groupSessionsByTreatment, sessionsCountLabel } from './group-sessions';
+
+describe('sessionsCountLabel', () => {
+  it('cuenta las sesiones hechas frente a las planificadas', () => {
+    expect(sessionsCountLabel(3, 10)).toBe('3 de 10 sesiones');
+  });
+
+  it('sin sesiones planificadas, el límite es ∞', () => {
+    expect(sessionsCountLabel(0, undefined)).toBe('0 de ∞ sesiones');
+    expect(sessionsCountLabel(2, 0)).toBe('2 de ∞ sesiones');
+  });
+});
 
 describe('groupSessionsByTreatment', () => {
   it('con tratamientos activos, enseña todos los activos y ninguno de los demás', () => {

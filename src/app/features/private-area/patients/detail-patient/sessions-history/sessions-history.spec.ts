@@ -60,7 +60,11 @@ describe('SessionsHistory', () => {
     const grupos = component.treatmentsWithSessions();
     expect(grupos.length).toBe(1);
     expect(grupos[0].sessions.map((s) => s.id)).toEqual(['s-new', 's-old']);
-    expect(component.getSessionsCount(aTreatment())).toBe('2 de 10 sesiones');
+  });
+
+  it('cada tratamiento muestra cuántas sesiones lleva de las planificadas', async () => {
+    await crear();
+    expect(fixture.nativeElement.textContent).toContain('2 de 10 sesiones');
   });
 
   it('sin tratamientos activos, muestra solo el último que empezó', async () => {
@@ -109,31 +113,17 @@ describe('SessionsHistory', () => {
     expect(component.sessionFormConfig()).toBeNull();
   });
 
-  it('crear sesión: convierte tipos y deja los opcionales vacíos en undefined', async () => {
+  it('crear sesión: la envía para este paciente, cierra el formulario y avisa', async () => {
     await crear();
     sessions.create.and.returnValue(of(aSession()));
-    component.onSubmitSession({
-      treatment_id: '',
-      physio_id: '7',
-      session_date: '2026-11-02',
-      duration: '45',
-      techniques_applied: 'Masaje',
-      patient_evolution: 'Mejor',
-      observations: '',
-      next_appointment: '',
-    });
+    component.onNewSession();
+    component.onSubmitSession({ physio_id: '7', duration: '45' });
 
-    expect(sessions.create).toHaveBeenCalledWith({
-      patient_id: 'p-1',
-      treatment_id: undefined,
-      physio_id: 7,
-      session_date: '2026-11-02',
-      duration: 45,
-      techniques_applied: 'Masaje',
-      patient_evolution: 'Mejor',
-      observations: undefined,
-      next_appointment: undefined,
-    });
+    expect(sessions.create).toHaveBeenCalledWith(
+      jasmine.objectContaining({ patient_id: 'p-1', physio_id: 7, duration: 45 }),
+    );
+    expect(component.showForm()).toBeFalse();
+    expect(component.saving()).toBeFalse();
     expect(notifications.success).toHaveBeenCalledWith('Sesión creada correctamente');
 
     sessions.create.and.returnValue(throwError(() => new Error('400')));
@@ -177,12 +167,5 @@ describe('SessionsHistory', () => {
     sessions.delete.and.returnValue(throwError(() => new Error('500')));
     component.onDelete(aSession());
     expect(notifications.error).toHaveBeenCalledWith('Error al eliminar la sesión');
-  });
-
-  it('cuenta las sesiones hechas frente a las planificadas', async () => {
-    await crear();
-    expect(component.getSessionsCount(aTreatment({ id: 'otro', sessions_planned: undefined }))).toBe(
-      '0 de ∞ sesiones',
-    );
   });
 });

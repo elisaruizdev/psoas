@@ -26,3 +26,8 @@ export function groupSessionsByTreatment(
       .sort((a, b) => newestFirst(a.session_date, b.session_date)),
   }));
 }
+
+/** "3 de 10 sesiones"; sin sesiones planificadas, "3 de ∞ sesiones". */
+export function sessionsCountLabel(done: number, planned?: number): string {
+  return `${done} de ${planned || '∞'} sesiones`;
+}
