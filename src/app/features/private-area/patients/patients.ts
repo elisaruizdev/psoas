@@ -4,7 +4,7 @@ import { TableConfig, TableRowClick } from '../../../shared/models/table.model';
 import { Table } from '../../../shared/ui/table/table';
 import { ButtonUI } from '../../../shared/ui/button/button';
 import { PatientsService } from './services/patients.service';
-import { Patient } from './models/patients.model';
+import { Patient, patientStatusLabel } from './models/patients.model';
 import { NewPatient } from './new-patient/new-patient';
 import { DetailPatient } from './detail-patient/detail-patient';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -80,17 +80,8 @@ export class Patients implements OnInit {
       identifier: patient.identifier,
       email: patient.email,
       phone: patient.phone,
-      status: this.translateStatus(patient.status),
+      status: patientStatusLabel(patient.status),
     }));
-  }
-
-
-  private translateStatus(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      active: 'Activo',
-      inactive: 'Inactivo',
-    };
-    return statusMap[status] || status;
   }
 
   onPatientClick(event: TableRowClick): void {

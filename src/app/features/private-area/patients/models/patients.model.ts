@@ -22,6 +22,16 @@ export interface Patient {
   updatedAt: Date | string;
 }
 
+const PATIENT_STATUS_LABELS: Record<string, string> = {
+  active: 'Activo',
+  inactive: 'Inactivo',
+};
+
+/** Estado del paciente para mostrar ("inactive" → "Inactivo"); si no se conoce, tal cual. */
+export function patientStatusLabel(status: string): string {
+  return PATIENT_STATUS_LABELS[status] ?? status;
+}
+
 export interface CreatePatient {
   name: string;
   surname: string;
@@ -59,6 +69,16 @@ export interface Diagnosis {
   updatedAt: Date | string;
 }
 
+const DIAGNOSIS_STATUS_LABELS: Record<string, string> = {
+  active: 'Activo',
+  resolved: 'Resuelto',
+};
+
+/** Estado del diagnóstico para mostrar ("resolved" → "Resuelto"); si no se conoce, tal cual. */
+export function diagnosisStatusLabel(status: string): string {
+  return DIAGNOSIS_STATUS_LABELS[status] ?? status;
+}
+
 export interface CreateDiagnosis {
   patient_id: string;
   diagnosis_date: string;
@@ -88,6 +108,17 @@ export interface Treatment {
   status: 'active' | 'completed' | 'paused';
   createdAt: Date | string;
   updatedAt: Date | string;
+}
+
+const TREATMENT_STATUS_LABELS: Record<string, string> = {
+  active: 'Activo',
+  completed: 'Completado',
+  paused: 'Pausado',
+};
+
+/** Estado del tratamiento para mostrar ("paused" → "Pausado"); si no se conoce, tal cual. */
+export function treatmentStatusLabel(status: string): string {
+  return TREATMENT_STATUS_LABELS[status] ?? status;
 }
 
 export interface CreateTreatment {

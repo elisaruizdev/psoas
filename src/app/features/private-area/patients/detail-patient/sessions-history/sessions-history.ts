@@ -21,6 +21,7 @@ import { DisplayDatePipe } from '../../../../../shared/pipes/display-date.pipe';
 import { FullNamePipe } from '../../../../../shared/pipes/full-name.pipe';
 import { groupSessionsByTreatment } from './group-sessions';
 import { localIsoDate } from '../../../../../shared/utils/dates';
+import { fullName } from '../../../../../shared/utils/text';
 
 
 @Component({
@@ -99,7 +100,7 @@ export class SessionsHistory implements OnInit {
                   .filter((p) => p && p.id_physio)
                   .map((p) => ({
                     value: String(p.id_physio),
-                    label: `${p.name} ${p.surname}`,
+                    label: fullName(p),
                   })),
               ],
             },

@@ -133,11 +133,7 @@ describe('Treatments', () => {
     expect(notifications.error).toHaveBeenCalledWith('Error al eliminar el tratamiento');
   });
 
-  it('etiquetas y colores de estado', () => {
-    expect(component.getStatusLabel('active')).toBe('Activo');
-    expect(component.getStatusLabel('completed')).toBe('Completado');
-    expect(component.getStatusLabel('paused')).toBe('Pausado');
-    expect(component.getStatusLabel('otro')).toBe('otro');
+  it('colores de estado', () => {
     expect(component.getStatusColor('paused')).toBe('warn');
     expect(component.getStatusColor('otro')).toBe('primary');
   });

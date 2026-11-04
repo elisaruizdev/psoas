@@ -12,7 +12,7 @@ import { TreatmentsService } from '../../services/treatments.service';
 import { Form } from '../../../../../shared/ui/form/form';
 import { FormConfig, FormValue, formChoice, formText } from '../../../../../shared/models/form.model';
 import { ButtonUI } from '../../../../../shared/ui/button/button';
-import { Treatment } from '../../models/patients.model';
+import { Treatment, treatmentStatusLabel } from '../../models/patients.model';
 import { NotificationService } from '../../../../../shared/notifications/notification.service';
 import { DisplayDatePipe } from '../../../../../shared/pipes/display-date.pipe';
 import { localIsoDate } from '../../../../../shared/utils/dates';
@@ -38,6 +38,8 @@ import { localIsoDate } from '../../../../../shared/utils/dates';
 export class Treatments implements OnInit {
   private treatmentsService = inject(TreatmentsService);
   private destroyRef = inject(DestroyRef);
+
+  readonly statusLabel = treatmentStatusLabel;
 
   readonly patientId = input.required<string>();
 
@@ -230,15 +232,6 @@ export class Treatments implements OnInit {
   }
 
 
-
-  getStatusLabel(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      active: 'Activo',
-      completed: 'Completado',
-      paused: 'Pausado',
-    };
-    return statusMap[status] || status;
-  }
 
   getStatusColor(status: string): 'primary' | 'accent' | 'warn' {
     const colorMap: { [key: string]: 'primary' | 'accent' | 'warn' } = {
