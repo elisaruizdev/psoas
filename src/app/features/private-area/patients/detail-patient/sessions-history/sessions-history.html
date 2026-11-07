@@ -71,12 +71,13 @@
 
                         <mat-card-content>
                             <div class="session-card__section">
-                                <div class="section-label">
+                                <label class="section-label" [attr.for]="isEditing(session.id) ? 'tecnicas-' + session.id : null">
                                     <mat-icon>build</mat-icon>
                                     <strong>Técnicas aplicadas</strong>
-                                </div>
+                                </label>
                                 @if (isEditing(session.id)) {
-                                <textarea class="section-content-edit" [(ngModel)]="session.techniques_applied"
+                                <textarea class="section-content-edit" [id]="'tecnicas-' + session.id"
+                                    [ngModel]="draft().techniques_applied" (ngModelChange)="editDraft('techniques_applied', $event)"
                                     rows="3"></textarea>
                                 } @else {
                                 <p class="section-content">{{ session.techniques_applied }}</p>
@@ -84,12 +85,13 @@
                             </div>
 
                             <div class="session-card__section">
-                                <div class="section-label">
+                                <label class="section-label" [attr.for]="isEditing(session.id) ? 'evolucion-' + session.id : null">
                                     <mat-icon>trending_up</mat-icon>
                                     <strong>Evolución del paciente</strong>
-                                </div>
+                                </label>
                                 @if (isEditing(session.id)) {
-                                <textarea class="section-content-edit" [(ngModel)]="session.patient_evolution"
+                                <textarea class="section-content-edit" [id]="'evolucion-' + session.id"
+                                    [ngModel]="draft().patient_evolution" (ngModelChange)="editDraft('patient_evolution', $event)"
                                     rows="3"></textarea>
                                 } @else {
                                 <p class="section-content">{{ session.patient_evolution }}</p>
@@ -98,12 +100,13 @@
 
                             @if (session.observations || isEditing(session.id)) {
                             <div class="session-card__observations">
-                                <div class="section-label">
+                                <label class="section-label" [attr.for]="isEditing(session.id) ? 'observaciones-' + session.id : null">
                                     <mat-icon>speaker_notes</mat-icon>
                                     <strong>Observaciones</strong>
-                                </div>
+                                </label>
                                 @if (isEditing(session.id)) {
-                                <textarea class="section-content-edit" [(ngModel)]="session.observations"
+                                <textarea class="section-content-edit" [id]="'observaciones-' + session.id"
+                                    [ngModel]="draft().observations" (ngModelChange)="editDraft('observations', $event)"
                                     rows="2"></textarea>
                                 } @else {
                                 <p class="section-content">{{ session.observations }}</p>

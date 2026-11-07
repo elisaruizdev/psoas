@@ -153,6 +153,54 @@ describe('SessionsHistory', () => {
     expect(component.editingId()).toBeNull();
   });
 
+  async function editarTecnicas(texto: string): Promise<HTMLTextAreaElement> {
+    component.onEdit(reciente);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const textarea: HTMLTextAreaElement = fixture.nativeElement.querySelector('#tecnicas-s-new');
+    textarea.value = texto;
+    textarea.dispatchEvent(new Event('input'));
+    return textarea;
+  }
+
+  it('al editar, cada caja de texto tiene su etiqueta asociada', async () => {
+    await crear();
+    await editarTecnicas('Punción seca');
+    const host: HTMLElement = fixture.nativeElement;
+
+    for (const id of ['tecnicas-s-new', 'evolucion-s-new', 'observaciones-s-new']) {
+      expect(host.querySelector(`textarea#${id}`)).withContext(id).not.toBeNull();
+      expect(host.querySelector(`label[for="${id}"]`)).withContext(id).not.toBeNull();
+    }
+  });
+
+  it('cancelar la edición descarta lo escrito y deja la sesión como estaba', async () => {
+    await crear();
+    const original = reciente.techniques_applied;
+    await editarTecnicas('Punción seca');
+
+    component.onCancelEdit();
+    fixture.detectChanges();
+
+    expect(reciente.techniques_applied).toBe(original);
+    expect(fixture.nativeElement.textContent).not.toContain('Punción seca');
+  });
+
+  it('guardar envía lo escrito sin tocar la sesión hasta que recarga', async () => {
+    await crear();
+    sessions.update.and.returnValue(of(aSession()));
+    const original = reciente.techniques_applied;
+    await editarTecnicas('Punción seca');
+
+    component.onSaveEdit(reciente);
+
+    expect(sessions.update).toHaveBeenCalledWith(
+      's-new',
+      jasmine.objectContaining({ techniques_applied: 'Punción seca' }),
+    );
+    expect(reciente.techniques_applied).toBe(original);
+  });
+
   it('borrar sesión respeta la confirmación', async () => {
     await crear();
     const confirmar = spyOn(window, 'confirm').and.returnValue(false);

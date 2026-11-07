@@ -11,6 +11,9 @@ import { FormConfig, FormValue } from '../../../../../shared/models/form.model';
 import { ButtonUI } from '../../../../../shared/ui/button/button';
 import { forkJoin, finalize } from 'rxjs';
 import { Session, Treatment, TreatmentWithSessions } from '../../models/patients.model';
+
+/** Los campos de una sesión que se editan en la propia tarjeta. */
+type SessionDraft = Pick<Session, 'techniques_applied' | 'patient_evolution' | 'observations'>;
 import { PhysiosService } from '../../../physios/services/physios.service';
 import { Physio } from '../../../physios/models/physios.model';
 import { NotificationService } from '../../../../../shared/notifications/notification.service';
@@ -50,6 +53,8 @@ export class SessionsHistory implements OnInit {
   readonly loading = signal<boolean>(false);
   readonly showForm = signal<boolean>(false);
   readonly editingId = signal<string | null>(null);
+  /** Copia de lo que se edita: cancelar la descarta y la sesión mostrada no cambia hasta guardar. */
+  readonly draft = signal<SessionDraft>({ techniques_applied: '', patient_evolution: '' });
   /** true mientras se guarda: el formulario desactiva el botón de enviar. */
   readonly saving = signal(false);
 
@@ -92,7 +97,16 @@ export class SessionsHistory implements OnInit {
   }
 
   onEdit(session: Session): void {
+    this.draft.set({
+      techniques_applied: session.techniques_applied,
+      patient_evolution: session.patient_evolution,
+      observations: session.observations,
+    });
     this.editingId.set(session.id);
+  }
+
+  editDraft(field: keyof SessionDraft, value: string): void {
+    this.draft.update((draft) => ({ ...draft, [field]: value }));
   }
 
   onCancelEdit(): void {
@@ -101,7 +115,7 @@ export class SessionsHistory implements OnInit {
 
   onSaveEdit(session: Session): void {
     this.sessionsService
-      .update(session.id, toUpdateSession(session))
+      .update(session.id, toUpdateSession({ ...session, ...this.draft() }))
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
